@@ -36,7 +36,60 @@ export default class Restructurer implements Optimizer {
       }
       NoDuplication[tp] = removeDuplication;
     }
-    return NoDuplication;
+    //return reusable(NoDuplication);
+
+    const reuse = reusable(NoDuplication);
+    const similars = reuse[0];
+    const difference = reuse[1];
+    var differentProps: any = [];
+    for (var d in difference) {
+      var current = d.split(',');
+      var prop = difference[d]
+      for (var c in current) {
+        for (var p in prop) {
+          // console.log(current[c], prop[p], NoDuplication[current[c]][prop[p]])
+          if (!Object.keys(differentProps).includes(current[c])) {
+
+            var x: any = [];
+            x[prop[p]] = NoDuplication[current[c]][prop[p]];
+            // console.log(x)
+            // differentProps[current[c]] = (prop[p] + ':' + NoDuplication[current[c]][prop[p]]);
+            differentProps[current[c]] = x;
+          }
+          else {
+            var x: any = [];
+            x[prop[p]] = NoDuplication[current[c]][prop[p]];
+            // console.log(x)
+            var old = differentProps[current[c]];
+            var newer = Object.assign({}, old, x);
+            differentProps[current[c]] = newer;
+          }
+
+        }
+      }
+
+
+
+    }
+    //console.log(differentProps)
+    for (var i in similars) {
+      var spl = i.split(',');
+      for (var j in spl) {
+        delete NoDuplication[spl[j]]
+      }
+
+      //console.log(i)
+
+      console.log(NoDuplication[i])
+    }
+    for (var i in similars) {
+      NoDuplication[i] = similars[i];
+    }
+    for (var i in differentProps) {
+      NoDuplication[i] = differentProps[i]
+    }
+    return (NoDuplication)
+
   }
 
   MediaTags(x: any) {
@@ -85,4 +138,167 @@ function colourNameToHex(colour: string) {
   return false;
 }
 
+function reusable(nmt: any) {
+  const dos = 75;
+  let sims: string[] = [];
+  let diffs: string[] = [];
+  var props = [];
 
+  for (var n in nmt) {
+    props.push(nmt[n]);
+  }
+
+
+  for (var i in props) {
+    for (var j in props) {
+      if (i != j) {
+        const sim = similar(props[i], props[j]);
+        const dif = differences(props[i], props[j]);
+        const SimilarityLen = Object.keys(sim).length;
+        const prop1Len = Object.keys(props[i]).length;
+        const prop2Len = Object.keys(props[j]).length;
+
+
+        if ((SimilarityLen / prop1Len) * 100 >= dos && (SimilarityLen / prop2Len) * 100 >= dos) {
+          let tags: string = [Object.keys(nmt)[i].trim(), Object.keys(nmt)[j].trim()].sort().toString();
+          let tagSplited: string[] = tags.split(',');
+          if (tagSplited.length > 2) {
+            //console.log(tags)
+          }
+          sims[toUniqueArray(tagSplited.sort())] = sim;
+          diffs[toUniqueArray(tagSplited.sort())] = dif;
+        }
+
+      }
+    }
+  }
+  var similarTags: any = [];
+
+  var current;
+  for (var s in sims) {
+    //console.log(s)
+    current = s.split(',');
+    var t = [];
+    var p = [];
+    for (var s1 in sims) {
+      if (s.trim() != s1.trim()) {
+
+        if (s1.split(',').includes(current[0]) || s1.split(',').includes(current[1])) {
+
+          var tempp = similar(sims[s], sims[s1]);
+          if (Object.keys(tempp).length / Object.keys(sims[s]).length * 100 >= dos && Object.keys(tempp).length / Object.keys(sims[s1]).length * 100 >= dos) {
+            t.push(current[0]);
+            t.push(current[1]);
+            var temp = s1.split(',');
+            if (!t.includes(s1[0]) || !t.includes(s1[1])) {
+
+              for (var x in temp) {
+                t.push(temp[x]);
+              }
+            }
+            p.push(tempp);
+          }
+          // console.log(toUniqueArray(current.concat(s1.split(','))).sort())
+          // console.log(similar(sims[s], sims[s1]))
+        }
+      }
+    }
+    if (p.length != 0) {
+      if (!similarTags.includes(toUniqueArray(t).sort().toString())) {
+        similarTags.push(toUniqueArray(t).sort().toString())
+
+      }
+
+    }
+    //console.log(toUniqueArray(t), p)
+
+  }
+  for (var st in similarTags) {
+    for (var si in sims) {
+      var c1 = si.split(',');
+      // console.log(c1)
+      if (!similarTags[st].includes(c1[0]) && !similarTags[st].includes(c1[1])) {
+        similarTags.push(si);
+        // console.log(c1);
+      }
+    }
+  }
+  let result: any = [];
+  for (var st in similarTags) {
+    var holder: any = [];
+    const temp = similarTags[st].split(',');
+    // console.log(temp)
+
+    for (let i = 0; i < temp.length; i++) {
+      try {
+        if (holder.length == 0) {
+          holder = (similar(nmt[temp[0]], nmt[temp[1]]));
+        }
+        else {
+          var t1 = similar(nmt[temp[i]], nmt[temp[i + 1]]);
+          var t2 = similar(holder, t1);
+          // console.log(similar(t1, holder))
+          holder = (t2);
+        }
+        //console.log(nmt[temp[i]])
+      } catch {
+
+      }
+    }
+    result[temp] = holder;
+    // console.log(holder)
+
+  }
+  return [result, diffs];
+
+
+}
+
+
+function differences(a: any, b: any) {
+  var dif: any = [];
+  for (var key in a) { //In a and not in b
+    if (!b[key]) {
+      dif.push(key)
+      //dif[key] = a[key];
+    }
+  }
+  for (key in a) { //in a and b but different values
+    if (a[key] && b[key] && a[key] != b[key]) {
+      //I don't know what you want in this case...
+      dif.push(key)
+      //dif[key] = a[key] + ' | ' + b[key];
+
+    }
+  }
+  for (key in b) { //in b and not in a
+    if (!a[key]) {
+      dif.push(key)
+      //dif[key] = b[key];
+    }
+  }
+  return dif;
+}
+function similar(a: any, b: any) {
+  let sim: any = [];
+  for (var key in a) {
+    if (b[key] && a[key] == b[key]) {
+      sim[key] = a[key];
+    }
+  }
+  for (key in b) {
+    if (a[key] && a[key] == b[key]) {
+      sim[key] = b[key];
+    }
+  }
+  return sim;
+}
+function toUniqueArray(a: any) {
+  var newArr: any = [];
+  for (var i = 0; i < a.length; i++) {
+    if (newArr.indexOf(a[i]) === -1) {
+      newArr.push(a[i]);
+    }
+  }
+  return newArr;
+}
