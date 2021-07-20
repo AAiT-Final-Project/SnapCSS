@@ -6,9 +6,6 @@ export default class Restructurer implements Optimizer {
   optimize(input: CSS): CSS {
     return input
   }
-
-
-
   NonMediaTags(x: any) {
     var TagsProps = x[0];
     var NoDuplication: any = [];
@@ -47,40 +44,27 @@ export default class Restructurer implements Optimizer {
       var prop = difference[d]
       for (var c in current) {
         for (var p in prop) {
-          // console.log(current[c], prop[p], NoDuplication[current[c]][prop[p]])
           if (!Object.keys(differentProps).includes(current[c])) {
 
             var x: any = [];
             x[prop[p]] = NoDuplication[current[c]][prop[p]];
-            // console.log(x)
-            // differentProps[current[c]] = (prop[p] + ':' + NoDuplication[current[c]][prop[p]]);
             differentProps[current[c]] = x;
           }
           else {
             var x: any = [];
             x[prop[p]] = NoDuplication[current[c]][prop[p]];
-            // console.log(x)
             var old = differentProps[current[c]];
             var newer = Object.assign({}, old, x);
             differentProps[current[c]] = newer;
           }
-
         }
       }
-
-
-
     }
-    //console.log(differentProps)
     for (var i in similars) {
       var spl = i.split(',');
       for (var j in spl) {
         delete NoDuplication[spl[j]]
       }
-
-      //console.log(i)
-
-      console.log(NoDuplication[i])
     }
     for (var i in similars) {
       NoDuplication[i] = similars[i];
@@ -89,9 +73,7 @@ export default class Restructurer implements Optimizer {
       NoDuplication[i] = differentProps[i]
     }
     return (NoDuplication)
-
   }
-
   MediaTags(x: any) {
     var TagsProps = x[1];
     var NoDuplication: any = [];
@@ -101,8 +83,11 @@ export default class Restructurer implements Optimizer {
     }
     return NoDuplication;
   }
-
 }
+
+
+
+/**************************************************** Helper Functions **********************************************/
 function colourNameToHex(colour: string) {
   var colours: any = {
     "aliceblue": "#f0f8ff", "antiquewhite": "#faebd7", "aqua": "#00ffff", "aquamarine": "#7fffd4", "azure": "#f0ffff",
@@ -130,11 +115,8 @@ function colourNameToHex(colour: string) {
     "wheat": "#f5deb3", "white": "#ffffff", "whitesmoke": "#f5f5f5",
     "yellow": "#ffff00", "yellowgreen": "#9acd32"
   };
-
   if (typeof colours[colour.toLowerCase()] != 'undefined')
     return colours[colour.toLowerCase()];
-
-
   return false;
 }
 
@@ -176,7 +158,6 @@ function reusable(nmt: any) {
 
   var current;
   for (var s in sims) {
-    //console.log(s)
     current = s.split(',');
     var t = [];
     var p = [];
@@ -198,28 +179,20 @@ function reusable(nmt: any) {
             }
             p.push(tempp);
           }
-          // console.log(toUniqueArray(current.concat(s1.split(','))).sort())
-          // console.log(similar(sims[s], sims[s1]))
         }
       }
     }
     if (p.length != 0) {
       if (!similarTags.includes(toUniqueArray(t).sort().toString())) {
         similarTags.push(toUniqueArray(t).sort().toString())
-
       }
-
     }
-    //console.log(toUniqueArray(t), p)
-
   }
   for (var st in similarTags) {
     for (var si in sims) {
       var c1 = si.split(',');
-      // console.log(c1)
       if (!similarTags[st].includes(c1[0]) && !similarTags[st].includes(c1[1])) {
         similarTags.push(si);
-        // console.log(c1);
       }
     }
   }
@@ -227,8 +200,6 @@ function reusable(nmt: any) {
   for (var st in similarTags) {
     var holder: any = [];
     const temp = similarTags[st].split(',');
-    // console.log(temp)
-
     for (let i = 0; i < temp.length; i++) {
       try {
         if (holder.length == 0) {
@@ -237,16 +208,13 @@ function reusable(nmt: any) {
         else {
           var t1 = similar(nmt[temp[i]], nmt[temp[i + 1]]);
           var t2 = similar(holder, t1);
-          // console.log(similar(t1, holder))
           holder = (t2);
         }
-        //console.log(nmt[temp[i]])
       } catch {
-
+        continue;
       }
     }
     result[temp] = holder;
-    // console.log(holder)
 
   }
   return [result, diffs];
@@ -263,14 +231,7 @@ function differences(a: any, b: any) {
       //dif[key] = a[key];
     }
   }
-  for (key in a) { //in a and b but different values
-    if (a[key] && b[key] && a[key] != b[key]) {
-      //I don't know what you want in this case...
-      dif.push(key)
-      //dif[key] = a[key] + ' | ' + b[key];
 
-    }
-  }
   for (key in b) { //in b and not in a
     if (!a[key]) {
       dif.push(key)
