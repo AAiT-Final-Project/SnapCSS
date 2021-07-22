@@ -60,6 +60,22 @@ export default class Restructurer implements Optimizer {
         }
       }
     }
+        for (var d in differentProps) {
+      var each = differentProps[d];
+      for (var e in each) {
+        if (each[e] == undefined) {
+          delete each[e];
+        }
+      }
+    }
+    for (var d in differentProps) {
+      var each = differentProps[d];
+
+      if (Object.values(each).length == 0) {
+        delete differentProps[d];
+      }
+
+    }
     for (var i in similars) {
       var spl = i.split(',');
       for (var j in spl) {
