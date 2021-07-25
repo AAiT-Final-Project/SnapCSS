@@ -1,24 +1,29 @@
 import Optimizer from '../optimizer'
 import CSS from '../../css/css'
 import Loader from '../../load/loader';
+import { CONNREFUSED } from 'dns';
 
 export default class Restructurer implements Optimizer {
   optimize(input: CSS): CSS {
     return input
   }
+  //this function takes care of rules without @ character in their names. 
+  //it takes an array from the loader class
+  //the array it gets from loader is structured like [[NonMediaTags],[MediaTags]] 
+  //at index 0 it has the Non @ rules and at index 1 it has rules wz @
   NonMediaTags(x: any) {
-    var TagsProps = x[0];
-    var NoDuplication: any = [];
+    var TagsProps = x[0]; //fetch the Non@ rules
+    var NoDuplication: any = []; // the array of rules it is going to be returned at last
     for (var tp in TagsProps) {
-      var eachProps = TagsProps[tp].split(';');
+      var eachProps = TagsProps[tp].split(';'); //split the string so we can take a look at each rules
       for (ep in eachProps) {
         eachProps[ep] = eachProps[ep].replace(/\r/g, '').replace(/\n/g, '').trim();
       }
-      var removeDuplication = [];
+      var removeDuplication = []; //if a property name mentioned the more than once in the same tag this dictionary will take the last rule mentioned.
       for (var ep in eachProps) {
         if (eachProps[ep] != '') {
-          var rule = eachProps[ep].split(':');
-          if ([rule[0]].includes('color')) {
+          var rule = eachProps[ep].split(':'); //split the property name and the value
+          if ([rule[0]].includes('color')) { //change to hex for consistancy
             if (colourNameToHex(rule[1].trim()) != false) {
               removeDuplication[rule[0]] = colourNameToHex(rule[1].trim());
             }
@@ -60,7 +65,7 @@ export default class Restructurer implements Optimizer {
         }
       }
     }
-        for (var d in differentProps) {
+    for (var d in differentProps) {
       var each = differentProps[d];
       for (var e in each) {
         if (each[e] == undefined) {
@@ -88,6 +93,7 @@ export default class Restructurer implements Optimizer {
     for (var i in differentProps) {
       NoDuplication[i] = differentProps[i]
     }
+
     return (NoDuplication)
   }
   MediaTags(x: any) {
@@ -160,9 +166,8 @@ function reusable(nmt: any) {
         if ((SimilarityLen / prop1Len) * 100 >= dos && (SimilarityLen / prop2Len) * 100 >= dos) {
           let tags: string = [Object.keys(nmt)[i].trim(), Object.keys(nmt)[j].trim()].sort().toString();
           let tagSplited: string[] = tags.split(',');
-          if (tagSplited.length > 2) {
-            //console.log(tags)
-          }
+
+          // console.log(Object.keys(nmt)[i], Object.keys(nmt)[j], dif)
           sims[toUniqueArray(tagSplited.sort())] = sim;
           diffs[toUniqueArray(tagSplited.sort())] = dif;
         }
@@ -172,11 +177,11 @@ function reusable(nmt: any) {
   }
   var similarTags: any = [];
 
-  var current;
+  var current: any;
   for (var s in sims) {
     current = s.split(',');
-    var t = [];
-    var p = [];
+    var t: any = [];
+    var p: any = [];
     for (var s1 in sims) {
       if (s.trim() != s1.trim()) {
 
@@ -184,17 +189,34 @@ function reusable(nmt: any) {
 
           var tempp = similar(sims[s], sims[s1]);
           if (Object.keys(tempp).length / Object.keys(sims[s]).length * 100 >= dos && Object.keys(tempp).length / Object.keys(sims[s1]).length * 100 >= dos) {
+            // console.log(current, Object.keys(tempp).length / Object.keys(sims[s]).length, Object.keys(tempp).length / Object.keys(sims[s1]).length)
+            // console.log('*************')
+
             t.push(current[0]);
             t.push(current[1]);
-            var temp = s1.split(',');
+            var temp: any = s1.split(',');
             if (!t.includes(s1[0]) || !t.includes(s1[1])) {
 
               for (var x in temp) {
                 t.push(temp[x]);
               }
+              p.push(tempp);
+
+
             }
-            p.push(tempp);
+
           }
+        }
+        else if (!t.includes(current[0])) {
+          for (var x in t) {
+            if (!t[x].split(',').includes(current[0]) || !t[x].split(',').includes(current[1])) {
+              if (!t.includes(s[0]) || !t.includes(s[1])) {
+                t.push(s)
+                p.push(sims[s])
+              }
+            }
+          }
+
         }
       }
     }
@@ -215,7 +237,7 @@ function reusable(nmt: any) {
   let result: any = [];
   for (var st in similarTags) {
     var holder: any = [];
-    const temp = similarTags[st].split(',');
+    const temp = toUniqueArray(similarTags[st].split(',')).sort();
     for (let i = 0; i < temp.length; i++) {
       try {
         if (holder.length == 0) {
@@ -223,8 +245,8 @@ function reusable(nmt: any) {
         }
         else {
           var t1 = similar(nmt[temp[i]], nmt[temp[i + 1]]);
-          var t2 = similar(holder, t1);
-          holder = (t2);
+          var t2 = (similar(holder, t1));
+          holder = t2;
         }
       } catch {
         continue;
@@ -233,6 +255,8 @@ function reusable(nmt: any) {
     result[temp] = holder;
 
   }
+  // console.log(diffs)
+
   return [result, diffs];
 
 
@@ -242,16 +266,29 @@ function reusable(nmt: any) {
 function differences(a: any, b: any) {
   var dif: any = [];
   for (var key in a) { //In a and not in b
-    if (!b[key]) {
-      dif.push(key)
+    if (!b[key.trim()]) {
+      dif.push(key.trim())
       //dif[key] = a[key];
     }
   }
 
   for (key in b) { //in b and not in a
-    if (!a[key]) {
-      dif.push(key)
+    if (!a[key.trim()]) {
+      dif.push(key.trim())
       //dif[key] = b[key];
+    }
+  }
+  for (var key in a) {
+    if (b[key.trim()] && a[key.trim()] != b[key.trim()]) {
+      dif.push(key.trim())
+      // dif[key.trim()] = a[key.trim()];
+    }
+  }
+  for (key in b) {
+    if (a[key.trim()] && a[key.trim()] != b[key.trim()]) {
+      dif.push(key.trim())
+
+      // dif[key.trim()] = b[key.trim()];
     }
   }
   return dif;
@@ -259,13 +296,13 @@ function differences(a: any, b: any) {
 function similar(a: any, b: any) {
   let sim: any = [];
   for (var key in a) {
-    if (b[key] && a[key] == b[key]) {
-      sim[key] = a[key];
+    if (b[key.trim()] && a[key.trim()] == b[key.trim()]) {
+      sim[key.trim()] = a[key.trim()];
     }
   }
   for (key in b) {
-    if (a[key] && a[key] == b[key]) {
-      sim[key] = b[key];
+    if (a[key.trim()] && a[key.trim()] == b[key.trim()]) {
+      sim[key.trim()] = b[key.trim()];
     }
   }
   return sim;
