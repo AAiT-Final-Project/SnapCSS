@@ -1,8 +1,102 @@
+/* eslint-disable no-else-return */
 import Optimizer from '../optimizer'
 import CSS from '../../css/css'
+const css = require('css')
 
-export default class Restructurer implements Optimizer {
+interface Shorthand {
+  propertyName: string;
+  properties: string[];
+}
+
+interface Declaration {
+  type: string;
+  property: string;
+  value: string;
+}
+
+interface Declarations {
+  [key: string]: Declaration;
+}
+
+interface Rule {
+  type: string;
+  selectors: string[];
+  declarations: Declaration[];
+}
+export default class Compressor implements Optimizer {
   optimize(input: CSS): CSS {
     return input
+  }
+
+  private compressTopRightBottomLeftOrder(shorthand: Shorthand, declarations: any): string {
+    const propertyName = shorthand.propertyName
+
+    if (declarations[propertyName + '-top'] && declarations[propertyName + '-right'] && declarations[propertyName + '-bottom'] && declarations[propertyName + '-left']) {
+      if (declarations[propertyName + '-top'].value === declarations[propertyName + '-right'].value && declarations[propertyName + '-right'].value === declarations[propertyName + '-bottom'].value && declarations[propertyName + '-bottom'].value === declarations[propertyName + '-left'].value) {
+        return declarations[propertyName + '-top'].value
+      } else if (declarations[propertyName + '-top'].value === declarations[propertyName + '-bottom'].value && declarations[propertyName + '-left'].value === declarations[propertyName + '-right'].value) {
+        return declarations[propertyName + '-top'].value + ' ' + declarations[propertyName + '-left'].value
+      } else if (declarations[propertyName + '-left'].value === declarations[propertyName + '-right'].value) {
+        return declarations[propertyName + '-top'].value + ' ' + declarations[propertyName + '-left'].value + ' ' + declarations[propertyName + '-bottom'].value
+      } else {
+        return declarations[propertyName + '-top'].value + ' ' + declarations[propertyName + '-right'].value + ' ' + declarations[propertyName + '-bottom'].value + ' ' + declarations[propertyName + '-left'].value
+      }
+    } else {
+      return ''
+    }
+  }
+
+  shorthands = [
+    {
+      propertyName: 'margin',
+      properties: ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
+      getShorthandValue: this.compressTopRightBottomLeftOrder,
+    }, {
+      propertyName: 'padding',
+      properties: ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
+      getShorthandValue: this.compressTopRightBottomLeftOrder,
+    }, {
+      propertyName: 'border-width',
+      properties: ['border-width-top', 'border-width-right', 'border-width-bottom', 'border-width-left'],
+      getShorthandValue: this.compressTopRightBottomLeftOrder,
+    },
+  ]
+
+  findLonghand(cssString: string) {
+    const cssObject = css.parse(cssString)
+
+    cssObject.stylesheet.rules.forEach((rule: Rule) => {
+      if (rule.type === 'rule') {
+        const declarations: Declarations[] = []
+
+        rule.declarations.forEach((declaration: any) => {
+          declarations[declaration.property] = declaration
+        })
+
+        this.shorthands.forEach(shorthand => {
+          const shorthandValue = shorthand.getShorthandValue(shorthand, declarations)
+
+          if (shorthandValue !== '') {
+            const newDeclarations = []
+
+            newDeclarations.push({
+              type: 'declaration',
+              property: shorthand.propertyName,
+              value: shorthandValue,
+            })
+
+            rule.declarations.forEach(declaration => {
+              if (shorthand.properties.indexOf(declaration.property) <= -1) {
+                newDeclarations.push(declaration)
+              }
+            })
+
+            rule.declarations = newDeclarations
+          }
+        })
+      }
+    })
+
+    return css.stringify(cssObject)
   }
 }
