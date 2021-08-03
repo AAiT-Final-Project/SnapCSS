@@ -28,7 +28,7 @@ export default class Compressor implements Optimizer {
     return input
   }
 
-  private compressTopRightBottomLeftOrder(shorthand: Shorthand, declarations: any): string {
+  private compressInTopRightBottomLeftOrder(shorthand: Shorthand, declarations: any): string {
     const propertyName = shorthand.propertyName
 
     if (declarations[propertyName + '-top'] && declarations[propertyName + '-right'] && declarations[propertyName + '-bottom'] && declarations[propertyName + '-left']) {
@@ -46,19 +46,57 @@ export default class Compressor implements Optimizer {
     }
   }
 
+  private compressInWidthStyleColorOrder(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+
+    if (declarations[propertyName + '-width'] && declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
+      return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
+    } else {
+      return ''
+    }
+  }
+
   shorthands = [
     {
       propertyName: 'margin',
       properties: ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
-      getShorthandValue: this.compressTopRightBottomLeftOrder,
+      getShorthandValue: this.compressInTopRightBottomLeftOrder,
     }, {
       propertyName: 'padding',
       properties: ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
-      getShorthandValue: this.compressTopRightBottomLeftOrder,
+      getShorthandValue: this.compressInTopRightBottomLeftOrder,
     }, {
       propertyName: 'border-width',
       properties: ['border-width-top', 'border-width-right', 'border-width-bottom', 'border-width-left'],
-      getShorthandValue: this.compressTopRightBottomLeftOrder,
+      getShorthandValue: this.compressInTopRightBottomLeftOrder,
+    }, {
+      propertyName: 'border',
+      properties: ['border-width', 'border-style', 'border-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-top',
+      properties: ['border-top-width', 'border-top-style', 'border-top-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-right',
+      properties: ['border-right-width', 'border-right-style', 'border-right-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-bottom',
+      properties: ['border-bottom-width', 'border-bottom-style', 'border-bottom-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-left',
+      properties: ['border-left-width', 'border-left-style', 'border-left-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'outline',
+      properties: ['outline-width', 'outline-style', 'outline-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'column-rule',
+      properties: ['column-rule-width', 'column-rule-style', 'column-rule-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
     },
   ]
 
