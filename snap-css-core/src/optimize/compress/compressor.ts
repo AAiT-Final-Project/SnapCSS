@@ -28,6 +28,7 @@ export default class Compressor implements Optimizer {
     return input
   }
 
+  // Padding, Margin
   private compressInTopRightBottomLeftOrder(shorthand: Shorthand, declarations: any): string {
     const propertyName = shorthand.propertyName
 
@@ -46,6 +47,7 @@ export default class Compressor implements Optimizer {
     }
   }
 
+  // border, border-top, border-right, border-bottom, border-left, outline, column-rule
   private compressInWidthStyleColorOrder(shorthand: Shorthand, declarations: any) {
     const propertyName = shorthand.propertyName
 
@@ -62,6 +64,7 @@ export default class Compressor implements Optimizer {
     }
   }
 
+  // Flex
   private shorthandFlex(shorthand: Shorthand, declarations: any) {
     const propertyName = shorthand.propertyName
 
@@ -88,10 +91,6 @@ export default class Compressor implements Optimizer {
     }, {
       propertyName: 'padding',
       properties: ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
-      getShorthandValue: this.compressInTopRightBottomLeftOrder,
-    }, {
-      propertyName: 'border-width',
-      properties: ['border-width-top', 'border-width-right', 'border-width-bottom', 'border-width-left'],
       getShorthandValue: this.compressInTopRightBottomLeftOrder,
     }, {
       propertyName: 'border',
