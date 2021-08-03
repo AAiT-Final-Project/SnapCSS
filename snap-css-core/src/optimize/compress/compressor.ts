@@ -51,6 +51,12 @@ export default class Compressor implements Optimizer {
 
     if (declarations[propertyName + '-width'] && declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
       return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
+    } else if (declarations[propertyName + '-width'] && declarations[propertyName + '-style']) {
+      return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value
+    } else if (declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
+      return declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
+    } else if (declarations[propertyName + '-style']) {
+      return declarations[propertyName + '-style'].value
     } else {
       return ''
     }
