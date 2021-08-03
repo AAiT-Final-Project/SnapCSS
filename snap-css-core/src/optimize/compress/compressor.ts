@@ -56,6 +56,24 @@ export default class Compressor implements Optimizer {
     }
   }
 
+  private shorthandFlex(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+
+    if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink'] && declarations[propertyName + '-basis']) {
+      return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value + ' ' + declarations[propertyName + '-basis'].value
+    } else if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink']) {
+      return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value
+    } else if (declarations[propertyName + '-grow'] && declarations[propertyName + '-basis']) {
+      return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-basis'].value
+    } else if (declarations[propertyName + '-grow']) {
+      return declarations[propertyName + '-grow'].value
+    } else if (declarations[propertyName + '-basis']) {
+      return declarations[propertyName + '-basis'].value
+    } else {
+      return ''
+    }
+  }
+
   shorthands = [
     {
       propertyName: 'margin',
@@ -97,6 +115,10 @@ export default class Compressor implements Optimizer {
       propertyName: 'column-rule',
       properties: ['column-rule-width', 'column-rule-style', 'column-rule-color'],
       getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'flex',
+      properties: ['flex-grow', 'flex-shrink', 'flex-basis'],
+      getShorthandValue: this.shorthandFlex,
     },
   ]
 
