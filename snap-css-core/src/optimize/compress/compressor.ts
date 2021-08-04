@@ -111,10 +111,13 @@ export default class Compressor implements Optimizer {
 
       shorthandedValue.push(cornerRadius)
     }
-    if (shorthandedValue[1] === undefined) {
+
+    if (shorthandedValue[0] && shorthandedValue[1]) {
+      return shorthandedValue[0] + ' / ' + shorthandedValue[1]
+    } else if (shorthandedValue[0]) {
       return shorthandedValue[0]
     } else {
-      return shorthandedValue[0] + ' / ' + shorthandedValue[1]
+      return ''
     }
   }
 
@@ -148,6 +151,47 @@ export default class Compressor implements Optimizer {
       return declarations[prefixName + '-direction'].value
     } else if (declarations[prefixName + '-wrap']) {
       return declarations[prefixName + '-wrap'].value
+    } else {
+      return ''
+    }
+  }
+
+  // Columns
+  private shorthandColumns(shorthand: Shorthand, declarations: any) {
+    if (declarations['column-width'] && declarations['column-count']) {
+      return declarations['column-width'].value + ' ' + declarations['column-count'].value
+    } else if (declarations['column-width']) {
+      return declarations['column-width'].value
+    } else if (declarations['column-count']) {
+      return declarations['column-count'].value
+    } else {
+      return ''
+    }
+  }
+
+  // Gap
+  private shorthandGap(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+
+    if (declarations['row-' + propertyName] && declarations['column-' + propertyName]) {
+      if (declarations['row-' + propertyName].value === declarations['column-' + propertyName].value) {
+        return declarations['row-' + propertyName].value
+      } else {
+        return declarations['row-' + propertyName].value + ' ' + declarations['column-' + propertyName].value
+      }
+    } else if (declarations['row-' + propertyName]) {
+      return declarations['row-' + propertyName].value
+    } else {
+      return ''
+    }
+  }
+
+  // grid-column, grid-row
+  private shorthandGridRowAndColumn(shorthand: Shorthand, declarations: any): string {
+    const propertyName = shorthand.propertyName
+
+    if (declarations[propertyName + '-start'] && declarations[propertyName + '-end']) {
+      return declarations[propertyName + '-start'].value + ' / ' + declarations[propertyName + '-end'].value
     } else {
       return ''
     }
@@ -214,6 +258,22 @@ export default class Compressor implements Optimizer {
       propertyName: 'flex-flow',
       properties: ['flex-direction', 'flex-wrap'],
       getShorthandValue: this.shorthandFlexFlow,
+    }, {
+      propertyName: 'columns',
+      properties: ['column-width', 'column-count'],
+      getShorthandValue: this.shorthandColumns,
+    }, {
+      propertyName: 'gap',
+      properties: ['row-gap', 'column-gap'],
+      getShorthandValue: this.shorthandGap,
+    }, {
+      propertyName: 'grid-column',
+      properties: ['grid-column-start', 'grid-column-end'],
+      getShorthandValue: this.shorthandGridRowAndColumn,
+    }, {
+      propertyName: 'grid-row',
+      properties: ['grid-row-start', 'grid-row-end'],
+      getShorthandValue: this.shorthandGridRowAndColumn,
     },
   ]
 

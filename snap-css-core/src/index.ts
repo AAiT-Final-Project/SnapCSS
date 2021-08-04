@@ -28,7 +28,7 @@ class SnapCss extends Command {
     // const trial = CSS.fromString('Trial CSS')
     // eslint-disable-next-line no-console
     // console.log(trial.toString())
-    const cssString = 'class1 { border-top-left-radius: 10px 20px; border-top-right-radius: 15px 25px; border-bottom-right-radius: 18px 28px; border-bottom-left-radius: 15px 25px; }'
+    const cssString = 'class1 { grid-column-start: 1; grid-column-end: span 2; grid-row-start: 1; grid-row-end: span 2; }'
     const compressor = new Compressor()
     const shorthandedCss = compressor.findLonghand(cssString)
     console.log(shorthandedCss)
