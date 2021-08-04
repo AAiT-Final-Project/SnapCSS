@@ -28,7 +28,7 @@ class SnapCss extends Command {
     // const trial = CSS.fromString('Trial CSS')
     // eslint-disable-next-line no-console
     // console.log(trial.toString())
-    const cssString = 'class1 { border-style: solid; }'
+    const cssString = 'class1 { flex-direction: column; } class2 { flex-wrap: wrap; } class3 { flex-direction: row; flex-wrap: wrap-reverse; }'
     const compressor = new Compressor()
     const shorthandedCss = compressor.findLonghand(cssString)
     console.log(shorthandedCss)

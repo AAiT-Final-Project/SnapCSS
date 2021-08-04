@@ -83,6 +83,22 @@ export default class Compressor implements Optimizer {
     }
   }
 
+  // flex-flow
+  private shorthandFlexFlow(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+    const prefixName = propertyName.split('-')[0]
+
+    if (declarations[prefixName + '-direction'] && declarations[prefixName + '-wrap']) {
+      return declarations[prefixName + '-direction'].value + ' ' + declarations[prefixName + '-wrap'].value
+    } else if (declarations[prefixName + '-direction']) {
+      return declarations[prefixName + '-direction'].value
+    } else if (declarations[prefixName + '-wrap']) {
+      return declarations[prefixName + '-wrap'].value
+    } else {
+      return ''
+    }
+  }
+
   shorthands = [
     {
       propertyName: 'margin',
@@ -124,6 +140,10 @@ export default class Compressor implements Optimizer {
       propertyName: 'flex',
       properties: ['flex-grow', 'flex-shrink', 'flex-basis'],
       getShorthandValue: this.shorthandFlex,
+    }, {
+      propertyName: 'flex-flow',
+      properties: ['flex-direction', 'flex-wrap'],
+      getShorthandValue: this.shorthandFlexFlow,
     },
   ]
 
