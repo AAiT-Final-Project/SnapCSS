@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import {Command, flags} from '@oclif/command'
-import CSS from './css/css'
 import Compressor from './optimize/compress/compressor'
 
 class SnapCss extends Command {
@@ -29,7 +28,7 @@ class SnapCss extends Command {
     // const trial = CSS.fromString('Trial CSS')
     // eslint-disable-next-line no-console
     // console.log(trial.toString())
-    const cssString = 'class1 {border-width-top: 5px; border-width-right: 10px; border-width-bottom: 15px; border-width-left: 20px; padding-top: 5px; padding-right: 10px; padding-bottom: 15px; padding-left: 20px;} class2 { margin-top: 5px; margin-right: 10px; margin-bottom: 15px; margin-left: 20px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px; padding-left: 10px;  border-width-top: 10px; border-width-right: 10px; border-width-bottom: 10px; border-width-left: 10px;}'
+    const cssString = 'class1 { grid-column-start: 1; grid-column-end: span 2; grid-row-start: 1; grid-row-end: span 2; }'
     const compressor = new Compressor()
     const shorthandedCss = compressor.findLonghand(cssString)
     console.log(shorthandedCss)

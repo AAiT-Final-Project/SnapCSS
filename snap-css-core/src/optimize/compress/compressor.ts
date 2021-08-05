@@ -28,7 +28,8 @@ export default class Compressor implements Optimizer {
     return input
   }
 
-  private compressTopRightBottomLeftOrder(shorthand: Shorthand, declarations: any): string {
+  // Padding, Margin
+  private compressInTopRightBottomLeftOrder(shorthand: Shorthand, declarations: any): string {
     const propertyName = shorthand.propertyName
 
     if (declarations[propertyName + '-top'] && declarations[propertyName + '-right'] && declarations[propertyName + '-bottom'] && declarations[propertyName + '-left']) {
@@ -46,19 +47,233 @@ export default class Compressor implements Optimizer {
     }
   }
 
+  // border, border-top, border-right, border-bottom, border-left, outline, column-rule
+  private compressInWidthStyleColorOrder(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+
+    if (declarations[propertyName + '-width'] && declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
+      return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
+    } else if (declarations[propertyName + '-width'] && declarations[propertyName + '-style']) {
+      return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value
+    } else if (declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
+      return declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
+    } else if (declarations[propertyName + '-style']) {
+      return declarations[propertyName + '-style'].value
+    } else {
+      return ''
+    }
+  }
+
+  // border-color, border-style, border-width
+  private compressInTopRightBottomLeftOrderForSingleMiddleValue(shorthand: Shorthand, declarations: any): string {
+    const propertyName = shorthand.propertyName
+    const prefix = propertyName.split('-')[0]
+    const postfix = propertyName.split('-')[1]
+
+    if (declarations[prefix + '-top-' + postfix] && declarations[prefix + '-right-' + postfix] && declarations[prefix + '-bottom-' + postfix] && declarations[prefix + '-left-' + postfix]) {
+      if (declarations[prefix + '-top-' + postfix].value === declarations[prefix + '-right-' + postfix].value && declarations[prefix + '-right-' + postfix].value === declarations[prefix + '-bottom-' + postfix].value && declarations[prefix + '-bottom-' + postfix].value === declarations[prefix + '-left-' + postfix].value) {
+        return declarations[prefix + '-top-' + postfix].value
+      } else if (declarations[prefix + '-top-' + postfix].value === declarations[prefix + '-bottom-' + postfix].value && declarations[prefix + '-left-' + postfix].value === declarations[prefix + '-right-' + postfix].value) {
+        return declarations[prefix + '-top-' + postfix].value + ' ' + declarations[prefix + '-left-' + postfix].value
+      } else if (declarations[prefix + '-left-' + postfix].value === declarations[prefix + '-right-' + postfix].value) {
+        return declarations[prefix + '-top-' + postfix].value + ' ' + declarations[prefix + '-left-' + postfix].value + ' ' + declarations[prefix + '-bottom-' + postfix].value
+      } else {
+        return declarations[prefix + '-top-' + postfix].value + ' ' + declarations[prefix + '-right-' + postfix].value + ' ' + declarations[prefix + '-bottom-' + postfix].value + ' ' + declarations[prefix + '-left-' + postfix].value
+      }
+    } else {
+      return ''
+    }
+  }
+
+  // border-radius
+  private shorthandBorderRadius(shorthand: Shorthand, declarations: any): string {
+    const propertyName = shorthand.propertyName
+    const prefix = propertyName.split('-')[0]
+    const postfix = propertyName.split('-')[1]
+
+    let cornerRadius = ''
+    const shorthandedValue: string[] = []
+
+    for (let i = 0; i < 2; i++) {
+      if (declarations[prefix + '-top-left-' + postfix] && declarations[prefix + '-top-right-' + postfix] && declarations[prefix + '-bottom-right-' + postfix] && declarations[prefix + '-bottom-left-' + postfix]) {
+        if (declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-top-right-' + postfix].value.split(' ')[i] && declarations[prefix + '-top-right-' + postfix].value.split(' ')[i] === declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] && declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] === declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i]) {
+          cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i]
+        } else if (declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] && declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-top-right-' + postfix].value.split(' ')[i]) {
+          cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i]
+        } else if (declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-top-right-' + postfix].value.split(' ')[i]) {
+          cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i]
+        } else {
+          cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-top-right-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i]
+        }
+      } else {
+        cornerRadius = ''
+      }
+
+      shorthandedValue.push(cornerRadius)
+    }
+
+    if (shorthandedValue[0] && shorthandedValue[1]) {
+      return shorthandedValue[0] + ' / ' + shorthandedValue[1]
+    } else if (shorthandedValue[0]) {
+      return shorthandedValue[0]
+    } else {
+      return ''
+    }
+  }
+
+  // Flex
+  private shorthandFlex(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+
+    if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink'] && declarations[propertyName + '-basis']) {
+      return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value + ' ' + declarations[propertyName + '-basis'].value
+    } else if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink']) {
+      return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value
+    } else if (declarations[propertyName + '-grow'] && declarations[propertyName + '-basis']) {
+      return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-basis'].value
+    } else if (declarations[propertyName + '-grow']) {
+      return declarations[propertyName + '-grow'].value
+    } else if (declarations[propertyName + '-basis']) {
+      return declarations[propertyName + '-basis'].value
+    } else {
+      return ''
+    }
+  }
+
+  // flex-flow
+  private shorthandFlexFlow(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+    const prefixName = propertyName.split('-')[0]
+
+    if (declarations[prefixName + '-direction'] && declarations[prefixName + '-wrap']) {
+      return declarations[prefixName + '-direction'].value + ' ' + declarations[prefixName + '-wrap'].value
+    } else if (declarations[prefixName + '-direction']) {
+      return declarations[prefixName + '-direction'].value
+    } else if (declarations[prefixName + '-wrap']) {
+      return declarations[prefixName + '-wrap'].value
+    } else {
+      return ''
+    }
+  }
+
+  // Columns
+  private shorthandColumns(shorthand: Shorthand, declarations: any) {
+    if (declarations['column-width'] && declarations['column-count']) {
+      return declarations['column-width'].value + ' ' + declarations['column-count'].value
+    } else if (declarations['column-width']) {
+      return declarations['column-width'].value
+    } else if (declarations['column-count']) {
+      return declarations['column-count'].value
+    } else {
+      return ''
+    }
+  }
+
+  // Gap
+  private shorthandGap(shorthand: Shorthand, declarations: any) {
+    const propertyName = shorthand.propertyName
+
+    if (declarations['row-' + propertyName] && declarations['column-' + propertyName]) {
+      if (declarations['row-' + propertyName].value === declarations['column-' + propertyName].value) {
+        return declarations['row-' + propertyName].value
+      } else {
+        return declarations['row-' + propertyName].value + ' ' + declarations['column-' + propertyName].value
+      }
+    } else if (declarations['row-' + propertyName]) {
+      return declarations['row-' + propertyName].value
+    } else {
+      return ''
+    }
+  }
+
+  // grid-column, grid-row
+  private shorthandGridRowAndColumn(shorthand: Shorthand, declarations: any): string {
+    const propertyName = shorthand.propertyName
+
+    if (declarations[propertyName + '-start'] && declarations[propertyName + '-end']) {
+      return declarations[propertyName + '-start'].value + ' / ' + declarations[propertyName + '-end'].value
+    } else {
+      return ''
+    }
+  }
+
   shorthands = [
     {
       propertyName: 'margin',
       properties: ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
-      getShorthandValue: this.compressTopRightBottomLeftOrder,
+      getShorthandValue: this.compressInTopRightBottomLeftOrder,
     }, {
       propertyName: 'padding',
       properties: ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
-      getShorthandValue: this.compressTopRightBottomLeftOrder,
+      getShorthandValue: this.compressInTopRightBottomLeftOrder,
+    }, {
+      propertyName: 'border',
+      properties: ['border-width', 'border-style', 'border-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-top',
+      properties: ['border-top-width', 'border-top-style', 'border-top-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-right',
+      properties: ['border-right-width', 'border-right-style', 'border-right-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-bottom',
+      properties: ['border-bottom-width', 'border-bottom-style', 'border-bottom-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-left',
+      properties: ['border-left-width', 'border-left-style', 'border-left-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'border-color',
+      properties: ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'],
+      getShorthandValue: this.compressInTopRightBottomLeftOrderForSingleMiddleValue,
+    }, {
+      propertyName: 'border-style',
+      properties: ['border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'],
+      getShorthandValue: this.compressInTopRightBottomLeftOrderForSingleMiddleValue,
     }, {
       propertyName: 'border-width',
-      properties: ['border-width-top', 'border-width-right', 'border-width-bottom', 'border-width-left'],
-      getShorthandValue: this.compressTopRightBottomLeftOrder,
+      properties: ['border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'],
+      getShorthandValue: this.compressInTopRightBottomLeftOrderForSingleMiddleValue,
+    }, {
+      propertyName: 'border-radius',
+      properties: ['border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius'],
+      getShorthandValue: this.shorthandBorderRadius,
+    }, {
+      propertyName: 'outline',
+      properties: ['outline-width', 'outline-style', 'outline-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'column-rule',
+      properties: ['column-rule-width', 'column-rule-style', 'column-rule-color'],
+      getShorthandValue: this.compressInWidthStyleColorOrder,
+    }, {
+      propertyName: 'flex',
+      properties: ['flex-grow', 'flex-shrink', 'flex-basis'],
+      getShorthandValue: this.shorthandFlex,
+    }, {
+      propertyName: 'flex-flow',
+      properties: ['flex-direction', 'flex-wrap'],
+      getShorthandValue: this.shorthandFlexFlow,
+    }, {
+      propertyName: 'columns',
+      properties: ['column-width', 'column-count'],
+      getShorthandValue: this.shorthandColumns,
+    }, {
+      propertyName: 'gap',
+      properties: ['row-gap', 'column-gap'],
+      getShorthandValue: this.shorthandGap,
+    }, {
+      propertyName: 'grid-column',
+      properties: ['grid-column-start', 'grid-column-end'],
+      getShorthandValue: this.shorthandGridRowAndColumn,
+    }, {
+      propertyName: 'grid-row',
+      properties: ['grid-row-start', 'grid-row-end'],
+      getShorthandValue: this.shorthandGridRowAndColumn,
     },
   ]
 
