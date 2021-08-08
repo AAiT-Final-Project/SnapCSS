@@ -1,19 +1,58 @@
 /* eslint-disable max-statements-per-line */
 import {Shorthand} from './interfaces'
 
-// Padding, Margin
-export const compressInTopRightBottomLeftOrder = (shorthand: Shorthand, declarations: any): string => {
-  const propertyName = shorthand.propertyName
+const oneValueProperty = ['padding', 'margin']
+const twoValueProperty = ['border-color', 'border-width', 'border-style']
+const threeValueProperty = ['border-radius']
+const oneValueSet = new Set(oneValueProperty)
+const twoValueSet = new Set(twoValueProperty)
+const threeValueSet = new Set(threeValueProperty)
 
-  if (declarations[propertyName + '-top'] && declarations[propertyName + '-right'] && declarations[propertyName + '-bottom'] && declarations[propertyName + '-left']) {
-    if (declarations[propertyName + '-top'].value === declarations[propertyName + '-right'].value && declarations[propertyName + '-right'].value === declarations[propertyName + '-bottom'].value && declarations[propertyName + '-bottom'].value === declarations[propertyName + '-left'].value) {
-      return declarations[propertyName + '-top'].value
-    } if (declarations[propertyName + '-top'].value === declarations[propertyName + '-bottom'].value && declarations[propertyName + '-left'].value === declarations[propertyName + '-right'].value) {
-      return declarations[propertyName + '-top'].value + ' ' + declarations[propertyName + '-left'].value
-    } if (declarations[propertyName + '-left'].value === declarations[propertyName + '-right'].value) {
-      return declarations[propertyName + '-top'].value + ' ' + declarations[propertyName + '-left'].value + ' ' + declarations[propertyName + '-bottom'].value
+// padding, margin, border-color, border-style, border-width, border-radius
+export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
+  const propertyName = shorthand.propertyName
+  const propertyList = propertyName.split('-')
+
+  const prefix = propertyList[0]
+  let affix = ['-top', '-right', '-bottom', '-left']
+  let postfix = ''
+  let times = 1
+
+  if (oneValueSet.has(propertyName)) {
+    postfix = ''
+  } else if (twoValueSet.has(propertyName)) {
+    postfix = '-' + propertyList[1]
+  } else if (threeValueSet.has(propertyName)) {
+    postfix = '-' + propertyList[1]
+    affix = ['-top-left', '-top-right', '-bottom-right', '-bottom-left']
+    times = 2
+  }
+
+  let result = ''
+  const shorthandedValue: string[] = []
+
+  for (let i = 0; i < times; i++) {
+    if (declarations[prefix + affix[0] + postfix] && declarations[prefix + affix[1] + postfix] && declarations[prefix + affix[2] + postfix] && declarations[prefix + affix[3] + postfix]) {
+      if (declarations[prefix + affix[0] + postfix].value.split(' ')[i] === declarations[prefix + affix[1] + postfix].value.split(' ')[i] && declarations[prefix + affix[1] + postfix].value.split(' ')[i] === declarations[prefix + affix[2] + postfix].value.split(' ')[i] && declarations[prefix + affix[2] + postfix].value.split(' ')[i] === declarations[prefix + affix[3] + postfix].value.split(' ')[i]) {
+        result = declarations[prefix + affix[0] + postfix].value.split(' ')[i]
+      } else if (declarations[prefix + affix[0] + postfix].value.split(' ')[i] === declarations[prefix + affix[2] + postfix].value.split(' ')[i] && declarations[prefix + affix[3] + postfix].value.split(' ')[i] === declarations[prefix + affix[1] + postfix].value.split(' ')[i]) {
+        result = declarations[prefix + affix[0] + postfix].value.split(' ')[i] + ' ' + declarations[prefix + affix[3] + postfix].value.split(' ')[i]
+      } else if (declarations[prefix + affix[3] + postfix].value.split(' ')[i] === declarations[prefix + affix[1] + postfix].value.split(' ')[i]) {
+        result = declarations[prefix + affix[0] + postfix].value.split(' ')[i] + ' ' + declarations[prefix + affix[3] + postfix].value.split(' ')[i] + ' ' + declarations[prefix + affix[2] + postfix].value.split(' ')[i]
+      } else {
+        result = declarations[prefix + affix[0] + postfix].value.split(' ')[i] + ' ' + declarations[prefix + affix[1] + postfix].value.split(' ')[i] + ' ' + declarations[prefix + affix[2] + postfix].value.split(' ')[i] + ' ' + declarations[prefix + affix[3] + postfix].value.split(' ')[i]
+      }
+    } else {
+      result = ''
     }
-    return declarations[propertyName + '-top'].value + ' ' + declarations[propertyName + '-right'].value + ' ' + declarations[propertyName + '-bottom'].value + ' ' + declarations[propertyName + '-left'].value
+
+    shorthandedValue.push(result)
+  }
+
+  if (shorthandedValue[0] && shorthandedValue[1]) {
+    return shorthandedValue[0] + ' / ' + shorthandedValue[1]
+  } if (shorthandedValue[0]) {
+    return shorthandedValue[0]
   }
   return ''
 }
@@ -30,60 +69,6 @@ export const compressInWidthStyleColorOrder = (shorthand: Shorthand, declaration
     return declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
   } if (declarations[propertyName + '-style']) {
     return declarations[propertyName + '-style'].value
-  }
-  return ''
-}
-
-// border-color, border-style, border-width
-export const compressInTopRightBottomLeftOrderForSingleMiddleValue = (shorthand: Shorthand, declarations: any): string => {
-  const propertyName = shorthand.propertyName
-  const prefix = propertyName.split('-')[0]
-  const postfix = propertyName.split('-')[1]
-
-  if (declarations[prefix + '-top-' + postfix] && declarations[prefix + '-right-' + postfix] && declarations[prefix + '-bottom-' + postfix] && declarations[prefix + '-left-' + postfix]) {
-    if (declarations[prefix + '-top-' + postfix].value === declarations[prefix + '-right-' + postfix].value && declarations[prefix + '-right-' + postfix].value === declarations[prefix + '-bottom-' + postfix].value && declarations[prefix + '-bottom-' + postfix].value === declarations[prefix + '-left-' + postfix].value) {
-      return declarations[prefix + '-top-' + postfix].value
-    } if (declarations[prefix + '-top-' + postfix].value === declarations[prefix + '-bottom-' + postfix].value && declarations[prefix + '-left-' + postfix].value === declarations[prefix + '-right-' + postfix].value) {
-      return declarations[prefix + '-top-' + postfix].value + ' ' + declarations[prefix + '-left-' + postfix].value
-    } if (declarations[prefix + '-left-' + postfix].value === declarations[prefix + '-right-' + postfix].value) {
-      return declarations[prefix + '-top-' + postfix].value + ' ' + declarations[prefix + '-left-' + postfix].value + ' ' + declarations[prefix + '-bottom-' + postfix].value
-    }
-    return declarations[prefix + '-top-' + postfix].value + ' ' + declarations[prefix + '-right-' + postfix].value + ' ' + declarations[prefix + '-bottom-' + postfix].value + ' ' + declarations[prefix + '-left-' + postfix].value
-  }
-  return ''
-}
-
-// border-radius
-export const shorthandBorderRadius = (shorthand: Shorthand, declarations: any): string => {
-  const propertyName = shorthand.propertyName
-  const prefix = propertyName.split('-')[0]
-  const postfix = propertyName.split('-')[1]
-
-  let cornerRadius = ''
-  const shorthandedValue: string[] = []
-
-  for (let i = 0; i < 2; i++) {
-    if (declarations[prefix + '-top-left-' + postfix] && declarations[prefix + '-top-right-' + postfix] && declarations[prefix + '-bottom-right-' + postfix] && declarations[prefix + '-bottom-left-' + postfix]) {
-      if (declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-top-right-' + postfix].value.split(' ')[i] && declarations[prefix + '-top-right-' + postfix].value.split(' ')[i] === declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] && declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] === declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i]) {
-        cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i]
-      } else if (declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] && declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-top-right-' + postfix].value.split(' ')[i]) {
-        cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i]
-      } else if (declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i] === declarations[prefix + '-top-right-' + postfix].value.split(' ')[i]) {
-        cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i]
-      } else {
-        cornerRadius = declarations[prefix + '-top-left-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-top-right-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-right-' + postfix].value.split(' ')[i] + ' ' + declarations[prefix + '-bottom-left-' + postfix].value.split(' ')[i]
-      }
-    } else {
-      cornerRadius = ''
-    }
-
-    shorthandedValue.push(cornerRadius)
-  }
-
-  if (shorthandedValue[0] && shorthandedValue[1]) {
-    return shorthandedValue[0] + ' / ' + shorthandedValue[1]
-  } if (shorthandedValue[0]) {
-    return shorthandedValue[0]
   }
   return ''
 }

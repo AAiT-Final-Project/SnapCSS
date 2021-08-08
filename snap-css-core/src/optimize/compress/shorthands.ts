@@ -1,24 +1,22 @@
 import {
-  compressInTopRightBottomLeftOrder,
   compressInWidthStyleColorOrder,
-  compressInTopRightBottomLeftOrderForSingleMiddleValue,
-  shorthandBorderRadius,
   shorthandFlex,
   shorthandFlexFlow,
   shorthandColumns,
   shorthandGap,
   shorthandGridRowAndColumn,
+  convertToShorthand,
 } from './helper-functions'
 
 export const shorthands = [
   {
     propertyName: 'margin',
     properties: ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
-    getShorthandValue: compressInTopRightBottomLeftOrder,
+    getShorthandValue: convertToShorthand,
   }, {
     propertyName: 'padding',
     properties: ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
-    getShorthandValue: compressInTopRightBottomLeftOrder,
+    getShorthandValue: convertToShorthand,
   }, {
     propertyName: 'border',
     properties: ['border-width', 'border-style', 'border-color'],
@@ -42,19 +40,19 @@ export const shorthands = [
   }, {
     propertyName: 'border-color',
     properties: ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'],
-    getShorthandValue: compressInTopRightBottomLeftOrderForSingleMiddleValue,
+    getShorthandValue: convertToShorthand,
   }, {
     propertyName: 'border-style',
     properties: ['border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'],
-    getShorthandValue: compressInTopRightBottomLeftOrderForSingleMiddleValue,
+    getShorthandValue: convertToShorthand,
   }, {
     propertyName: 'border-width',
     properties: ['border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'],
-    getShorthandValue: compressInTopRightBottomLeftOrderForSingleMiddleValue,
+    getShorthandValue: convertToShorthand,
   }, {
     propertyName: 'border-radius',
     properties: ['border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius'],
-    getShorthandValue: shorthandBorderRadius,
+    getShorthandValue: convertToShorthand,
   }, {
     propertyName: 'outline',
     properties: ['outline-width', 'outline-style', 'outline-color'],
