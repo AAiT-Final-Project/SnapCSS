@@ -1,7 +1,7 @@
 /* eslint-disable max-statements-per-line */
 import {Shorthand} from './interfaces'
 
-const oneValueProperty = ['padding', 'margin']
+const oneValueProperty = ['padding', 'margin', 'scroll-margin', 'scroll-padding']
 const twoValueProperty = ['border-color', 'border-width', 'border-style']
 const threeValueProperty = ['border-radius']
 const oneValueSet = new Set(oneValueProperty)
@@ -13,12 +13,13 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
   const propertyName = shorthand.propertyName
   const propertyList = propertyName.split('-')
 
-  const prefix = propertyList[0]
+  let prefix = propertyList[0]
   let affix = ['-top', '-right', '-bottom', '-left']
   let postfix = ''
   let times = 1
 
   if (oneValueSet.has(propertyName)) {
+    prefix = propertyName
     postfix = ''
   } else if (twoValueSet.has(propertyName)) {
     postfix = '-' + propertyList[1]
@@ -57,7 +58,7 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
   return ''
 }
 
-// border, border-top, border-right, border-bottom, border-left, outline, column-rule
+// border, border-top, border-right, border-bottom, border-left, outline, column-rule, border-inline-start, border-inline-end, border-block-start, border-block-end
 export const compressInWidthStyleColorOrder = (shorthand: Shorthand, declarations: any) => {
   const propertyName = shorthand.propertyName
 

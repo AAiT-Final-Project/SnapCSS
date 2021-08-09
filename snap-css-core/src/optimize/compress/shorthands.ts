@@ -34,6 +34,22 @@ export const shorthands = [
     properties: ['border-bottom-width', 'border-bottom-style', 'border-bottom-color'],
     getShorthandValue: compressInWidthStyleColorOrder,
   }, {
+    propertyName: 'border-inline-start',
+    properties: ['border-inline-start-width', 'border-inline-start-style', 'border-inline-start-color'],
+    getShorthandValue: compressInWidthStyleColorOrder,
+  }, {
+    propertyName: 'border-inline-end',
+    properties: ['border-inline-end-width', 'border-inline-end-style', 'border-inline-end-color'],
+    getShorthandValue: compressInWidthStyleColorOrder,
+  }, {
+    propertyName: 'border-block-start',
+    properties: ['border-block-start-width', 'border-block-start-style', 'border-block-start-color'],
+    getShorthandValue: compressInWidthStyleColorOrder,
+  }, {
+    propertyName: 'border-block-end',
+    properties: ['border-block-end-width', 'border-block-end-style', 'border-block-end-color'],
+    getShorthandValue: compressInWidthStyleColorOrder,
+  }, {
     propertyName: 'border-left',
     properties: ['border-left-width', 'border-left-style', 'border-left-color'],
     getShorthandValue: compressInWidthStyleColorOrder,
@@ -52,6 +68,14 @@ export const shorthands = [
   }, {
     propertyName: 'border-radius',
     properties: ['border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius'],
+    getShorthandValue: convertToShorthand,
+  }, {
+    propertyName: 'scroll-margin',
+    properties: ['scroll-margin-top', 'scroll-margin-right', 'scroll-margin-bottom', 'scroll-margin-left'],
+    getShorthandValue: convertToShorthand,
+  },{
+    propertyName: 'scroll-padding',
+    properties: ['scroll-padding-top', 'scroll-padding-right', 'scroll-padding-bottom', 'scroll-padding-left'],
     getShorthandValue: convertToShorthand,
   }, {
     propertyName: 'outline',
