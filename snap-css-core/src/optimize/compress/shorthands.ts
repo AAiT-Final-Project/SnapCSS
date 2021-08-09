@@ -1,7 +1,7 @@
 import {
   compressInWidthStyleColorOrder,
   shorthandFlex,
-  shorthandFlexFlow,
+  shorthandFlow,
   shorthandColumns,
   shorthandGap,
   shorthandGridRowAndColumn,
@@ -73,7 +73,7 @@ export const shorthands = [
     propertyName: 'scroll-margin',
     properties: ['scroll-margin-top', 'scroll-margin-right', 'scroll-margin-bottom', 'scroll-margin-left'],
     getShorthandValue: convertToShorthand,
-  },{
+  }, {
     propertyName: 'scroll-padding',
     properties: ['scroll-padding-top', 'scroll-padding-right', 'scroll-padding-bottom', 'scroll-padding-left'],
     getShorthandValue: convertToShorthand,
@@ -92,7 +92,11 @@ export const shorthands = [
   }, {
     propertyName: 'flex-flow',
     properties: ['flex-direction', 'flex-wrap'],
-    getShorthandValue: shorthandFlexFlow,
+    getShorthandValue: shorthandFlow,
+  }, {
+    propertyName: 'overflow',
+    properties: ['overflow-x', 'overflow-y'],
+    getShorthandValue: shorthandFlow,
   }, {
     propertyName: 'columns',
     properties: ['column-width', 'column-count'],

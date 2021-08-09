@@ -1,15 +1,15 @@
 /* eslint-disable max-statements-per-line */
 import {Shorthand} from './interfaces'
 
-const oneValueProperty = ['padding', 'margin', 'scroll-margin', 'scroll-padding']
-const twoValueProperty = ['border-color', 'border-width', 'border-style']
-const threeValueProperty = ['border-radius']
-const oneValueSet = new Set(oneValueProperty)
-const twoValueSet = new Set(twoValueProperty)
-const threeValueSet = new Set(threeValueProperty)
-
 // padding, margin, border-color, border-style, border-width, border-radius
 export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
+  const oneValueProperty = ['padding', 'margin', 'scroll-margin', 'scroll-padding']
+  const twoValueProperty = ['border-color', 'border-width', 'border-style']
+  const threeValueProperty = ['border-radius']
+  const oneValueSet = new Set(oneValueProperty)
+  const twoValueSet = new Set(twoValueProperty)
+  const threeValueSet = new Set(threeValueProperty)
+
   const propertyName = shorthand.propertyName
   const propertyList = propertyName.split('-')
 
@@ -92,19 +92,29 @@ export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
   return ''
 }
 
-// flex-flow
-export const shorthandFlexFlow = (shorthand: Shorthand, declarations: any) => {
+// flex-flow, overflow
+export const shorthandFlow = (shorthand: Shorthand, declarations: any) => {
   const propertyName = shorthand.propertyName
   const prefixName = propertyName.split('-')[0]
+  const equalitySet = new Set(['overflow'])
 
-  if (declarations[prefixName + '-direction'] && declarations[prefixName + '-wrap']) {
-    return declarations[prefixName + '-direction'].value + ' ' + declarations[prefixName + '-wrap'].value
-  } if (declarations[prefixName + '-direction']) {
-    return declarations[prefixName + '-direction'].value
-  } if (declarations[prefixName + '-wrap']) {
-    return declarations[prefixName + '-wrap'].value
+  let postfix = ['-direction', '-wrap']
+  if (propertyName === 'overflow') {
+    postfix = ['-x', '-y']
   }
-  return ''
+
+  let result = ''
+  if (declarations[prefixName + postfix[0]] && declarations[prefixName + postfix[1]]) {
+    result = declarations[prefixName + postfix[0]].value + ' ' + declarations[prefixName + postfix[1]].value
+    if ((equalitySet.has(propertyName)) && (declarations[prefixName + postfix[0]].value === declarations[prefixName + postfix[1]].value)) {
+      result = declarations[prefixName + postfix[0]].value
+    }
+  } else if (declarations[prefixName + postfix[0]]) {
+    result = declarations[prefixName + postfix[0]].value
+  } else if (declarations[prefixName + postfix[1]]) {
+    result = declarations[prefixName + postfix[1]].value
+  }
+  return result
 }
 
 // Columns
