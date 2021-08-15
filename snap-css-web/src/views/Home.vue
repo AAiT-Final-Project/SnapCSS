@@ -14,8 +14,8 @@ import SnapCss from "snappy-css";
   mounted() {
     const snap = new SnapCss();
     const optimizers = snap.getOptimizers("a");
-    const css = snap.getCSS("Trial CSS code Goes Here");
-    optimizers.forEach((optimizer) => optimizer.optimize(css));
+    let css = snap.getCSS("Trial CSS code Goes Here");
+    optimizers.forEach((optimizer) => (css = optimizer.optimize(css)));
   },
   components: {
     HelloWorld,
