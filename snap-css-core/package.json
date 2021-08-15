@@ -1,6 +1,6 @@
 {
-  "name": "snap-css",
-  "version": "0.0.0",
+  "name": "snappy-css",
+  "version": "0.0.2",
   "author": "snap-team",
   "bin": {
     "snap-css": "./bin/run"
@@ -50,6 +50,9 @@
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
     "css": "^3.0.0",
+    "csstree-validator": "^2.0.1",
+    "postcss": "^8.3.6",
+    "postcss-shorthand-expand": "^1.0.1",
     "tslib": "^1.14.1"
   }
 }
