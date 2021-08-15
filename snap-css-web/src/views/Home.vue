@@ -8,11 +8,14 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-import snap from "snappy-css";
+import SnapCss from "snappy-css";
 
 @Options({
   mounted() {
-    // snap.description = "Hello there";
+    const snap = new SnapCss();
+    const optimizers = snap.getOptimizers("a");
+    const css = snap.getCSS("Trial CSS code Goes Here");
+    optimizers.forEach((optimizer) => optimizer.optimize(css));
   },
   components: {
     HelloWorld,

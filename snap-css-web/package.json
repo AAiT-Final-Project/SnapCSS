@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "csstree-validator": "^2.0.1",
+    "postcss-shorthand-expand": "^1.0.1",
     "register-service-worker": "^1.7.1",
-    "snappy-css": "^0.0.0",
+    "snappy-css": "^0.0.1",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0",
