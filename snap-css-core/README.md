@@ -20,7 +20,7 @@ $ npm install -g snappy-css
 $ snap-css COMMAND
 running command...
 $ snap-css (-v|--version|version)
-snappy-css/0.0.1 darwin-x64 node-v16.4.0
+snappy-css/0.0.2 darwin-x64 node-v16.4.0
 $ snap-css --help [COMMAND]
 USAGE
   $ snap-css COMMAND
