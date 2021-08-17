@@ -153,3 +153,26 @@ export const shorthandGridRowAndColumn = (shorthand: Shorthand, declarations: an
   }
   return ''
 }
+
+// place-content, place-items, place-self
+export const shorthandAlignments = (shorthand: Shorthand, declarations: any) => {
+  const propertyName = shorthand.propertyName
+  const equalitySet = new Set(['place-items', 'place-self'])
+
+  const prefix = ['align', 'justify']
+  let postfix = ['-content', '-content']
+  if (propertyName === 'place-items') {
+    postfix = ['-items', '-items']
+  } else if (propertyName === 'place-self') {
+    postfix = ['-self', '-self']
+  }
+
+  let result = ''
+  if (declarations[prefix[0] + postfix[0]] && declarations[prefix[1] + postfix[1]]) {
+    result = declarations[prefix[0] + postfix[0]].value + ' ' + declarations[prefix[1] + postfix[1]].value
+    if ((equalitySet.has(propertyName)) && (declarations[prefix[0] + postfix[0]].value === declarations[prefix[1] + postfix[1]].value)) {
+      result = declarations[prefix[0] + postfix[0]].value
+    }
+  }
+  return result
+}

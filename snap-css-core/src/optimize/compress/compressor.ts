@@ -28,7 +28,7 @@ export default class Compressor implements Optimizer {
         })
 
         this.shorthands.forEach(shorthand => {
-          const shorthandValue = shorthand.getShorthandValue(shorthand, declarations)
+          const shorthandValue = shorthand.computedValue(shorthand, declarations)
 
           if (shorthandValue !== '') {
             const newDeclarations = []

@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import {Command, flags} from '@oclif/command'
-import Compressor from './optimize/compress/compressor'
 
 class SnapCss extends Command {
   static description = 'describe the command here'
