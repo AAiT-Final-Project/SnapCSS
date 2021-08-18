@@ -10,7 +10,7 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
   const twoValueSet = new Set(twoValueProperty)
   const threeValueSet = new Set(threeValueProperty)
 
-  const propertyName = shorthand.propertyName
+  const propertyName = shorthand.shorthandName
   const propertyList = propertyName.split('-')
 
   let prefix = propertyList[0]
@@ -60,7 +60,7 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
 
 // border, border-top, border-right, border-bottom, border-left, outline, column-rule, border-inline-start, border-inline-end, border-block-start, border-block-end
 export const compressInWidthStyleColorOrder = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
+  const propertyName = shorthand.shorthandName
 
   if (declarations[propertyName + '-width'] && declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
     return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
@@ -76,7 +76,7 @@ export const compressInWidthStyleColorOrder = (shorthand: Shorthand, declaration
 
 // Flex
 export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
+  const propertyName = shorthand.shorthandName
 
   if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink'] && declarations[propertyName + '-basis']) {
     return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value + ' ' + declarations[propertyName + '-basis'].value
@@ -94,7 +94,7 @@ export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
 
 // flex-flow, overflow
 export const shorthandFlow = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
+  const propertyName = shorthand.shorthandName
   const prefixName = propertyName.split('-')[0]
   const equalitySet = new Set(['overflow'])
 
@@ -131,7 +131,7 @@ export const shorthandColumns = (shorthand: Shorthand, declarations: any) => {
 
 // Gap
 export const shorthandGap = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
+  const propertyName = shorthand.shorthandName
 
   if (declarations['row-' + propertyName] && declarations['column-' + propertyName]) {
     if (declarations['row-' + propertyName].value === declarations['column-' + propertyName].value) {
@@ -146,7 +146,7 @@ export const shorthandGap = (shorthand: Shorthand, declarations: any) => {
 
 // grid-column, grid-row
 export const shorthandGridRowAndColumn = (shorthand: Shorthand, declarations: any): string => {
-  const propertyName = shorthand.propertyName
+  const propertyName = shorthand.shorthandName
 
   if (declarations[propertyName + '-start'] && declarations[propertyName + '-end']) {
     return declarations[propertyName + '-start'].value + ' / ' + declarations[propertyName + '-end'].value
@@ -155,8 +155,8 @@ export const shorthandGridRowAndColumn = (shorthand: Shorthand, declarations: an
 }
 
 // place-content, place-items, place-self
-export const shorthandAlignments = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
+export const shorthandAlignments = (shorthand: Shorthand, declarations: any): string => {
+  const propertyName = shorthand.shorthandName
   const equalitySet = new Set(['place-items', 'place-self'])
 
   const prefix = ['align', 'justify']
@@ -175,4 +175,48 @@ export const shorthandAlignments = (shorthand: Shorthand, declarations: any) => 
     }
   }
   return result
+}
+
+const convertToString = (arr: string[]): string => {
+  let syntax = ''
+  arr.forEach(element => {
+    syntax = syntax + ' ' + element
+  })
+
+  return syntax
+}
+
+const getShorthandValue = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandName = shorthand.shorthandName
+  let shorthandValue = ''
+  if (shorthandName === 'font') {
+    shorthandValue = 'font-stretch font-style font-variant font-weight font-size/line-height font-family'
+  } else {
+    shorthandValue = convertToString(shorthand.shorthandProperties)
+  }
+
+  shorthand.shorthandProperties.forEach(property => {
+    if (declarations[property]) {
+      shorthandValue = shorthandValue.replace(property, declarations[property].value)
+    } else {
+      shorthandValue = shorthandValue.replace(property, '')
+    }
+  })
+
+  shorthandValue = shorthandValue.replace('  ', ' ').trim()
+  return shorthandValue
+}
+
+export const shorthandFont = (shorthand: Shorthand, declarations: any): string => {
+  let shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['font-size'] || !declarations['font-family']) {
+    return ''
+  }
+
+  if (!declarations['line-height']) {
+    shorthandValue = shorthandValue.replace('/', '')
+  }
+
+  return shorthandValue.replace('  ', ' ').trim()
 }

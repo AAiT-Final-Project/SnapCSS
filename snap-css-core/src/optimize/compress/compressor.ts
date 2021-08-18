@@ -35,12 +35,12 @@ export default class Compressor implements Optimizer {
 
             newDeclarations.push({
               type: 'declaration',
-              property: shorthand.propertyName,
+              property: shorthand.shorthandName,
               value: shorthandValue,
             })
 
             rule.declarations.forEach(declaration => {
-              if (shorthand.properties.indexOf(declaration.property) <= -1) {
+              if (shorthand.shorthandProperties.indexOf(declaration.property) <= -1) {
                 newDeclarations.push(declaration)
               }
             })
