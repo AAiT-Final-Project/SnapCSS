@@ -177,6 +177,7 @@ export const shorthandAlignments = (shorthand: Shorthand, declarations: any): st
   return result
 }
 
+// Convert arrays of string into a single string
 const convertToString = (arr: string[]): string => {
   let syntax = ''
   arr.forEach(element => {
@@ -186,6 +187,7 @@ const convertToString = (arr: string[]): string => {
   return syntax
 }
 
+// Get shorthand values
 const getShorthandValue = (shorthand: Shorthand, declarations: any): string => {
   const shorthandName = shorthand.shorthandName
   let shorthandValue = ''
@@ -207,6 +209,7 @@ const getShorthandValue = (shorthand: Shorthand, declarations: any): string => {
   return shorthandValue
 }
 
+// font
 export const shorthandFont = (shorthand: Shorthand, declarations: any): string => {
   let shorthandValue = getShorthandValue(shorthand, declarations)
 
@@ -218,5 +221,11 @@ export const shorthandFont = (shorthand: Shorthand, declarations: any): string =
     shorthandValue = shorthandValue.replace('/', '')
   }
 
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// list-style, offset, text-emphasis, text-decoration
+export const replaceLonghand = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandValue = getShorthandValue(shorthand, declarations)
   return shorthandValue.replace('  ', ' ').trim()
 }

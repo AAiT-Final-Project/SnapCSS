@@ -8,6 +8,7 @@ import {
   convertToShorthand,
   shorthandAlignments,
   shorthandFont,
+  replaceLonghand,
 } from './helper-functions'
 
 export const shorthands = [
@@ -132,5 +133,21 @@ export const shorthands = [
     shorthandName: 'font',
     shorthandProperties: ['font-stretch', 'font-style', 'font-variant', 'font-weight', 'font-size', 'line-height', 'font-family'],
     computedValue: shorthandFont,
+  }, {
+    shorthandName: 'list-style',
+    shorthandProperties: ['list-style-type', 'list-style-position', 'list-style-image'],
+    computedValue: replaceLonghand,
+  }, {
+    shorthandName: 'offset',
+    shorthandProperties: ['offset-position', 'offset-path', 'offset-distance', 'offset-rotate', 'offset-anchor'],
+    computedValue: replaceLonghand,
+  }, {
+    shorthandName: 'text-emphasis',
+    shorthandProperties: ['text-emphasis-style', 'text-emphasis-color'],
+    computedValue: replaceLonghand,
+  }, {
+    shorthandName: 'text-decoration',
+    shorthandProperties: ['text-decoration-line', 'text-decoration-style', 'text-decoration-color', 'text-decoration-thickness'],
+    computedValue: replaceLonghand,
   },
 ]
