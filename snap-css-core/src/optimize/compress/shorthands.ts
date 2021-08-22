@@ -1,5 +1,4 @@
 import {
-  compressInWidthStyleColorOrder,
   shorthandFlex,
   shorthandFlow,
   shorthandColumns,
@@ -84,11 +83,11 @@ export const shorthands = [
   }, {
     shorthandName: 'outline',
     shorthandProperties: ['outline-width', 'outline-style', 'outline-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'column-rule',
     shorthandProperties: ['column-rule-width', 'column-rule-style', 'column-rule-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'flex',
     shorthandProperties: ['flex-grow', 'flex-shrink', 'flex-basis'],

@@ -58,22 +58,6 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
   return ''
 }
 
-// border, border-top, border-right, border-bottom, border-left, outline, column-rule, border-inline-start, border-inline-end, border-block-start, border-block-end
-export const compressInWidthStyleColorOrder = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.shorthandName
-
-  if (declarations[propertyName + '-width'] && declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
-    return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
-  } if (declarations[propertyName + '-width'] && declarations[propertyName + '-style']) {
-    return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value
-  } if (declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
-    return declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
-  } if (declarations[propertyName + '-style']) {
-    return declarations[propertyName + '-style'].value
-  }
-  return ''
-}
-
 // Flex
 export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
   const propertyName = shorthand.shorthandName
