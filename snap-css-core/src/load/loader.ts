@@ -1,8 +1,11 @@
+import { exit } from "process";
+
 export default class Loader {
-  postcss = require('postcss');
-  shorthandExpand = require('postcss-shorthand-expand');
-  validator = require('csstree-validator').validate;
+  validator = require('csstree-validator');
   fs = require('fs');
+  cssbeautify = require('cssbeautify');
+  strip = require('strip-comments')
+  css = require('css');
 
   constructor(
     public inputPath: string
@@ -12,117 +15,98 @@ export default class Loader {
     var data: string = '';
     try {
       data = this.fs.readFileSync(this.inputPath, 'utf8');
+      data = this.cssbeautify(data, {
+        indent: '  ',
+        openbrace: 'separate-line',
+        autosemicolon: true
+      });
     }
     catch (err) {
       console.error(err);
     }
+
     var validated = this.validate(data);
-    //console.log(validated);
-    var cleared = this.clearComments(validated);
-    //console.log(cleared);
-    var constructed = this.construct(cleared);
-    //console.log(constructed)
-    return constructed;
+    if (validated == 1) {
+      let cleared = this.clearComments(data);
+      let constructed = this.construct(cleared);
+
+      return constructed;
+    }
+    else {
+      return 'invalid'
+    }
+
   }
 
   validate(data: string) {
-    var result = this.validator(data);
-    //console.log(result)
-    if (result.valid != []) {
-      //console.log(result.valid);
-      return data;
+    let result = this.validator.validate(data);
+    if (result.length == 0) {
+      return 1;
     }
     else {
       console.log('The css file is not valid');
-      console.log(result.errors);
-      return;
+      return 0;
     }
   }
 
   clearComments(data: any) {
-    var start = data.indexOf('/*');
-    //console.log(data.charAt(data.indexOf('/*')))
-    if (start != -1) {
-      var end = data.indexOf('*/');
-      data = data.substring(0, start - 1) + data.substring(end + 2, data.length);
-      this.clearComments(data);
-      return data;
-    }
-    else {
-      //console.log(data);
-      return data;
 
-    }
+
+    var x = this.strip(data); //=> var t;
+    return x;
+
   }
 
-  construct(data: any) {
-    data = this.postcss([this.shorthandExpand()]).process(data).css;
-    var nonMediaTagProp: any = [];
-    var mediaTagProp: any = [];
-    for (var i = 0; i < data.length; i++) {
-      var tag = '';
-      var property = '';
+  construct(data: string) {
+
+    let nonMediaTagProp: string[] = [];
+    let mediaTagProp: string[] = [];
+    for (let i = 0; i < data.length; i++) {
+      let tag: any = '';
+      let property = '';
       if (data.charAt(i) == '{') {
-        var j = i - 1;
+        let j = i - 1;
         while (data.charAt(j) != '}' && j >= 0) {
           tag = tag + data.charAt(j);
           j--;
         }
         if (!reverseString(tag).includes('@')) {
           tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
-          if (tag.includes(',')) {
-            var tags = tag.split(',');
-            var k = i;
-            for (var t in tags) {
-              while (data.charAt(k - 1) != '}') {
-                property = property + data.charAt(k);
-                k++;
-              }
-              property = property.replace('{', '').replace('}', '').trim() + ';';
-              if (Object.keys(nonMediaTagProp).includes(tags[t].trim())) {
-                var oldProp = nonMediaTagProp[tags[t]];
-                var newProp = oldProp + property;
-                nonMediaTagProp[tags[t]] = newProp;
-              }
-              else {
-                nonMediaTagProp[tags[t]] = property;
-              }
-            }
-            tag = '';
-            property = '';
+
+          let k = i;
+          while (data.charAt(k - 1) != '}') {
+            property = property + data.charAt(k);
+            k++;
+          }
+          property = property.replace('{', '').replace('}', '').trim();
+          if (Object.keys(nonMediaTagProp).includes(tag.trim())) {
+            let oldProp = nonMediaTagProp[tag];
+            let newProp = oldProp + property;
+            nonMediaTagProp[tag] = newProp;
           }
           else {
-            var k = i;
-            while (data.charAt(k - 1) != '}') {
-              property = property + data.charAt(k);
-              k++;
-            }
-            property = property.replace('{', '').replace('}', '').trim() + ';';
-            if (Object.keys(nonMediaTagProp).includes(tag.trim())) {
-              var oldProp = nonMediaTagProp[tag];
-              var newProp = oldProp + property;
-              nonMediaTagProp[tag] = newProp;
-            }
-            else {
-              nonMediaTagProp[tag] = property;
-            }
-            tag = '';
-            property = '';
+            nonMediaTagProp[tag] = property;
           }
+          tag = '';
+          property = '';
         }
         else {
-          var opentag = 0;
-          var closetag = 0;
-          var j = i;
+          let opentag = 0;
+          let closetag = 0;
+          let j = i;
           while (j < data.length) {
             property = property + data[j];
-            if (data[j] == '{') { opentag++; }
-            else if (data[j] == '}') { closetag++; }
+            if (data[j] == '{') {
+              opentag++;
+            }
+            else if (data[j] == '}') {
+              closetag++;
+            }
             if (opentag == closetag) {
               tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
               if (Object.keys(mediaTagProp).includes(tag.trim())) {
-                var oldProp = mediaTagProp[tag];
-                var newProp = oldProp + property.substring(1, property.length - 2);
+                let oldProp = mediaTagProp[tag];
+                let newProp = oldProp + property.substring(1, property.length - 2);
                 mediaTagProp[tag] = newProp;
               }
               else {
@@ -140,7 +124,17 @@ export default class Loader {
         }
       }
     }
-    const result = [nonMediaTagProp, mediaTagProp];
+
+    let result = [nonMediaTagProp, mediaTagProp];
+    let mediaSelectorsStr = '';
+    let nonMediaSelectorsStr = '';
+    for (let r in result[0]) {
+      nonMediaSelectorsStr = nonMediaSelectorsStr + r + '{\n' + result[0][r] + '\n}\n'
+    }
+    for (let r in result[1]) {
+      mediaSelectorsStr = mediaSelectorsStr + r + '{\n' + result[1][r] + '\n}\n'
+    }
+    result = [this.css.parse(nonMediaSelectorsStr), this.css.parse(mediaSelectorsStr)]
     return result;
   }
 }
