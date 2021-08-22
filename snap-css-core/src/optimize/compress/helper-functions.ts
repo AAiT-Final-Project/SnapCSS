@@ -224,7 +224,7 @@ export const shorthandFont = (shorthand: Shorthand, declarations: any): string =
   return shorthandValue.replace('  ', ' ').trim()
 }
 
-// list-style, offset, text-emphasis, text-decoration
+// list-style, offset, text-emphasis, text-decoration, border, border-top, border-right, border-bottom, border-left, outline, column-rule, border-inline-start, border-inline-end, border-block-start, border-block-end
 export const replaceLonghand = (shorthand: Shorthand, declarations: any): string => {
   const shorthandValue = getShorthandValue(shorthand, declarations)
   return shorthandValue.replace('  ', ' ').trim()

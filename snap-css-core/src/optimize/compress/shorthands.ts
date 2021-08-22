@@ -24,39 +24,39 @@ export const shorthands = [
   }, {
     shorthandName: 'border',
     shorthandProperties: ['border-width', 'border-style', 'border-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-top',
     shorthandProperties: ['border-top-width', 'border-top-style', 'border-top-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-right',
     shorthandProperties: ['border-right-width', 'border-right-style', 'border-right-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-bottom',
     shorthandProperties: ['border-bottom-width', 'border-bottom-style', 'border-bottom-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-inline-start',
     shorthandProperties: ['border-inline-start-width', 'border-inline-start-style', 'border-inline-start-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-inline-end',
     shorthandProperties: ['border-inline-end-width', 'border-inline-end-style', 'border-inline-end-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-block-start',
     shorthandProperties: ['border-block-start-width', 'border-block-start-style', 'border-block-start-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-block-end',
     shorthandProperties: ['border-block-end-width', 'border-block-end-style', 'border-block-end-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-left',
     shorthandProperties: ['border-left-width', 'border-left-style', 'border-left-color'],
-    computedValue: compressInWidthStyleColorOrder,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'border-color',
     shorthandProperties: ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'],
@@ -153,6 +153,10 @@ export const shorthands = [
   }, {
     shorthandName: 'border-image',
     shorthandProperties: ['border-image-source', 'border-image-slice', 'border-image-width', 'border-image-outset', 'border-image-repeat'],
+    computedValue: shorthandBorderImage,
+  }, {
+    shorthandName: 'grid-area',
+    shorthandProperties: ['grid-row-start', 'grid-column-start', 'grid-row-end', 'grid-column-end'],
     computedValue: shorthandBorderImage,
   },
 ]
