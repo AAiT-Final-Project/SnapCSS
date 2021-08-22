@@ -9,6 +9,7 @@ import {
   shorthandAlignments,
   shorthandFont,
   replaceLonghand,
+  shorthandBorderImage,
 } from './helper-functions'
 
 export const shorthands = [
@@ -149,5 +150,9 @@ export const shorthands = [
     shorthandName: 'text-decoration',
     shorthandProperties: ['text-decoration-line', 'text-decoration-style', 'text-decoration-color', 'text-decoration-thickness'],
     computedValue: replaceLonghand,
+  }, {
+    shorthandName: 'border-image',
+    shorthandProperties: ['border-image-source', 'border-image-slice', 'border-image-width', 'border-image-outset', 'border-image-repeat'],
+    computedValue: shorthandBorderImage,
   },
 ]

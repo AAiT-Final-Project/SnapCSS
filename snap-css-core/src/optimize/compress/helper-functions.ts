@@ -229,3 +229,14 @@ export const replaceLonghand = (shorthand: Shorthand, declarations: any): string
   const shorthandValue = getShorthandValue(shorthand, declarations)
   return shorthandValue.replace('  ', ' ').trim()
 }
+
+// border-image
+export const shorthandBorderImage = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['border-image-source']) {
+    return ''
+  }
+
+  return shorthandValue.replace('  ', ' ').trim()
+}
