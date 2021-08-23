@@ -1,12 +1,12 @@
 import {
   shorthandFlex,
-  shorthandFlow,
   shorthandGridRowAndColumn,
   convertToShorthand,
   shorthandFont,
   replaceLonghand,
   shorthandBorderImage,
   transformToShorthand,
+  shorthandOverflow,
 } from './helper-functions'
 
 export const shorthands = [
@@ -93,11 +93,11 @@ export const shorthands = [
   }, {
     shorthandName: 'flex-flow',
     shorthandProperties: ['flex-direction', 'flex-wrap'],
-    computedValue: shorthandFlow,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'overflow',
     shorthandProperties: ['overflow-x', 'overflow-y'],
-    computedValue: shorthandFlow,
+    computedValue: shorthandOverflow,
   }, {
     shorthandName: 'columns',
     shorthandProperties: ['column-width', 'column-count'],

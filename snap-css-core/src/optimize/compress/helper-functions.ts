@@ -58,31 +58,6 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
   return ''
 }
 
-// flex-flow, overflow
-export const shorthandFlow = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.shorthandName
-  const prefixName = propertyName.split('-')[0]
-  const equalitySet = new Set(['overflow'])
-
-  let postfix = ['-direction', '-wrap']
-  if (propertyName === 'overflow') {
-    postfix = ['-x', '-y']
-  }
-
-  let result = ''
-  if (declarations[prefixName + postfix[0]] && declarations[prefixName + postfix[1]]) {
-    result = declarations[prefixName + postfix[0]].value + ' ' + declarations[prefixName + postfix[1]].value
-    if ((equalitySet.has(propertyName)) && (declarations[prefixName + postfix[0]].value === declarations[prefixName + postfix[1]].value)) {
-      result = declarations[prefixName + postfix[0]].value
-    }
-  } else if (declarations[prefixName + postfix[0]]) {
-    result = declarations[prefixName + postfix[0]].value
-  } else if (declarations[prefixName + postfix[1]]) {
-    result = declarations[prefixName + postfix[1]].value
-  }
-  return result
-}
-
 // grid-column, grid-row
 export const shorthandGridRowAndColumn = (shorthand: Shorthand, declarations: any): string => {
   const propertyName = shorthand.shorthandName
@@ -141,7 +116,7 @@ export const shorthandFont = (shorthand: Shorthand, declarations: any): string =
 }
 
 // list-style, offset, text-emphasis, text-decoration, outline, column-rule, columns
-// border, border-top, border-right, border-bottom, border-left
+// border, border-top, border-right, border-bottom, border-left, flex-flow
 // border-inline-start, border-inline-end, border-block-start, border-block-end
 export const replaceLonghand = (shorthand: Shorthand, declarations: any): string => {
   const shorthandValue = getShorthandValue(shorthand, declarations)
@@ -182,4 +157,15 @@ export const transformToShorthand = (shorthand: Shorthand, declarations: any): s
     }
   }
   return result
+}
+
+// overflow
+export const shorthandOverflow = (shorthand: Shorthand, declarations: any): string => {
+  const result = transformToShorthand(shorthand, declarations)
+
+  if (result) {
+    return result
+  }
+  const shorthandValue = getShorthandValue(shorthand, declarations)
+  return shorthandValue.replace('  ', ' ').trim()
 }
