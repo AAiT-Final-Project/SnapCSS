@@ -59,22 +59,22 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
 }
 
 // Flex
-export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.shorthandName
+// export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
+//   const propertyName = shorthand.shorthandName
 
-  if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink'] && declarations[propertyName + '-basis']) {
-    return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value + ' ' + declarations[propertyName + '-basis'].value
-  } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink']) {
-    return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value
-  } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-basis']) {
-    return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-basis'].value
-  } if (declarations[propertyName + '-grow']) {
-    return declarations[propertyName + '-grow'].value
-  } if (declarations[propertyName + '-basis']) {
-    return declarations[propertyName + '-basis'].value
-  }
-  return ''
-}
+//   if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink'] && declarations[propertyName + '-basis']) {
+//     return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value + ' ' + declarations[propertyName + '-basis'].value
+//   } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink']) {
+//     return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value
+//   } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-basis']) {
+//     return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-basis'].value
+//   } if (declarations[propertyName + '-grow']) {
+//     return declarations[propertyName + '-grow'].value
+//   } if (declarations[propertyName + '-basis']) {
+//     return declarations[propertyName + '-basis'].value
+//   }
+//   return ''
+// }
 
 // flex-flow, overflow
 export const shorthandFlow = (shorthand: Shorthand, declarations: any) => {
@@ -208,7 +208,9 @@ export const shorthandFont = (shorthand: Shorthand, declarations: any): string =
   return shorthandValue.replace('  ', ' ').trim()
 }
 
-// list-style, offset, text-emphasis, text-decoration, border, border-top, border-right, border-bottom, border-left, outline, column-rule, border-inline-start, border-inline-end, border-block-start, border-block-end
+// list-style, offset, text-emphasis, text-decoration, outline, column-rule
+// border, border-top, border-right, border-bottom, border-left
+// border-inline-start, border-inline-end, border-block-start, border-block-end
 export const replaceLonghand = (shorthand: Shorthand, declarations: any): string => {
   const shorthandValue = getShorthandValue(shorthand, declarations)
   return shorthandValue.replace('  ', ' ').trim()
@@ -219,6 +221,17 @@ export const shorthandBorderImage = (shorthand: Shorthand, declarations: any): s
   const shorthandValue = getShorthandValue(shorthand, declarations)
 
   if (!declarations['border-image-source']) {
+    return ''
+  }
+
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// flex
+export const shorthandFlex = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['flex-grow'] && !declarations['flex-basis']) {
     return ''
   }
 
