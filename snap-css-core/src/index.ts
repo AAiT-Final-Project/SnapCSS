@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import {Command, flags} from '@oclif/command'
+import Compressor from './optimize/compress/compressor'
 
 class SnapCss extends Command {
   static description = 'describe the command here'
@@ -27,6 +28,10 @@ class SnapCss extends Command {
     // const trial = CSS.fromString('Trial CSS')
     // eslint-disable-next-line no-console
     // console.log(trial.toString())
+    const compressor = new Compressor()
+    const cssString = 'class1 { align-items: start; justify-items: center; }'
+    const shorthandedValue = compressor.findLonghand(cssString)
+    console.log(shorthandedValue)
   }
 }
 

@@ -108,29 +108,6 @@ export const shorthandGridRowAndColumn = (shorthand: Shorthand, declarations: an
   return ''
 }
 
-// place-content, place-items, place-self
-export const shorthandAlignments = (shorthand: Shorthand, declarations: any): string => {
-  const propertyName = shorthand.shorthandName
-  const equalitySet = new Set(['place-items', 'place-self'])
-
-  const prefix = ['align', 'justify']
-  let postfix = ['-content', '-content']
-  if (propertyName === 'place-items') {
-    postfix = ['-items', '-items']
-  } else if (propertyName === 'place-self') {
-    postfix = ['-self', '-self']
-  }
-
-  let result = ''
-  if (declarations[prefix[0] + postfix[0]] && declarations[prefix[1] + postfix[1]]) {
-    result = declarations[prefix[0] + postfix[0]].value + ' ' + declarations[prefix[1] + postfix[1]].value
-    if ((equalitySet.has(propertyName)) && (declarations[prefix[0] + postfix[0]].value === declarations[prefix[1] + postfix[1]].value)) {
-      result = declarations[prefix[0] + postfix[0]].value
-    }
-  }
-  return result
-}
-
 // Convert arrays of string into a single string
 const convertToString = (arr: string[]): string => {
   let syntax = ''
@@ -178,7 +155,7 @@ export const shorthandFont = (shorthand: Shorthand, declarations: any): string =
   return shorthandValue.replace('  ', ' ').trim()
 }
 
-// list-style, offset, text-emphasis, text-decoration, outline, column-rule
+// list-style, offset, text-emphasis, text-decoration, outline, column-rule, columns
 // border, border-top, border-right, border-bottom, border-left
 // border-inline-start, border-inline-end, border-block-start, border-block-end
 export const replaceLonghand = (shorthand: Shorthand, declarations: any): string => {
@@ -206,4 +183,18 @@ export const shorthandFlex = (shorthand: Shorthand, declarations: any): string =
   }
 
   return shorthandValue.replace('  ', ' ').trim()
+}
+
+// place-content, place-items, place-self
+export const transformToShorthand = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandProperties = shorthand.shorthandProperties
+  let result = ''
+  if (declarations[shorthandProperties[0]] && declarations[shorthandProperties[1]]) {
+    if ((declarations[shorthandProperties[0]].value === declarations[shorthandProperties[1]].value)) {
+      result = declarations[shorthandProperties[0]].value
+    } else {
+      result = declarations[shorthandProperties[0]].value + ' ' + declarations[shorthandProperties[1]].value
+    }
+  }
+  return result
 }

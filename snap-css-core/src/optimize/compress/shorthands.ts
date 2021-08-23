@@ -4,10 +4,10 @@ import {
   shorthandGap,
   shorthandGridRowAndColumn,
   convertToShorthand,
-  shorthandAlignments,
   shorthandFont,
   replaceLonghand,
   shorthandBorderImage,
+  transformToShorthand,
 } from './helper-functions'
 
 export const shorthands = [
@@ -119,15 +119,15 @@ export const shorthands = [
     shorthandName: 'place-content',
     shorthandProperties: ['align-content', 'justify-content'],
     shorthandSyntax: 'align-content justify-content',
-    computedValue: shorthandAlignments,
+    computedValue: transformToShorthand,
   }, {
     shorthandName: 'place-items',
     shorthandProperties: ['align-items', 'justify-items'],
-    computedValue: shorthandAlignments,
+    computedValue: transformToShorthand,
   }, {
     shorthandName: 'place-self',
     shorthandProperties: ['align-self', 'justify-self'],
-    computedValue: shorthandAlignments,
+    computedValue: transformToShorthand,
   }, {
     shorthandName: 'font',
     shorthandProperties: ['font-stretch', 'font-style', 'font-variant', 'font-weight', 'font-size', 'line-height', 'font-family'],
