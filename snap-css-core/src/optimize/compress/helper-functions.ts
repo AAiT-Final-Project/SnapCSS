@@ -83,21 +83,6 @@ export const shorthandFlow = (shorthand: Shorthand, declarations: any) => {
   return result
 }
 
-// Gap
-export const shorthandGap = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.shorthandName
-
-  if (declarations['row-' + propertyName] && declarations['column-' + propertyName]) {
-    if (declarations['row-' + propertyName].value === declarations['column-' + propertyName].value) {
-      return declarations['row-' + propertyName].value
-    }
-    return declarations['row-' + propertyName].value + ' ' + declarations['column-' + propertyName].value
-  } if (declarations['row-' + propertyName]) {
-    return declarations['row-' + propertyName].value
-  }
-  return ''
-}
-
 // grid-column, grid-row
 export const shorthandGridRowAndColumn = (shorthand: Shorthand, declarations: any): string => {
   const propertyName = shorthand.shorthandName
@@ -185,7 +170,7 @@ export const shorthandFlex = (shorthand: Shorthand, declarations: any): string =
   return shorthandValue.replace('  ', ' ').trim()
 }
 
-// place-content, place-items, place-self
+// place-content, place-items, place-self, gap
 export const transformToShorthand = (shorthand: Shorthand, declarations: any): string => {
   const shorthandProperties = shorthand.shorthandProperties
   let result = ''
