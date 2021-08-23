@@ -1,7 +1,6 @@
 import {
   shorthandFlex,
   shorthandFlow,
-  shorthandColumns,
   shorthandGap,
   shorthandGridRowAndColumn,
   convertToShorthand,
@@ -103,7 +102,7 @@ export const shorthands = [
   }, {
     shorthandName: 'columns',
     shorthandProperties: ['column-width', 'column-count'],
-    computedValue: shorthandColumns,
+    computedValue: replaceLonghand,
   }, {
     shorthandName: 'gap',
     shorthandProperties: ['row-gap', 'column-gap'],

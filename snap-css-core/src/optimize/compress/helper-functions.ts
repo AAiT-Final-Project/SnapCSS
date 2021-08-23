@@ -58,24 +58,6 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
   return ''
 }
 
-// Flex
-// export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
-//   const propertyName = shorthand.shorthandName
-
-//   if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink'] && declarations[propertyName + '-basis']) {
-//     return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value + ' ' + declarations[propertyName + '-basis'].value
-//   } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink']) {
-//     return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value
-//   } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-basis']) {
-//     return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-basis'].value
-//   } if (declarations[propertyName + '-grow']) {
-//     return declarations[propertyName + '-grow'].value
-//   } if (declarations[propertyName + '-basis']) {
-//     return declarations[propertyName + '-basis'].value
-//   }
-//   return ''
-// }
-
 // flex-flow, overflow
 export const shorthandFlow = (shorthand: Shorthand, declarations: any) => {
   const propertyName = shorthand.shorthandName
@@ -99,18 +81,6 @@ export const shorthandFlow = (shorthand: Shorthand, declarations: any) => {
     result = declarations[prefixName + postfix[1]].value
   }
   return result
-}
-
-// Columns
-export const shorthandColumns = (shorthand: Shorthand, declarations: any) => {
-  if (declarations['column-width'] && declarations['column-count']) {
-    return declarations['column-width'].value + ' ' + declarations['column-count'].value
-  } if (declarations['column-width']) {
-    return declarations['column-width'].value
-  } if (declarations['column-count']) {
-    return declarations['column-count'].value
-  }
-  return ''
 }
 
 // Gap
