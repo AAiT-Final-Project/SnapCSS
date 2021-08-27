@@ -71,6 +71,10 @@ export default class Restructurer implements Optimizer {
             if (!removeDuplication[rule[0]].includes('!important')) {
               removeDuplication[rule[0]] = rule[1];
             }
+            else if (rule[1].includes('!important')) {
+              removeDuplication[rule[0]] = rule[1];
+
+            }
           }
           else {
             removeDuplication[rule[0]] = rule[1];
@@ -255,6 +259,7 @@ export default class Restructurer implements Optimizer {
     return newString;
   }
 
+
   reusable(nmt: any) {
     let dos = 75;
     let sims = [];
@@ -280,6 +285,7 @@ export default class Restructurer implements Optimizer {
         }
       }
     }
+    // console.log(Object.values(sims))
     let similarSelectors: any = [];
     let current;
     if (Object.keys(sims).length == 1) {
@@ -351,7 +357,9 @@ export default class Restructurer implements Optimizer {
           continue;
         }
       }
-      
+      // for (let t = 0; t < temp_1.length - 1; t++) {
+      //     temp_1[t] = temp_1[t].replace(',', '') + '\n,';
+      // }
       result[temp_1] = holder;
 
     }
