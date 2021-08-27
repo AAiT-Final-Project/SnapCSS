@@ -11,26 +11,26 @@ export default class Restructurer implements Optimizer {
   }
   //this function takes care of rules without @ character in their names. 
   //it takes an array from the loader class
-  //the array it gets from loader is structured like [[NonMediaTags],[MediaTags]] 
+  //the array it gets from loader is structured like [[NonMediaSelectors],[MediaSelectors]] 
   //at index 0 it has the Non @ rules and at index 1 it has rules wz @
-  NonMediaTags(x: any) {
-    let TagsProps: any[] = []; //fetch the Non@ rules
+  NonMediaSelectors(x: any) {
+    let SelectorsProps: any[] = []; //fetch the Non@ rules
     const data = css.stringify(x[0]);
 
 
     //***********************************************************************************************
     try {
       for (let i = 0; i < data.length; i++) {
-        let tag: any = '';
+        let selector: any = '';
         let property = '';
         if (data.charAt(i) == '{') {
           let j = i - 1;
           while (data.charAt(j) != '}' && j >= 0) {
-            tag = tag + data.charAt(j);
+            selector = selector + data.charAt(j);
             j--;
           }
 
-          tag = this.reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
+          selector = this.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim();
 
           let k = i;
           while (data.charAt(k - 1) != '}') {
@@ -38,15 +38,15 @@ export default class Restructurer implements Optimizer {
             k++;
           }
           property = property.replace('{', '').replace('}', '').trim();
-          if (Object.keys(TagsProps).includes(tag.trim())) {
-            let oldProp = TagsProps[tag];
+          if (Object.keys(SelectorsProps).includes(selector.trim())) {
+            let oldProp = SelectorsProps[selector];
             let newProp = oldProp + property;
-            TagsProps[tag] = newProp;
+            SelectorsProps[selector] = newProp;
           }
           else {
-            TagsProps[tag] = property;
+            SelectorsProps[selector] = property;
           }
-          tag = '';
+          selector = '';
           property = '';
 
 
@@ -58,22 +58,23 @@ export default class Restructurer implements Optimizer {
     //************************************************************************************************
 
     let NoDuplication: any = []; // the array of rules it is going to be returned at last
-    for (let tp in TagsProps) {
-      let eachProps = TagsProps[tp].split(';'); //split the string so we can take a look at each rules
+    for (let tp in SelectorsProps) {
+      let eachProps = SelectorsProps[tp].split(';'); //split the string so we can take a look at each rules
       for (let ep in eachProps) {
         eachProps[ep] = eachProps[ep].replace(/\r/g, '').replace(/\n/g, '').trim();
       }
-      let removeDuplication = []; //if a property name mentioned the more than once in the same tag this dictionary will take the last rule mentioned.
+      let removeDuplication: any = []; //if a property name mentioned the more than once in the same selector this dictionary will take the last rule mentioned.
       for (let ep in eachProps) {
         if (eachProps[ep] != '') {
           let rule = eachProps[ep].split(':'); //split the property name and the value
-          if ([rule[0]].includes('color')) { //change to hex for consistancy
-
-            removeDuplication[rule[0]] = rule[1];
-
+          if (Object.keys(removeDuplication).includes(rule[0])) {
+            if (!removeDuplication[rule[0]].includes('!important')) {
+              removeDuplication[rule[0]] = rule[1];
+            }
           }
           else {
             removeDuplication[rule[0]] = rule[1];
+
           }
         }
       }
@@ -169,8 +170,8 @@ export default class Restructurer implements Optimizer {
     // return NoDuplication;
     return (css.parse(toBEWritten));
   }
-  MediaTags(x: any) {
-    let TagsProps: any = [];
+  MediaSelectors(x: any) {
+    let SelectorsProps: any = [];
     const data = css.stringify(x[1])
 
 
@@ -178,38 +179,38 @@ export default class Restructurer implements Optimizer {
     //***********************************************************************************************
     try {
       for (let i = 0; i < data.length; i++) {
-        let tag = '';
+        let selector = '';
         let property = '';
         if (data.charAt(i) == '{') {
           let j = i - 1;
           while (data.charAt(j) != '}' && j >= 0) {
-            tag = tag + data.charAt(j);
+            selector = selector + data.charAt(j);
             j--;
           }
-          let opentag = 0;
-          let closetag = 0;
+          let openselector = 0;
+          let closeselector = 0;
           let k = i;
           while (k < data.length) {
             property = property + data[k];
             if (data[k] == '{') {
-              opentag++;
+              openselector++;
             }
             else if (data[k] == '}') {
-              closetag++;
+              closeselector++;
             }
-            if (opentag == closetag) {
-              tag = this.reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
-              if (Object.keys(TagsProps).includes(tag.trim())) {
-                let oldProp = TagsProps[tag];
+            if (openselector == closeselector) {
+              selector = this.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim();
+              if (Object.keys(SelectorsProps).includes(selector.trim())) {
+                let oldProp = SelectorsProps[selector];
                 let newProp = oldProp + property.substring(1, property.length - 2);
-                TagsProps[tag] = newProp;
+                SelectorsProps[selector] = newProp;
               }
               else {
-                TagsProps[tag] = property.substring(1, property.length - 2);
+                SelectorsProps[selector] = property.substring(1, property.length - 2);
               }
-              opentag = 0;
-              closetag = 0;
-              tag = '';
+              openselector = 0;
+              closeselector = 0;
+              selector = '';
               property = '';
               i = k + 1;
               break;
@@ -224,10 +225,10 @@ export default class Restructurer implements Optimizer {
     //************************************************************************************************************
 
     let NoDuplication: any = [];
-    for (let tp in TagsProps) {
-      var prepared = new Loader('').construct(TagsProps[tp]);
+    for (let tp in SelectorsProps) {
+      var prepared = new Loader('').construct(SelectorsProps[tp]);
 
-      NoDuplication[tp] = this.NonMediaTags(prepared);
+      NoDuplication[tp] = this.NonMediaSelectors(prepared);
     }
     let toBEWritten = '';
     for (let m in NoDuplication) {
@@ -245,37 +246,7 @@ export default class Restructurer implements Optimizer {
   }
 
   /**************************************************** Helper Functions **********************************************/
-  colourNameToHex(colour: string) {
-    var colours: any = {
-      "aliceblue": "#f0f8ff", "antiquewhite": "#faebd7", "aqua": "#00ffff", "aquamarine": "#7fffd4", "azure": "#f0ffff",
-      "beige": "#f5f5dc", "bisque": "#ffe4c4", "black": "#000000", "blanchedalmond": "#ffebcd", "blue": "#0000ff", "blueviolet": "#8a2be2", "brown": "#a52a2a", "burlywood": "#deb887",
-      "cadetblue": "#5f9ea0", "chartreuse": "#7fff00", "chocolate": "#d2691e", "coral": "#ff7f50", "cornflowerblue": "#6495ed", "cornsilk": "#fff8dc", "crimson": "#dc143c", "cyan": "#00ffff",
-      "darkblue": "#00008b", "darkcyan": "#008b8b", "darkgoldenrod": "#b8860b", "darkgray": "#a9a9a9", "darkgreen": "#006400", "darkkhaki": "#bdb76b", "darkmagenta": "#8b008b", "darkolivegreen": "#556b2f",
-      "darkorange": "#ff8c00", "darkorchid": "#9932cc", "darkred": "#8b0000", "darksalmon": "#e9967a", "darkseagreen": "#8fbc8f", "darkslateblue": "#483d8b", "darkslategray": "#2f4f4f", "darkturquoise": "#00ced1",
-      "darkviolet": "#9400d3", "deeppink": "#ff1493", "deepskyblue": "#00bfff", "dimgray": "#696969", "dodgerblue": "#1e90ff",
-      "firebrick": "#b22222", "floralwhite": "#fffaf0", "forestgreen": "#228b22", "fuchsia": "#ff00ff",
-      "gainsboro": "#dcdcdc", "ghostwhite": "#f8f8ff", "gold": "#ffd700", "goldenrod": "#daa520", "gray": "#808080", "green": "#008000", "greenyellow": "#adff2f",
-      "honeydew": "#f0fff0", "hotpink": "#ff69b4",
-      "indianred ": "#cd5c5c", "indigo": "#4b0082", "ivory": "#fffff0", "khaki": "#f0e68c",
-      "lavender": "#e6e6fa", "lavenderblush": "#fff0f5", "lawngreen": "#7cfc00", "lemonchiffon": "#fffacd", "lightblue": "#add8e6", "lightcoral": "#f08080", "lightcyan": "#e0ffff", "lightgoldenrodyellow": "#fafad2",
-      "lightgrey": "#d3d3d3", "lightgreen": "#90ee90", "lightpink": "#ffb6c1", "lightsalmon": "#ffa07a", "lightseagreen": "#20b2aa", "lightskyblue": "#87cefa", "lightslategray": "#778899", "lightsteelblue": "#b0c4de",
-      "lightyellow": "#ffffe0", "lime": "#00ff00", "limegreen": "#32cd32", "linen": "#faf0e6",
-      "magenta": "#ff00ff", "maroon": "#800000", "mediumaquamarine": "#66cdaa", "mediumblue": "#0000cd", "mediumorchid": "#ba55d3", "mediumpurple": "#9370d8", "mediumseagreen": "#3cb371", "mediumslateblue": "#7b68ee",
-      "mediumspringgreen": "#00fa9a", "mediumturquoise": "#48d1cc", "mediumvioletred": "#c71585", "midnightblue": "#191970", "mintcream": "#f5fffa", "mistyrose": "#ffe4e1", "moccasin": "#ffe4b5",
-      "navajowhite": "#ffdead", "navy": "#000080",
-      "oldlace": "#fdf5e6", "olive": "#808000", "olivedrab": "#6b8e23", "orange": "#ffa500", "orangered": "#ff4500", "orchid": "#da70d6",
-      "palegoldenrod": "#eee8aa", "palegreen": "#98fb98", "paleturquoise": "#afeeee", "palevioletred": "#d87093", "papayawhip": "#ffefd5", "peachpuff": "#ffdab9", "peru": "#cd853f", "pink": "#ffc0cb", "plum": "#dda0dd", "powderblue": "#b0e0e6", "purple": "#800080",
-      "rebeccapurple": "#663399", "red": "#ff0000", "rosybrown": "#bc8f8f", "royalblue": "#4169e1",
-      "saddlebrown": "#8b4513", "salmon": "#fa8072", "sandybrown": "#f4a460", "seagreen": "#2e8b57", "seashell": "#fff5ee", "sienna": "#a0522d", "silver": "#c0c0c0", "skyblue": "#87ceeb", "slateblue": "#6a5acd", "slategray": "#708090", "snow": "#fffafa", "springgreen": "#00ff7f", "steelblue": "#4682b4",
-      "tan": "#d2b48c", "teal": "#008080", "thistle": "#d8bfd8", "tomato": "#ff6347", "turquoise": "#40e0d0",
-      "violet": "#ee82ee",
-      "wheat": "#f5deb3", "white": "#ffffff", "whitesmoke": "#f5f5f5",
-      "yellow": "#ffff00", "yellowgreen": "#9acd32"
-    };
-    if (typeof colours[colour.toLowerCase()] != 'undefined')
-      return colours[colour.toLowerCase()];
-    return false;
-  }
+
   reverseString(str: string) {
     let newString = "";
     for (let i = str.length - 1; i >= 0; i--) {
@@ -283,7 +254,6 @@ export default class Restructurer implements Optimizer {
     }
     return newString;
   }
-
 
   reusable(nmt: any) {
     let dos = 75;
@@ -302,16 +272,15 @@ export default class Restructurer implements Optimizer {
           let prop1Len = Object.keys(props[i]).length;
           let prop2Len = Object.keys(props[j]).length;
           if ((SimilarityLen / prop1Len) * 100 >= dos && (SimilarityLen / prop2Len) * 100 >= dos) {
-            let tags = [Object.keys(nmt)[i].trim(), Object.keys(nmt)[j].trim()].sort().toString();
-            let tagSplited = tags.split(',');
-            sims[this.toUniqueArray(tagSplited.sort())] = sim;
-            diffs[this.toUniqueArray(tagSplited.sort())] = dif;
+            let Selectors = [Object.keys(nmt)[i].trim(), Object.keys(nmt)[j].trim()].sort().toString();
+            let Selectorsplited = Selectors.split(',');
+            sims[this.toUniqueArray(Selectorsplited.sort())] = sim;
+            diffs[this.toUniqueArray(Selectorsplited.sort())] = dif;
           }
         }
       }
     }
-    // console.log(Object.values(sims))
-    let similarTags: any = [];
+    let similarSelectors: any = [];
     let current;
     if (Object.keys(sims).length == 1) {
       return [sims, diffs]
@@ -346,26 +315,26 @@ export default class Restructurer implements Optimizer {
           }
         }
         if (p.length != 0) {
-          if (!similarTags.includes(this.toUniqueArray(t).sort().toString())) {
-            similarTags.push(this.toUniqueArray(t).sort().toString());
+          if (!similarSelectors.includes(this.toUniqueArray(t).sort().toString())) {
+            similarSelectors.push(this.toUniqueArray(t).sort().toString());
           }
         }
       }
     }
 
 
-    for (let st in similarTags) {
+    for (let st in similarSelectors) {
       for (let si in sims) {
         let c1 = si.split(',');
-        if (!similarTags[st].includes(c1[0]) && !similarTags[st].includes(c1[1])) {
-          similarTags.push(si);
+        if (!similarSelectors[st].includes(c1[0]) && !similarSelectors[st].includes(c1[1])) {
+          similarSelectors.push(si);
         }
       }
     }
     let result = [];
-    for (let st in similarTags) {
+    for (let st in similarSelectors) {
       let holder = [];
-      let temp_1 = this.toUniqueArray(similarTags[st].split(',')).sort();
+      let temp_1 = this.toUniqueArray(similarSelectors[st].split(',')).sort();
 
       for (let i_1 = 0; i_1 < temp_1.length; i_1++) {
         try {
@@ -382,9 +351,7 @@ export default class Restructurer implements Optimizer {
           continue;
         }
       }
-      // for (let t = 0; t < temp_1.length - 1; t++) {
-      //     temp_1[t] = temp_1[t].replace(',', '') + '\n,';
-      // }
+      
       result[temp_1] = holder;
 
     }
