@@ -50,15 +50,11 @@ export default class Loader {
   }
 
   clearComments(data: any) {
-
-
     var x = this.strip(data); //=> var t;
     return x;
-
   }
 
   construct(data: string) {
-
     let nonMediaTagProp: string[] = [];
     let mediaTagProp: string[] = [];
     for (let i = 0; i < data.length; i++) {
@@ -138,12 +134,6 @@ export default class Loader {
     return result;
   }
 }
-
-
-
-
-
-
 
 
 //**********************************************helper functions***********************************************

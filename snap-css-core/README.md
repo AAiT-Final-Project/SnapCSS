@@ -16,11 +16,11 @@ snap-css
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g snap-css
+$ npm install -g snappy-css
 $ snap-css COMMAND
 running command...
 $ snap-css (-v|--version|version)
-snap-css/0.0.0 darwin-x64 node-v16.4.0
+snappy-css/0.0.2 darwin-x64 node-v16.4.0
 $ snap-css --help [COMMAND]
 USAGE
   $ snap-css COMMAND

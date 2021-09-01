@@ -1,6 +1,6 @@
 {
-  "name": "snap-css",
-  "version": "0.0.0",
+  "name": "snappy-css",
+  "version": "0.0.2",
   "author": "snap-team",
   "bin": {
     "snap-css": "./bin/run"
@@ -16,7 +16,7 @@
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",
-    "mocha": "^5.2.0",
+    "mocha": "^9.0.3",
     "nyc": "^14.1.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
@@ -49,6 +49,10 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
+    "css": "^3.0.0",
+    "csstree-validator": "^2.0.1",
+    "postcss": "^8.3.6",
+    "postcss-shorthand-expand": "^1.0.1",
     "tslib": "^1.14.1"
   }
 }
