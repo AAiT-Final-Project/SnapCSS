@@ -1,152 +1,148 @@
+import { exit } from "process";
+
 export default class Loader {
-  private postcss = require('postcss');
-
-  private shorthandExpand = require('postcss-shorthand-expand');
-
-  private validator = require('csstree-validator').validate
-
-  private  fs = require('fs')
+  validator = require('csstree-validator');
+  fs = require('fs');
+  cssbeautify = require('cssbeautify');
+  strip = require('strip-comments')
+  css = require('css');
 
   constructor(
     public inputPath: string
   ) { }
 
   scan() {
-    let data = ''
+    var data: string = '';
     try {
-      data = this.fs.readFileSync(this.inputPath, 'utf8')
-    } catch (err) {
-      console.error(err)
+      data = this.fs.readFileSync(this.inputPath, 'utf8');
+      data = this.cssbeautify(data, {
+        indent: '  ',
+        openbrace: 'separate-line',
+        autosemicolon: true
+      });
     }
-    const validated = this.validate(data)
-    // console.log(validated);
-    const cleared = this.clearComments(validated)
-    // console.log(cleared);
-    const constructed = this.construct(cleared)
-    // console.log(constructed)
-    return constructed
+    catch (err) {
+      console.error(err);
+    }
+
+    var validated = this.validate(data);
+    if (validated == 1) {
+      let cleared = this.clearComments(data);
+      let constructed = this.construct(cleared);
+
+      return constructed;
+    }
+    else {
+      return 'invalid'
+    }
+
   }
 
   validate(data: string) {
-    const result = this.validator(data)
-    // console.log(result)
-    if (result.valid != []) {
-      // console.log(result.valid);
-      return data
+    let result = this.validator.validate(data);
+    if (result.length == 0) {
+      return 1;
     }
-
-    console.log('The css file is not valid')
-    console.log(result.errors)
+    else {
+      console.log('The css file is not valid');
+      return 0;
+    }
   }
 
   clearComments(data: any) {
-    const start = data.indexOf('/*')
-    // console.log(data.charAt(data.indexOf('/*')))
-    if (start != -1) {
-      const end = data.indexOf('*/')
-      data = data.substring(0, start - 1) + data.substring(end + 2, data.length)
-      this.clearComments(data)
-      return data
-    }
-
-    // console.log(data);
-    return data
+    var x = this.strip(data); //=> var t;
+    return x;
   }
 
-  construct(data: any) {
-    data = this.postcss([this.shorthandExpand()]).process(data).css
-    const nonMediaTagProp: any = []
-    const mediaTagProp: any = []
+  construct(data: string) {
+    let nonMediaTagProp: string[] = [];
+    let mediaTagProp: string[] = [];
     for (let i = 0; i < data.length; i++) {
-      let tag = ''
-      let property = ''
+      let tag: any = '';
+      let property = '';
       if (data.charAt(i) == '{') {
-        var j = i - 1
+        let j = i - 1;
         while (data.charAt(j) != '}' && j >= 0) {
-          tag += data.charAt(j)
-          j--
+          tag = tag + data.charAt(j);
+          j--;
         }
         if (!reverseString(tag).includes('@')) {
-          tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim()
-          if (tag.includes(',')) {
-            const tags = tag.split(',')
-            var k = i
-            for (const t in tags) {
-              while (data.charAt(k - 1) != '}') {
-                property += data.charAt(k)
-                k++
-              }
-              property = property.replace('{', '').replace('}', '').trim() + ';'
-              if (Object.keys(nonMediaTagProp).includes(tags[t].trim())) {
-                var oldProp = nonMediaTagProp[tags[t]]
-                var newProp = oldProp + property
-                nonMediaTagProp[tags[t]] = newProp
-              } else {
-                nonMediaTagProp[tags[t]] = property
-              }
-            }
-            tag = ''
-            property = ''
-          } else {
-            var k = i
-            while (data.charAt(k - 1) != '}') {
-              property += data.charAt(k)
-              k++
-            }
-            property = property.replace('{', '').replace('}', '').trim() + ';'
-            if (Object.keys(nonMediaTagProp).includes(tag.trim())) {
-              var oldProp = nonMediaTagProp[tag]
-              var newProp = oldProp + property
-              nonMediaTagProp[tag] = newProp
-            } else {
-              nonMediaTagProp[tag] = property
-            }
-            tag = ''
-            property = ''
+          tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
+
+          let k = i;
+          while (data.charAt(k - 1) != '}') {
+            property = property + data.charAt(k);
+            k++;
           }
-        } else {
-          let opentag = 0
-          let closetag = 0
-          var j = i
+          property = property.replace('{', '').replace('}', '').trim();
+          if (Object.keys(nonMediaTagProp).includes(tag.trim())) {
+            let oldProp = nonMediaTagProp[tag];
+            let newProp = oldProp + property;
+            nonMediaTagProp[tag] = newProp;
+          }
+          else {
+            nonMediaTagProp[tag] = property;
+          }
+          tag = '';
+          property = '';
+        }
+        else {
+          let opentag = 0;
+          let closetag = 0;
+          let j = i;
           while (j < data.length) {
-            property += data[j]
+            property = property + data[j];
             if (data[j] == '{') {
-              opentag++
-            } else if (data[j] == '}') {
-              closetag++
+              opentag++;
+            }
+            else if (data[j] == '}') {
+              closetag++;
             }
             if (opentag == closetag) {
-              tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim()
+              tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
               if (Object.keys(mediaTagProp).includes(tag.trim())) {
-                var oldProp = mediaTagProp[tag]
-                var newProp = oldProp + property.substring(1, property.length - 2)
-                mediaTagProp[tag] = newProp
-              } else {
-                mediaTagProp[tag] = property.substring(1, property.length - 2)
+                let oldProp = mediaTagProp[tag];
+                let newProp = oldProp + property.substring(1, property.length - 2);
+                mediaTagProp[tag] = newProp;
               }
-              opentag = 0
-              closetag = 0
-              tag = ''
-              property = ''
-              i = j + 1
-              break
+              else {
+                mediaTagProp[tag] = property.substring(1, property.length - 2);
+              }
+              opentag = 0;
+              closetag = 0;
+              tag = '';
+              property = '';
+              i = j + 1;
+              break;
             }
-            j++
+            j++;
           }
         }
       }
     }
-    const result = [nonMediaTagProp, mediaTagProp]
-    return result
+
+    let result = [nonMediaTagProp, mediaTagProp];
+    let mediaSelectorsStr = '';
+    let nonMediaSelectorsStr = '';
+    for (let r in result[0]) {
+      nonMediaSelectorsStr = nonMediaSelectorsStr + r + '{\n' + result[0][r] + '\n}\n'
+    }
+    for (let r in result[1]) {
+      mediaSelectorsStr = mediaSelectorsStr + r + '{\n' + result[1][r] + '\n}\n'
+    }
+    result = [this.css.parse(nonMediaSelectorsStr), this.css.parse(mediaSelectorsStr)]
+    return result;
   }
 }
 
-//* *********************************************helper functions***********************************************
+
+//**********************************************helper functions***********************************************
+
 
 function reverseString(str: string) {
-  let newString = ''
-  for (let i = str.length - 1; i >= 0; i--) {
-    newString += str[i]
+  var newString = "";
+  for (var i = str.length - 1; i >= 0; i--) {
+    newString += str[i];
   }
-  return newString
+  return newString;
 }
