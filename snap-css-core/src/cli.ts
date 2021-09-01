@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {Command, flags} from '@oclif/command'
 import SnapCss = require('./index')
 
@@ -33,8 +32,26 @@ class SnapCli extends Command {
     // this should be what the CLI runs after parsing the inputs any way it wants
     const snap = new SnapCss()
     const optimizers = snap.getOptimizers('a')
-    const css = snap.getCSS('Trial CSS code Goes Here')
+    const css = snap.getCSS(`
+    @media screen and (min-width: 480px) {
+      .body:hover{
+        background-color: rgba(10,11,14,15) !important;
+      }
+    }
+
+    #main, .apple {
+      border: 1px solid black;
+    }
+
+    #max {
+      padding: 50px;
+      height: 100%;
+    }`)
     optimizers.forEach(optimizer => optimizer.optimize(css))
+    // this.log(css.toString())
+    // snap.exportFile('./trial.json', JSON.stringify(css.toObject()))
+    snap.exportFile('./trial.css', css.toString())
+    this.log(snap.getCSSFromFile('./trial.css').toString())
   }
 }
 
