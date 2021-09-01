@@ -1,32 +1,22 @@
-/* eslint-disable no-console */
-import {Command, flags} from '@oclif/command'
+import Optimizer from './optimize/optimizer'
+import Compressor from './optimize/compress/compressor'
+import Restructurer from './optimize/restructure/restructurer'
+import Cleaner from './optimize/clean/cleaner'
+import Suggester from './optimize/suggest/suggester'
+import CSS from './css/css'
 
-class SnapCss extends Command {
-  static description = 'describe the command here'
+class SnapCss {
+  private keys = ['r', 'c', 'k', 's']
 
-  static flags = {
-    // add --version flag to show CLI version
-    version: flags.version({char: 'v'}),
-    help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
-  }
+  private optimizers: Optimizer[] = [new Restructurer(), new Cleaner(), new Compressor(), new Suggester()]
 
-  static args = [{name: 'file'}]
+  public getOptimizers = (params: string) => this.optimizers.filter(
+    (opt, ind) => params.includes(this.keys[ind]) || params.includes('a'))
 
-  async run() {
-    // const {args, flags} = this.parse(SnapCss)
-
-    // const name = flags.name ?? 'world'
-    // this.log(`hello ${name} from ./src/index.ts`)
-    // if (args.file && flags.force) {
-    //   this.log(`you input --force and --file: ${args.file}`)
-    // }
-    // const trial = CSS.fromString('Trial CSS')
-    // eslint-disable-next-line no-console
-    // console.log(trial.toString())
+  public getCSS(css: string) {
+    // Here is to handle how the loader loads the css file and turns it into text or just return text after validating it menamen or creating CSS object there
+    // const loader = new Loader(path)
+    return CSS.fromString(css)
   }
 }
 
