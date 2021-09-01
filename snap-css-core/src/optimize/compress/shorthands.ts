@@ -7,6 +7,7 @@ import {
   shorthandBorderImage,
   transformToShorthand,
   shorthandOverflow,
+  shorthandBackground,
 } from './helper-functions'
 
 export const shorthands = [
@@ -155,5 +156,9 @@ export const shorthands = [
     shorthandName: 'grid-area',
     shorthandProperties: ['grid-row-start', 'grid-column-start', 'grid-row-end', 'grid-column-end'],
     computedValue: shorthandBorderImage,
+  }, {
+    shorthandName: 'background',
+    shorthandProperties: ['background-color', 'background-image', 'background-repeat', 'background-position', 'background-attachment', 'background-origin', 'background-clip', 'background-size'],
+    computedValue: shorthandBackground,
   },
 ]

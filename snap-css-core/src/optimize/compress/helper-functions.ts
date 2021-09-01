@@ -84,6 +84,8 @@ const getShorthandValue = (shorthand: Shorthand, declarations: any): string => {
   let shorthandValue = ''
   if (shorthandName === 'font') {
     shorthandValue = 'font-stretch font-style font-variant font-weight font-size/line-height font-family'
+  } else if (shorthandName === 'background') {
+    shorthandValue = 'background-color background-image background-repeat background-attachment background-position/background-size background-origin background-clip'
   } else {
     shorthandValue = convertToString(shorthand.shorthandProperties)
   }
@@ -167,5 +169,22 @@ export const shorthandOverflow = (shorthand: Shorthand, declarations: any): stri
     return result
   }
   const shorthandValue = getShorthandValue(shorthand, declarations)
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// background
+export const shorthandBackground = (shorthand: Shorthand, declarations: any): string => {
+  let shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['background-position'] && declarations['background-size']) {
+    declarations['background-size'].value = '0 0/' + declarations['background-size'].value
+  }
+
+  shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['background-position'] || !declarations['background-size']) {
+    shorthandValue = shorthandValue.replace('/', '')
+  }
+
   return shorthandValue.replace('  ', ' ').trim()
 }
