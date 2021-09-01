@@ -1,6 +1,6 @@
 export interface Shorthand {
-    propertyName: string;
-    properties: string[];
+    shorthandName: string;
+    shorthandProperties: string[];
   }
 
 export interface Declaration {

@@ -28,19 +28,19 @@ export default class Compressor implements Optimizer {
         })
 
         this.shorthands.forEach(shorthand => {
-          const shorthandValue = shorthand.getShorthandValue(shorthand, declarations)
+          const shorthandValue = shorthand.computedValue(shorthand, declarations)
 
           if (shorthandValue !== '') {
             const newDeclarations = []
 
             newDeclarations.push({
               type: 'declaration',
-              property: shorthand.propertyName,
+              property: shorthand.shorthandName,
               value: shorthandValue,
             })
 
             rule.declarations.forEach(declaration => {
-              if (shorthand.properties.indexOf(declaration.property) <= -1) {
+              if (shorthand.shorthandProperties.indexOf(declaration.property) <= -1) {
                 newDeclarations.push(declaration)
               }
             })

@@ -1,24 +1,25 @@
 /* eslint-disable max-statements-per-line */
 import {Shorthand} from './interfaces'
 
-const oneValueProperty = ['padding', 'margin']
-const twoValueProperty = ['border-color', 'border-width', 'border-style']
-const threeValueProperty = ['border-radius']
-const oneValueSet = new Set(oneValueProperty)
-const twoValueSet = new Set(twoValueProperty)
-const threeValueSet = new Set(threeValueProperty)
-
 // padding, margin, border-color, border-style, border-width, border-radius
 export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
+  const oneValueProperty = ['padding', 'margin', 'scroll-margin', 'scroll-padding']
+  const twoValueProperty = ['border-color', 'border-width', 'border-style']
+  const threeValueProperty = ['border-radius']
+  const oneValueSet = new Set(oneValueProperty)
+  const twoValueSet = new Set(twoValueProperty)
+  const threeValueSet = new Set(threeValueProperty)
+
+  const propertyName = shorthand.shorthandName
   const propertyList = propertyName.split('-')
 
-  const prefix = propertyList[0]
+  let prefix = propertyList[0]
   let affix = ['-top', '-right', '-bottom', '-left']
   let postfix = ''
   let times = 1
 
   if (oneValueSet.has(propertyName)) {
+    prefix = propertyName
     postfix = ''
   } else if (twoValueSet.has(propertyName)) {
     postfix = '-' + propertyList[1]
@@ -57,88 +58,133 @@ export const convertToShorthand = (shorthand: Shorthand, declarations: any) => {
   return ''
 }
 
-// border, border-top, border-right, border-bottom, border-left, outline, column-rule
-export const compressInWidthStyleColorOrder = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
-
-  if (declarations[propertyName + '-width'] && declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
-    return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
-  } if (declarations[propertyName + '-width'] && declarations[propertyName + '-style']) {
-    return declarations[propertyName + '-width'].value + ' ' + declarations[propertyName + '-style'].value
-  } if (declarations[propertyName + '-style'] && declarations[propertyName + '-color']) {
-    return declarations[propertyName + '-style'].value + ' ' + declarations[propertyName + '-color'].value
-  } if (declarations[propertyName + '-style']) {
-    return declarations[propertyName + '-style'].value
-  }
-  return ''
-}
-
-// Flex
-export const shorthandFlex = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
-
-  if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink'] && declarations[propertyName + '-basis']) {
-    return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value + ' ' + declarations[propertyName + '-basis'].value
-  } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-shrink']) {
-    return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-shrink'].value
-  } if (declarations[propertyName + '-grow'] && declarations[propertyName + '-basis']) {
-    return declarations[propertyName + '-grow'].value + ' ' + declarations[propertyName + '-basis'].value
-  } if (declarations[propertyName + '-grow']) {
-    return declarations[propertyName + '-grow'].value
-  } if (declarations[propertyName + '-basis']) {
-    return declarations[propertyName + '-basis'].value
-  }
-  return ''
-}
-
-// flex-flow
-export const shorthandFlexFlow = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
-  const prefixName = propertyName.split('-')[0]
-
-  if (declarations[prefixName + '-direction'] && declarations[prefixName + '-wrap']) {
-    return declarations[prefixName + '-direction'].value + ' ' + declarations[prefixName + '-wrap'].value
-  } if (declarations[prefixName + '-direction']) {
-    return declarations[prefixName + '-direction'].value
-  } if (declarations[prefixName + '-wrap']) {
-    return declarations[prefixName + '-wrap'].value
-  }
-  return ''
-}
-
-// Columns
-export const shorthandColumns = (shorthand: Shorthand, declarations: any) => {
-  if (declarations['column-width'] && declarations['column-count']) {
-    return declarations['column-width'].value + ' ' + declarations['column-count'].value
-  } if (declarations['column-width']) {
-    return declarations['column-width'].value
-  } if (declarations['column-count']) {
-    return declarations['column-count'].value
-  }
-  return ''
-}
-
-// Gap
-export const shorthandGap = (shorthand: Shorthand, declarations: any) => {
-  const propertyName = shorthand.propertyName
-
-  if (declarations['row-' + propertyName] && declarations['column-' + propertyName]) {
-    if (declarations['row-' + propertyName].value === declarations['column-' + propertyName].value) {
-      return declarations['row-' + propertyName].value
-    }
-    return declarations['row-' + propertyName].value + ' ' + declarations['column-' + propertyName].value
-  } if (declarations['row-' + propertyName]) {
-    return declarations['row-' + propertyName].value
-  }
-  return ''
-}
-
 // grid-column, grid-row
 export const shorthandGridRowAndColumn = (shorthand: Shorthand, declarations: any): string => {
-  const propertyName = shorthand.propertyName
+  const propertyName = shorthand.shorthandName
 
   if (declarations[propertyName + '-start'] && declarations[propertyName + '-end']) {
     return declarations[propertyName + '-start'].value + ' / ' + declarations[propertyName + '-end'].value
   }
   return ''
+}
+
+// Convert arrays of string into a single string
+const convertToString = (arr: string[]): string => {
+  let syntax = ''
+  arr.forEach(element => {
+    syntax = syntax + ' ' + element
+  })
+
+  return syntax
+}
+
+// Get shorthand values
+const getShorthandValue = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandName = shorthand.shorthandName
+  let shorthandValue = ''
+  if (shorthandName === 'font') {
+    shorthandValue = 'font-stretch font-style font-variant font-weight font-size/line-height font-family'
+  } else if (shorthandName === 'background') {
+    shorthandValue = 'background-color background-image background-repeat background-attachment background-position/background-size background-origin background-clip'
+  } else {
+    shorthandValue = convertToString(shorthand.shorthandProperties)
+  }
+
+  shorthand.shorthandProperties.forEach(property => {
+    if (declarations[property]) {
+      shorthandValue = shorthandValue.replace(property, declarations[property].value)
+    } else {
+      shorthandValue = shorthandValue.replace(property, '')
+    }
+  })
+
+  shorthandValue = shorthandValue.replace('  ', ' ').trim()
+  return shorthandValue
+}
+
+// font
+export const shorthandFont = (shorthand: Shorthand, declarations: any): string => {
+  let shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['font-size'] || !declarations['font-family']) {
+    return ''
+  }
+
+  if (!declarations['line-height']) {
+    shorthandValue = shorthandValue.replace('/', '')
+  }
+
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// list-style, offset, text-emphasis, text-decoration, outline, column-rule, columns
+// border, border-top, border-right, border-bottom, border-left, flex-flow
+// border-inline-start, border-inline-end, border-block-start, border-block-end
+export const replaceLonghand = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandValue = getShorthandValue(shorthand, declarations)
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// border-image
+export const shorthandBorderImage = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['border-image-source']) {
+    return ''
+  }
+
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// flex
+export const shorthandFlex = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['flex-grow'] && !declarations['flex-basis']) {
+    return ''
+  }
+
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// place-content, place-items, place-self, gap
+export const transformToShorthand = (shorthand: Shorthand, declarations: any): string => {
+  const shorthandProperties = shorthand.shorthandProperties
+  let result = ''
+  if (declarations[shorthandProperties[0]] && declarations[shorthandProperties[1]]) {
+    if ((declarations[shorthandProperties[0]].value === declarations[shorthandProperties[1]].value)) {
+      result = declarations[shorthandProperties[0]].value
+    } else {
+      result = declarations[shorthandProperties[0]].value + ' ' + declarations[shorthandProperties[1]].value
+    }
+  }
+  return result
+}
+
+// overflow
+export const shorthandOverflow = (shorthand: Shorthand, declarations: any): string => {
+  const result = transformToShorthand(shorthand, declarations)
+
+  if (result) {
+    return result
+  }
+  const shorthandValue = getShorthandValue(shorthand, declarations)
+  return shorthandValue.replace('  ', ' ').trim()
+}
+
+// background
+export const shorthandBackground = (shorthand: Shorthand, declarations: any): string => {
+  let shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['background-position'] && declarations['background-size']) {
+    declarations['background-size'].value = '0 0/' + declarations['background-size'].value
+  }
+
+  shorthandValue = getShorthandValue(shorthand, declarations)
+
+  if (!declarations['background-position'] || !declarations['background-size']) {
+    shorthandValue = shorthandValue.replace('/', '')
+  }
+
+  return shorthandValue.replace('  ', ' ').trim()
 }
