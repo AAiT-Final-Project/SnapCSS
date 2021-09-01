@@ -4,7 +4,7 @@
   "publisher": "SnapCSS",
   "repository": "https://github.com/AAiT-Final-Project/SnapCSS/tree/main/snap-css-vsc",
   "description": "A Visual Studio Code extension for the SnapCSS CSS Optimization tool.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -19,6 +19,7 @@
     "commands": [
       {
         "command": "snap-css-vsc.optimize",
+        "category": "Snap CSS",
         "title": "Optimize CSS"
       }
     ]
