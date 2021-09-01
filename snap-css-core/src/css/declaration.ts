@@ -30,5 +30,15 @@ export default class Declaration {
   ) {
   }
 
-  public toString = () => `${this.property} : ${this.value}${this.unit};`
+  public toString = () => `${this.property} : ${this.value}${this.unit}${this.important ? ' !important' : ''};`
+
+  public toObject = () => {
+    return {
+      property: this.property,
+      value: this.value,
+      type: this.type,
+      unit: this.unit,
+      important: this.important,
+    }
+  }
 }

@@ -34,4 +34,12 @@ export default class RuleSet {
     if (this.name !== '') result += '\n}'
     return result
   }
+
+  public toObject = () => {
+    return {
+      name: this.name,
+      params: this.params,
+      rules: this.rules.map(rule => rule.toObject()),
+    }
+  }
 }

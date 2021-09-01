@@ -31,4 +31,11 @@ export default class Rule {
     result += `${this.padding}${this.selector} {${tab}${this.declarations.join(tab)} \n${this.padding}}`
     return result
   }
+
+  public toObject = () => {
+    return {
+      selector: this.selector,
+      declarations: this.declarations.map(declaration => declaration.toObject()),
+    }
+  }
 }

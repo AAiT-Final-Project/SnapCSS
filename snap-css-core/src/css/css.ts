@@ -18,4 +18,10 @@ export default class CSS {
   public toString() {
     return this.ruleSets.join('\n')
   }
+
+  public toObject = () => {
+    return {
+      ruleSets: this.ruleSets.map(set => set.toObject()),
+    }
+  }
 }
