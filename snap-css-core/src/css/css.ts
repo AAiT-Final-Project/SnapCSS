@@ -1,17 +1,27 @@
 import RuleSet from './rule-set'
+import * as postcss from 'postcss'
 
 export default class CSS {
-  static fromString(css: string) {
-    // eslint-disable-next-line no-console
-    console.log(css)
-    const result = new CSS()
-    result.ruleSets.push(RuleSet.fromString('Trial RuleSet'))
+  static fromString(string: string) {
+    const root = postcss.parse(string).root()
+    const result = new CSS([RuleSet.fromAST(root)])
+    root.walkAtRules(atRule => {
+      result.ruleSets.push(RuleSet.fromAST(atRule))
+    })
     return result
   }
 
-  public ruleSets: RuleSet[] = []
+  constructor(
+    public ruleSets: RuleSet[] = []
+  ) {}
 
   public toString() {
     return this.ruleSets.join('\n')
+  }
+
+  public toObject = () => {
+    return {
+      ruleSets: this.ruleSets.map(set => set.toObject()),
+    }
   }
 }

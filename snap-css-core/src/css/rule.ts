@@ -1,13 +1,13 @@
+import * as postcss from 'postcss'
 import Declaration from './declaration'
+
 export default class Rule {
-  static fromString(block: string, padding = '') {
-    // eslint-disable-next-line no-console
-    console.log(block)
-    const results = []
-    const res = new Rule('.home', padding)
-    res.declarations.push(Declaration.fromString('Trial Declaration'))
-    results.push(res)
-    return results
+  static fromAST(rule: postcss.Rule, padding = '') {
+    const result = new Rule(rule.selector, padding)
+    rule.walkDecls(decl => {
+      result.declarations.push(Declaration.fromAST(decl))
+    })
+    return result
   }
 
   public declarations: Declaration[] = []
@@ -30,5 +30,12 @@ export default class Rule {
       result += `// Suggested Selectors -> ${this.suggestions.join(', ')}\n`
     result += `${this.padding}${this.selector} {${tab}${this.declarations.join(tab)} \n${this.padding}}`
     return result
+  }
+
+  public toObject = () => {
+    return {
+      selector: this.selector,
+      declarations: this.declarations.map(declaration => declaration.toObject()),
+    }
   }
 }
