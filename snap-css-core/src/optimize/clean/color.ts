@@ -1,40 +1,40 @@
 export const rules = ['color', 'border', 'border-top', 'border-right', 'border-bottom', 'border-left', 'border-color',
-    'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color', 'background-color', 'outline', 'outline-color']
+    'border-top-color', 'text-shadow', 'border-right-color', 'border-bottom-color', 'border-left-color',
+    'background-color', 'outline', 'outline-color', 'border-block-end', 'border-block-end-color', 'outline', 'box-shadow']
 
-export function converter(color: any[]) {
+export function converter(color) {
 
-    if (color[0].trim() == 'color' || color[0].trim() == 'background-color' || color[0].trim() == 'border-color' || color[0].trim() == 'border-top-color' || color[0].trim() == 'border-right-color' || color[0].trim() == 'border-bottom-color' || color[0].trim() == 'border-left-color' || color[0].trim() == 'outline-color') {
+    if (color[0].includes('color')) {
         const result = [];
         const splited = color[1].trim().split(' ');
-        console.log(splited)
-
         if (colourNameToHex(splited[0].trim()) != false) {
             splited[0] = colourNameToHex(splited[0]);
             result[color[0]] = splited.join(' ')
         }
         else if (color[1].includes('rgba')) {
-            result[color[0]] = RGBAToHexA(color[1].trim());
+            splited[0] = RGBAToHexA(splited[0]);
+            result[color[0]] = splited.join(' ')
         }
         else if (color[1].includes('rgb')) {
-            result[color[0]] = RGBToHex(color[1].trim());
+            splited[0] = RGBToHex(splited[0]);
+            result[color[0]] = splited.join(' ')
         }
         else {
             result[color[0]] = color[1];
         }
         return result
     }
-
-    if (color[0].trim() == 'border' || color[0].trim() == 'border-top' || color[0].trim() == 'border-right' || color[0].trim() == 'border-bottom' || color[0].trim() == 'border-left') {
+    if (color[0] == 'text-shadow' || color[0].trim() == 'border' || color[0].trim() == 'border-top' ||
+        color[0].trim() == 'border-right' || color[0].trim() == 'border-bottom' || color[0].trim() == 'border-left' ||
+        color[0].trim() == 'border-block-end' || color[0].trim() == 'outline') {
         const result = [];
         let splited = color[1].trim().split(' ');
-        console.log(splited)
         if (color[1].includes('rgba')) {
             const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
-            // console.log(rgbaVal)
             const hexVal = RGBAToHexA(rgbaVal);
             color[1] = color[1].replace(rgbaVal, hexVal)
             result[color[0]] = color[1];
-
+            return result
         }
         else if (color[1].includes('rgb')) {
             const rgbVal = color[1].substring(color[1].indexOf('rgb'), color[1].indexOf(')') + 1);
@@ -42,7 +42,14 @@ export function converter(color: any[]) {
             const hexVal = RGBToHex(rgbVal);
             color[1] = color[1].replace(rgbVal, hexVal)
             result[color[0]] = color[1];
-
+            return result
+        }
+        if (splited.length == 4) {
+            if (colourNameToHex(splited[2].trim()) != false) {
+                splited[2] = colourNameToHex(splited[2].trim())
+                result[color[0]] = splited.join(' ')
+            }
+            return result
         }
         if (splited.length == 3 && !splited.includes('!important')) {
             const colorName = splited[2];
@@ -53,6 +60,7 @@ export function converter(color: any[]) {
             else {
                 result[color[0]] = color[1];
             }
+            return result
         }
         else if (splited.length == 3 && splited.includes('!important')) {
             if (colourNameToHex(splited[0].trim()) != false) {
@@ -66,6 +74,7 @@ export function converter(color: any[]) {
             else {
                 result[color[0]] = color[1]
             }
+            return result
         }
         else if (splited.length == 2) {
             if (colourNameToHex(splited[0].trim()) != false) {
@@ -79,20 +88,24 @@ export function converter(color: any[]) {
             else {
                 result[color[0]] = color[1]
             }
+            return result
         }
         else {
             result[color[0]] = color[1];
+            return result
         }
-
-        return result
-
     }
-
+    if (color[0] == 'box-shadow') {
+        const result = [];
+        const splited = color[1].split(' ');
+        if (colourNameToHex(splited[splited.length - 1]) != false) {
+            splited[splited.length - 1] = colourNameToHex(splited[splited.length - 1].trim())
+            result[color[0]] = splited.join(' ')
+        }
+    }
 }
-
-
-function colourNameToHex(colour: any) {
-    let colours: any = {
+function colourNameToHex(colour) {
+    let colours = {
         "aliceblue": "#f0f8ff", "antiquewhite": "#faebd7", "aqua": "#00ffff", "aquamarine": "#7fffd4", "azure": "#f0ffff",
         "beige": "#f5f5dc", "bisque": "#ffe4c4", "black": "#000000", "blanchedalmond": "#ffebcd", "blue": "#0000ff", "blueviolet": "#8a2be2", "brown": "#a52a2a", "burlywood": "#deb887",
         "cadetblue": "#5f9ea0", "chartreuse": "#7fff00", "chocolate": "#d2691e", "coral": "#ff7f50", "cornflowerblue": "#6495ed", "cornsilk": "#fff8dc", "crimson": "#dc143c", "cyan": "#00ffff",
@@ -122,30 +135,26 @@ function colourNameToHex(colour: any) {
         return colours[colour.toLowerCase()];
     return false;
 }
-function RGBAToHexA(rgba: any) {
+function RGBAToHexA(rgba) {
     let sep = rgba.indexOf(",") > -1 ? "," : " ";
     rgba = rgba.substr(5).split(")")[0].split(sep);
     if (rgba.indexOf("/") > -1)
         rgba.splice(3, 1);
-
     for (let R in rgba) {
         let r = rgba[R];
         if (r.indexOf("%") > -1) {
             let p = r.substr(0, r.length - 1) / 100;
-
-            if (parseInt(R) < 3) {
+            if (R < 3) {
                 rgba[R] = Math.round(p * 255);
             } else {
                 rgba[R] = p;
             }
         }
     }
-
     let r = (+rgba[0]).toString(16),
         g = (+rgba[1]).toString(16),
         b = (+rgba[2]).toString(16),
         a = Math.round(+rgba[3] * 255).toString(16);
-
     if (r.length == 1)
         r = "0" + r;
     if (g.length == 1)
@@ -154,10 +163,9 @@ function RGBAToHexA(rgba: any) {
         b = "0" + b;
     if (a.length == 1)
         a = "0" + a;
-
     return "#" + r + g + b + a;
 }
-function RGBToHex(rgb: any) {
+function RGBToHex(rgb) {
     let sep = rgb.indexOf(",") > -1 ? "," : " ";
     rgb = rgb.substr(4).split(")")[0].split(sep);
     for (let R in rgb) {
