@@ -32,7 +32,7 @@ export default class RuleSet {
     if (this.name !== '') result += `@${this.name} ${this.params} {\n`
     result += this.rules.join('\n\n')
     if (this.name !== '') result += '\n}'
-    return result
+    return result + '\n'
   }
 
   public toObject = () => {

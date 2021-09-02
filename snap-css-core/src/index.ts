@@ -4,6 +4,7 @@ import Restructurer from './optimize/restructure/restructurer'
 import Cleaner from './optimize/clean/cleaner'
 import Suggester from './optimize/suggest/suggester'
 import CSS from './css/css'
+import Scanner from './load/scanner'
 
 class SnapCss {
   private keys = ['r', 'c', 'k', 's']
@@ -17,6 +18,14 @@ class SnapCss {
     // Here is to handle how the loader loads the css file and turns it into text or just return text after validating it menamen or creating CSS object there
     // const loader = new Loader(path)
     return CSS.fromString(css)
+  }
+
+  public getCSSFromFile(path: string) {
+    return this.getCSS(Scanner.scanFile(path))
+  }
+
+  public exportFile(path: string, data: string) {
+    return Scanner.exportFile(path, data)
   }
 }
 
