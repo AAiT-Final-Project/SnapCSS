@@ -130,6 +130,20 @@ export default class Restructurer implements Optimizer {
         delete differentProps[d];
       }
     }
+    for (let d in differentProps) {
+      for (let s in similars) {
+        if (s.includes(d)) {
+          for (let d1 in differentProps[d]) {
+            if (Object.keys(similars[s]).includes(d1))
+              try {
+                delete similars[s][d1]
+              } catch {
+                continue
+            }
+          }
+        }
+      }
+    }
     for (let i in similars) {
       let spl = i.split(',');
       for (let j in spl) {
