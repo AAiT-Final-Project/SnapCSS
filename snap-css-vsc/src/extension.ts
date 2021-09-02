@@ -17,7 +17,20 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('snap-css-vsc.optimize', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Welcome to Optimization with Snap CSS!');
+		vscode.window.showInformationMessage('CSS Optimized Successfully!');
+
+		// vscode.workspace.fs.readDirectory(vscode.Uri.from('/src')).then((files) => console.log(files));
+		vscode.window.showOpenDialog({
+			title: 'Select Input File',
+			canSelectMany: true,
+			canSelectFiles: true,
+			filters: {'css': ['css']}
+		}).then(
+			(file) => vscode.window.showQuickPick(
+				["Restructure CSS", "Clean CSS", "Compress CSS", "Suggest Class Names"],
+				{canPickMany: true})
+		);
+
 		const snap = new SnapCss();
 		const optimizers = snap.getOptimizers("a");
 		let css = snap.getCSS("Trial CSS code Goes Here");
