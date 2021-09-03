@@ -7,16 +7,25 @@ export function converter(color) {
     if (color[0].includes('color')) {
         const result = [];
         const splited = color[1].trim().split(' ');
-        if (colourNameToHex(splited[0].trim()) != false) {
-            splited[0] = colourNameToHex(splited[0]);
-            result[color[0]] = splited.join(' ')
-        }
-        else if (color[1].includes('rgba')) {
-            splited[0] = RGBAToHexA(splited[0]);
-            result[color[0]] = splited.join(' ')
+        if (color[1].includes('rgba')) {
+            const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
+            const hexVal = RGBAToHexA(rgbaVal);
+            color[1] = color[1].replace(rgbaVal, hexVal)
+            result[color[0]] = color[1];
+            return result
+
         }
         else if (color[1].includes('rgb')) {
-            splited[0] = RGBToHex(splited[0]);
+            const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
+            const hexVal = RGBAToHexA(rgbaVal);
+            color[1] = color[1].replace(rgbaVal, hexVal)
+            result[color[0]] = color[1];
+            return result
+        }
+        else if (colourNameToHex(splited[0].trim()) != false) {
+            splited[0] = colourNameToHex(splited[0]);
             result[color[0]] = splited.join(' ')
         }
         else {
