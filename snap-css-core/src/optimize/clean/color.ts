@@ -2,9 +2,10 @@ export const rules = ['color', 'border', 'border-top', 'border-right', 'border-b
     'border-top-color', 'text-shadow', 'border-right-color', 'border-bottom-color', 'border-left-color',
     'background-color', 'outline', 'outline-color', 'border-block-end', 'border-block-end-color', 'outline', 'box-shadow']
 
-export function converter(color) {
-    const result = [];
+export function converter(color: any) {
+    const result: String[] = [];
     if (color[0].includes('color')) {
+
         if (color[1].includes('rgba')) {
             const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
             // console.log(rgbaVal)
@@ -12,6 +13,7 @@ export function converter(color) {
             color[1] = color[1].replace(rgbaVal, hexVal)
             result[color[0]] = color[1];
             return result
+
         }
         else if (color[1].includes('rgb')) {
             const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
@@ -42,13 +44,16 @@ export function converter(color) {
             }
             return result;
         }
+
+
     }
     if (color[0] == 'text-shadow' || color[0] == 'box-shadow' || color[0].trim() == 'border' || color[0].trim() == 'border-top' ||
         color[0].trim() == 'border-right' || color[0].trim() == 'border-bottom' || color[0].trim() == 'border-left' ||
         color[0].trim() == 'border-block-end' || color[0].trim() == 'outline') {
-        const result = [];
+        const result: String[] = [];
         if (color[1].includes('rgba')) {
             const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
             const hexVal = RGBAToHexA(rgbaVal);
             color[1] = color[1].replace(rgbaVal, hexVal)
             result[color[0]] = color[1];
@@ -56,6 +61,7 @@ export function converter(color) {
         }
         else if (color[1].includes('rgb')) {
             const rgbVal = color[1].substring(color[1].indexOf('rgb'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
             const hexVal = RGBToHex(rgbVal);
             color[1] = color[1].replace(rgbVal, hexVal)
             result[color[0]] = color[1];
@@ -85,12 +91,17 @@ export function converter(color) {
                 return result
             }
         }
+        // console.log(splited)
+
+
     }
+
+
 }
 
 
-function colourNameToHex(colour) {
-    let colours = {
+function colourNameToHex(colour: any) {
+    let colours: any = {
         "aliceblue": "#f0f8ff", "antiquewhite": "#faebd7", "aqua": "#00ffff", "aquamarine": "#7fffd4", "azure": "#f0ffff",
         "beige": "#f5f5dc", "bisque": "#ffe4c4", "black": "#000000", "blanchedalmond": "#ffebcd", "blue": "#0000ff", "blueviolet": "#8a2be2", "brown": "#a52a2a", "burlywood": "#deb887",
         "cadetblue": "#5f9ea0", "chartreuse": "#7fff00", "chocolate": "#d2691e", "coral": "#ff7f50", "cornflowerblue": "#6495ed", "cornsilk": "#fff8dc", "crimson": "#dc143c", "cyan": "#00ffff",
@@ -120,7 +131,7 @@ function colourNameToHex(colour) {
         return colours[colour.toLowerCase()];
     return false;
 }
-function RGBAToHexA(rgba) {
+function RGBAToHexA(rgba: any) {
     let sep = rgba.indexOf(",") > -1 ? "," : " ";
     rgba = rgba.substr(5).split(")")[0].split(sep);
     if (rgba.indexOf("/") > -1)
@@ -131,7 +142,7 @@ function RGBAToHexA(rgba) {
         if (r.indexOf("%") > -1) {
             let p = r.substr(0, r.length - 1) / 100;
 
-            if (R < 3) {
+            if (parseInt(R) < 3) {
                 rgba[R] = Math.round(p * 255);
             } else {
                 rgba[R] = p;
@@ -152,9 +163,10 @@ function RGBAToHexA(rgba) {
         b = "0" + b;
     if (a.length == 1)
         a = "0" + a;
+
     return "#" + r + g + b + a;
 }
-function RGBToHex(rgb) {
+function RGBToHex(rgb: any) {
     let sep = rgb.indexOf(",") > -1 ? "," : " ";
     rgb = rgb.substr(4).split(")")[0].split(sep);
     for (let R in rgb) {
@@ -172,5 +184,6 @@ function RGBToHex(rgb) {
         g = "0" + g;
     if (b.length == 1)
         b = "0" + b;
+
     return "#" + r + g + b;
 }
