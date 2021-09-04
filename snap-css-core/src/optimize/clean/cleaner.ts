@@ -1,15 +1,13 @@
-
 let loader_1 = require("../../load/loader");
 import Optimizer from '../optimizer'
 import CSS from '../../css/css'
 const css = require('css');
 const color = require('./color')
-
-
 export default class Cleaner implements Optimizer {
-
-  optimize(input: CSS): CSS {
-    return input
+  optimize(input: any): any {
+    const nonMedia = this.NonMediaTags(input);
+    const media = this.MediaTags(input);
+    return [nonMedia, media]
   }
   //this function takes care of rules without @ character in their names. 
   //it takes an array from the loader class
@@ -29,7 +27,6 @@ export default class Cleaner implements Optimizer {
             tag = tag + data.charAt(j);
             j--;
           }
-
           tag = this.reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
 
           let k = i;
@@ -70,7 +67,9 @@ export default class Cleaner implements Optimizer {
               let hex = color.converter(rule)
               if (hex != undefined) {
                 rule = [rule[0], hex[rule[0]]];
+                // console.log(rule[0], hex[rule[0]].join(' '))
               }
+
             }
           } catch {
             continue
@@ -92,8 +91,6 @@ export default class Cleaner implements Optimizer {
       }
       NoDuplication[tp] = removeDuplication;
     }
-
-
     let toBEWritten = '';
     for (let n in NoDuplication) {
       let tempProp = "";
@@ -102,13 +99,14 @@ export default class Cleaner implements Optimizer {
       }
       toBEWritten = toBEWritten + n + " {\n" + tempProp + "}\n\n";
     }
+    // console.log(((css.parse(toBEWritten))))
+
     // return NoDuplication;
     return (css.parse(toBEWritten));
   };
   MediaTags(x: any) {
     let TagsProps: any = [];
     const data = css.stringify(x[1])
-
     //***********************************************************************************************
     try {
       for (let i = 0; i < data.length; i++) {
@@ -156,7 +154,6 @@ export default class Cleaner implements Optimizer {
       console.log(e)
     }
     //************************************************************************************************************
-
     let NoDuplication: any = [];
     for (let tp in TagsProps) {
       let prepared = new loader_1["default"]('').construct(TagsProps[tp]);
