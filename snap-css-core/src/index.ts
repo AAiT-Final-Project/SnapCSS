@@ -16,9 +16,9 @@ class SnapCss {
 
   // eslint-disable-next-line no-console
   public getCSS(css: string, display: (msg: string[]) => any = console.log, load = Loader.loadCSS) {
-    const result = load(css)
-    display(result[1])
-    return result[0]
+    const [result, message] = load(css)
+    display(message)
+    return result
   }
 
   // eslint-disable-next-line no-console
