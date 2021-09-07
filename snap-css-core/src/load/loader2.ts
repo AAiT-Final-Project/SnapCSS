@@ -20,8 +20,6 @@ export default class Loader {
       })
       return [new CSS(), messages]
     }
-    // Then expand the shorthand properties
-    // TODO expand shorthand properties
     return [CSS.fromString(text), [Loader.SUCCESS_MSG]]
   }
 
