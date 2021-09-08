@@ -6,6 +6,7 @@ const css = require('css')
 import helper_function = require('./helper-functions');
 
 export default class Restructurer implements Optimizer {
+<<<<<<< HEAD
 	optimize(input: any): any {
 		const nonMedia = this.nonMediaSelectors(input);
 		const media = this.mediaSelectors(input);
@@ -198,6 +199,202 @@ export default class Restructurer implements Optimizer {
 
 		return (css.parse(toBEWritten));
 	}
+=======
+  optimize(input: any): any {
+    const nonMedia = this.NonMediaSelectors(input);
+    const media = this.MediaSelectors(input);
+    return [nonMedia, media]
+  }
+  private NonMediaSelectors(x: any) {
+    let SelectorsProps: any[] = [];
+    const data = css.stringify(x[0]);
+    try {
+      for (let i = 0; i < data.length; i++) {
+        let selector: any = '';
+        let property = '';
+        if (data.charAt(i) == '{') {
+          let j = i - 1;
+          while (data.charAt(j) != '}' && j >= 0) {
+            selector = selector + data.charAt(j);
+            j--;
+          }
+          selector = helper_function.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim();
+          if (selector.includes(',')) {
+            var selectors = selector.split(',');
+            var k = i;
+            for (var t in selectors) {
+              while (data.charAt(k - 1) != '}') {
+                property = property + data.charAt(k);
+                k++;
+              }
+              property = property.replace('{', '').replace('}', '').trim() + ';';
+              if (Object.keys(SelectorsProps).includes(selector[t].trim())) {
+                var oldProp = SelectorsProps[selectors[t]];
+                var newProp = oldProp + property;
+                SelectorsProps[selectors[t]] = newProp;
+              }
+              else {
+                SelectorsProps[selectors[t]] = property;
+              }
+            }
+            selector = '';
+            property = '';
+          }
+          else {
+            let k = i;
+            while (data.charAt(k - 1) != '}') {
+              property = property + data.charAt(k);
+              k++;
+            }
+            property = property.replace('{', '').replace('}', '').trim();
+            if (Object.keys(SelectorsProps).includes(selector.trim())) {
+              let oldProp = SelectorsProps[selector];
+              let newProp = oldProp + property;
+              SelectorsProps[selector] = newProp;
+            }
+            else {
+              SelectorsProps[selector] = property;
+            }
+            selector = '';
+            property = '';
+          }
+        }
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    let NoDuplication: any = [];
+    for (let tp in SelectorsProps) {
+      let eachProps = SelectorsProps[tp].split(';');
+      for (let ep in eachProps) {
+        eachProps[ep] = eachProps[ep].replace(/\r/g, '').replace(/\n/g, '').trim();
+      }
+      let removeDuplication: any = [];
+      for (let ep in eachProps) {
+        if (eachProps[ep] != '') {
+          let rule = eachProps[ep].split(':');
+          if (Object.keys(removeDuplication).includes(rule[0])) {
+            if (!removeDuplication[rule[0]].includes('!important')) {
+              removeDuplication[rule[0]] = rule[1];
+            }
+            else if (rule[1].includes('!important')) {
+              removeDuplication[rule[0]] = rule[1];
+            }
+          }
+          else {
+            removeDuplication[rule[0]] = rule[1];
+          }
+        }
+      }
+      NoDuplication[tp] = removeDuplication;
+    }
+
+    let reuse = this.reusable(NoDuplication);
+    let similars = reuse[0];
+    let difference = reuse[1];
+    let differentProps: any = [];
+    for (let d in difference) {
+      let current = d.split(',');
+      let prop = difference[d];
+      for (let c in current) {
+        for (let p in prop) {
+          if (!Object.keys(differentProps).includes(current[c])) {
+            let x = [];
+            x[prop[p]] = NoDuplication[current[c]][prop[p]];
+            differentProps[current[c]] = x;
+          }
+          else {
+            let x = [];
+            x[prop[p]] = NoDuplication[current[c]][prop[p]];
+            let old = differentProps[current[c]];
+            let newer = Object.assign([], old, x);
+            differentProps[current[c]] = newer;
+          }
+        }
+      }
+    }
+    for (let d in differentProps) {
+      let each = differentProps[d];
+      for (let e in each) {
+        if (each[e] == undefined) {
+          delete each[e];
+        }
+      }
+    }
+    for (let d in differentProps) {
+      let each = differentProps[d];
+      if (Object.values(each).length == 0) {
+        delete differentProps[d];
+      }
+    }
+    for (let d in differentProps) {
+      for (let s in similars) {
+        if (s.includes(d)) {
+          for (let d1 in differentProps[d]) {
+            if (Object.keys(similars[s]).includes(d1))
+              try {
+                delete similars[s][d1]
+              } catch {
+                continue
+              }
+          }
+        }
+      }
+    }
+    for (let i in similars) {
+      let spl = i.split(',');
+      for (let j in spl) {
+        delete NoDuplication[spl[j]];
+      }
+    }
+    for (let i in similars) {
+      NoDuplication[i] = similars[i];
+    }
+    for (let i in similars) {
+      for (let j in similars) {
+        if (i != j) {
+          if (helper_function.intersection_destructive(i.split(','), j.split(',')).length != 0) {
+            if (i.split(',').length != j.split(',').length) {
+              let smaller = Math.min(i.split(',').length, j.split(',').length);
+              if (i.split(',').length == smaller) {
+                try {
+                  delete NoDuplication[i];
+                }
+                catch (_a) {
+                  continue;
+                }
+              }
+              else {
+                try {
+                  delete NoDuplication[j];
+                }
+                catch (_b) {
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    for (let i in differentProps) {
+      NoDuplication[i] = differentProps[i];
+    }
+    let toBEWritten = '';
+    for (let n in NoDuplication) {
+      let tempProp = "";
+      for (let ree in NoDuplication[n]) {
+        tempProp = tempProp + "   " + ree + " : " + NoDuplication[n][ree] + ";\n";
+      }
+      toBEWritten = toBEWritten + n + " {\n" + tempProp + "}\n\n";
+    }
+
+    return (css.parse(toBEWritten));
+  }
+  private MediaSelectors(x: any) {
+    let SelectorsProps: any = [];
+    const data = css.stringify(x[1])
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
 
 	private mediaSelectors(x: any) {
 		let SelectorsProps: any = [];

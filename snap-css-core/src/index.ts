@@ -15,6 +15,7 @@ class SnapCss {
     (opt, ind) => params.includes(this.keys[ind]) || params.includes('a'))
 
   // eslint-disable-next-line no-console
+<<<<<<< HEAD
   public getCSS(css: string, display: (msg: string[]) => any = console.log, load = Loader.loadCSS) {
     const result = load(css)
     display(result[1])
@@ -23,6 +24,16 @@ class SnapCss {
 
   // eslint-disable-next-line no-console
   public getCSSFromFile(path: string, display: (msg: string[]) => any = console.log) {
+=======
+  public getCSS(css: string, display: (msg: string[]) => any | void = console.log, load = Loader.loadCSS) {
+    const [result, message] = load(css)
+    display(message)
+    return result
+  }
+
+  // eslint-disable-next-line no-console
+  public getCSSFromFile(path: string, display: (msg: string[]) => any | void = console.log) {
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
     return this.getCSS(path, display, Loader.loadFromFile)
   }
 

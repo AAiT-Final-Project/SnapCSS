@@ -6,11 +6,19 @@ type ExportFunction = (path: string, data: string) => string
 export default class Scanner {
   static BAD_EXTENSION_MSG = 'FileError: File type is not supported. Use (.css, .html, .vue)'
 
+<<<<<<< HEAD
   static READ_ERROR_MSG = 'FileError: Could not load from file'
 
   static WRITE_SUCCESS_MSG = 'Successfully written into file'
 
   static WRITE_ERROR_MSG = 'FileError: Could not write into file'
+=======
+  static READ_ERROR_MSG = 'FileError: Could not load from File'
+
+  static WRITE_SUCCESS_MSG = 'Successfully written into File'
+
+  static WRITE_ERROR_MSG = 'FileError: Could not write into File'
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
 
   // TODO Implement the file specific scanners and exporters
   private static scanCSS: ScanFunction = (path: string) => {

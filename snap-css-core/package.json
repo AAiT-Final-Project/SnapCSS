@@ -57,6 +57,7 @@
     "csstree-validator": "^2.0.1",
     "postcss": "^8.3.6",
     "postcss-shorthand-expand": "^1.0.1",
+    "shortcss": "^0.1.3",
     "strip-comments": "^2.0.1",
     "tslib": "^1.14.1"
   }
