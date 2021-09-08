@@ -7,14 +7,14 @@ import {
   Declarations,
   Rule,
 } from './interfaces'
-import {shorthands} from './shorthands'
+import * as shorthands from './shorthands'
 
 export default class Compressor implements Optimizer {
   optimize(input: CSS): CSS {
     return input
   }
 
-  shorthands = shorthands
+  shorthands = shorthands.shorthands
 
   findLonghand(cssString: string) {
     const cssObject = css.parse(cssString)

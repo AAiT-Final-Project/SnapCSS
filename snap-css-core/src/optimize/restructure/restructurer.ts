@@ -6,10 +6,13 @@ const css = require('css')
 const helper_function = require('./helper-functions')
 
 export default class Restructurer implements Optimizer {
-  optimize(input: CSS): CSS {
-    return input
+  optimize(input: any): any {
+    const nonMedia = this.NonMediaSelectors(input);
+    const media = this.MediaSelectors(input);
+    const allInOne = css.parse(css.stringify(nonMedia).concat(css.stringify(media)))
+    return allInOne
   }
-  NonMediaSelectors(x: any) {
+  private NonMediaSelectors(x: any) {
     let SelectorsProps: any[] = [];
     const data = css.stringify(x[0]);
     try {
@@ -22,6 +25,7 @@ export default class Restructurer implements Optimizer {
             selector = selector + data.charAt(j);
             j--;
           }
+          selector = helper_function.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim();
           if (selector.includes(',')) {
             var selectors = selector.split(',');
             var k = i;
@@ -92,7 +96,7 @@ export default class Restructurer implements Optimizer {
       NoDuplication[tp] = removeDuplication;
     }
 
-    let reuse = helper_function.reusable(NoDuplication);
+    let reuse = this.reusable(NoDuplication);
     let similars = reuse[0];
     let difference = reuse[1];
     let differentProps: any = [];
@@ -139,7 +143,7 @@ export default class Restructurer implements Optimizer {
                 delete similars[s][d1]
               } catch {
                 continue
-            }
+              }
           }
         }
       }
@@ -194,7 +198,7 @@ export default class Restructurer implements Optimizer {
 
     return (css.parse(toBEWritten));
   }
-  MediaSelectors(x: any) {
+  private MediaSelectors(x: any) {
     let SelectorsProps: any = [];
     const data = css.stringify(x[1])
 
