@@ -4,9 +4,13 @@
   </div>
 </template>
 
-<script>
+<script >
 import MonacoEditor from "./components/MonacoEditor";
 export default {
+  name: "App",
+  components: {
+    MonacoEditor,
+  },
   data() {
     return {
       css: "",
@@ -16,10 +20,6 @@ export default {
     onChildClick(value) {
       this.css = value;
     },
-  },
-  name: "app",
-  components: {
-    MonacoEditor,
   },
 };
 </script>
