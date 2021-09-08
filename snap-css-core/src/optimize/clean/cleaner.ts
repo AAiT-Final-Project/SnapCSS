@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* eslint-disable max-depth */
 /* eslint-disable guard-for-in */
 /* eslint-disable no-console */
@@ -35,6 +36,8 @@ export default class Cleaner implements Optimizer {
             property += data.charAt(k)
             k++
 =======
+=======
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
 let loader_1 = require("../../load/loader");
 import Optimizer from '../optimizer'
 import CSS from '../../css/css'
@@ -89,6 +92,9 @@ export default class Cleaner implements Optimizer {
           }
           tag = '';
           property = '';
+<<<<<<< HEAD
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
+=======
 >>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
         }
       }
@@ -119,6 +125,9 @@ export default class Cleaner implements Optimizer {
       for (let ep in eachProps) {
         if (eachProps[ep] != '') {
           let rule = eachProps[ep].split(':'); //split the property name and the value
+<<<<<<< HEAD
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
+=======
 >>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
           try {
             if (color.rules.includes(rule[0].trim())) {
@@ -144,12 +153,15 @@ export default class Cleaner implements Optimizer {
       NoDuplication[tp] = removeDuplication
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     let toBEWritten = ''
     for (const n in NoDuplication) {
       let tempProp = ''
       for (const ree in NoDuplication[n]) {
         tempProp = tempProp + '   ' + ree + ' : ' + NoDuplication[n][ree] + ';\n'
 =======
+=======
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
     let toBEWritten = '';
     for (let n in NoDuplication) {
       let tempProp = "";
@@ -231,11 +243,14 @@ export default class Cleaner implements Optimizer {
     }
     //************************************************************************************************************
 <<<<<<< HEAD
+<<<<<<< HEAD
     const NoDuplication: any = []
     for (const tp in SelectorsWzDeclaretions) {
       const prepared = new Loader('').construct(SelectorsWzDeclaretions[tp])
       NoDuplication[tp] = this.nonMediaSelectors(prepared)
 =======
+=======
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
     let NoDuplication: any = [];
     for (let tp in TagsProps) {
       let prepared = new loader_1["default"]('').construct(TagsProps[tp]);
@@ -263,9 +278,15 @@ export default class Cleaner implements Optimizer {
       newString += str[i]
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     return newString
   }
 }
+=======
+    return newString;
+  };
+};
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
 =======
     return newString;
   };

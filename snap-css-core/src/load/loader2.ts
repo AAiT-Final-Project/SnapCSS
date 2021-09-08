@@ -3,6 +3,7 @@ import Scanner from './scanner'
 
 type LoadFunc = (text: string) => [CSS, string[]]
 <<<<<<< HEAD
+<<<<<<< HEAD
 const { validate } = require('csstree-validator')
 
 export default class Loader {
@@ -34,6 +35,8 @@ export default class Loader {
     }
 }
 =======
+=======
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
 const {validate} = require('csstree-validator')
 
 export default class Loader {
@@ -62,4 +65,7 @@ export default class Loader {
     return Loader.loadCSS(result)
   }
 }
+<<<<<<< HEAD
+>>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
+=======
 >>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
