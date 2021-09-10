@@ -7,7 +7,6 @@ import helper_function = require('./helper-functions');
 
 export default class Restructurer implements Optimizer {
 <<<<<<< HEAD
-<<<<<<< HEAD
 	optimize(input: any): any {
 		const nonMedia = this.nonMediaSelectors(input);
 		const media = this.mediaSelectors(input);
@@ -201,8 +200,6 @@ export default class Restructurer implements Optimizer {
 		return (css.parse(toBEWritten));
 	}
 =======
-=======
->>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
   optimize(input: any): any {
     const nonMedia = this.NonMediaSelectors(input);
     const media = this.MediaSelectors(input);

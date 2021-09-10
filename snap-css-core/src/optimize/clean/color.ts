@@ -199,9 +199,6 @@ export function converter(color: any) {
         }
         return result
     }
-<<<<<<< HEAD
->>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
-=======
 >>>>>>> 392ad28bfe572908a884f94934d4982287875f1f
 }
 function rgbtohex(rgb: any) {
