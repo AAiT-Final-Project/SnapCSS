@@ -1,5 +1,4 @@
 import * as postcss from 'postcss'
-const expander = require('shortcss')
 
 export default class Declaration {
   private static processValue(value: string) {
@@ -18,16 +17,8 @@ export default class Declaration {
   }
 
   static fromAST(decl:  postcss.Declaration) {
-    const expanded: {string: string} = expander.expand(decl.prop, decl.value)
-    const result: Declaration[] = []
-
-    Object.entries(expanded).forEach(
-      ([prop, val]) => {
-        const [value, type, unit] = this.processValue(val)
-        result.push(new Declaration(prop, value, type, unit, decl.important))
-      }
-    )
-    return result
+    const [value, type, unit] = this.processValue(decl.value)
+    return new Declaration(decl.prop, value, type, unit, decl.important)
   }
 
   constructor(

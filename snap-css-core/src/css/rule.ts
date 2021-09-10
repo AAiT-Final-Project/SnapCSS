@@ -5,7 +5,7 @@ export default class Rule {
   static fromAST(rule: postcss.Rule, padding = '') {
     const result = new Rule(rule.selector, padding)
     rule.walkDecls(decl => {
-      result.declarations = result.declarations.concat(Declaration.fromAST(decl))
+      result.declarations.push(Declaration.fromAST(decl))
     })
     return result
   }
