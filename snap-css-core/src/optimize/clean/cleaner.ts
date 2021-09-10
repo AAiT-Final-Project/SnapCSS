@@ -1,141 +1,160 @@
-/* eslint-disable max-depth */
-/* eslint-disable guard-for-in */
-/* eslint-disable no-console */
-/* eslint-disable unicorn/catch-error-name */
-
 import Optimizer from '../optimizer'
-// import CSS from '../../css/css'
-import Loader from '../../load/loader'
-const css = require('css')
-import color = require('./color')
-export default class Cleaner implements Optimizer {
-  optimize(input: any): any {
-    const nonMedia = this.nonMediaSelectors(input)
-    const media = this.mediaSelectors(input)
-    return [nonMedia, media]
-  }
+import CSS from '../../css/css'
+import Loader from '../../load/loader';
+const css = require('css');
+const cssbeautify = require('cssbeautify');
+const color = require('../clean/color')
 
-  nonMediaSelectors(x: any[]) {
-    const SelectorsWzDeclaretions: any[] = []
-    const data = css.stringify(x[0])
+export default class Cleaner implements Optimizer {
+  optimize(input: CSS): CSS {
+    return input
+  }
+  NonMediaTags(x: any) {
+    let TagsProps: String[] = []; //fetch the Non@ rules
+    const data = css.stringify(x[0]);
+    // console.log(css.stringify(TagsProps))
+
+
+    //***********************************************************************************************
     try {
       for (let i = 0; i < data.length; i++) {
-        let selector: any = ''
-        let property: any = ''
-        if (data.charAt(i) === '{') {
-          let j = i - 1
-          while (data.charAt(j) !== '}' && j >= 0) {
-            selector += data.charAt(j)
-            j--
+        let tag: any = '';
+        let property = '';
+        if (data.charAt(i) == '{') {
+          let j = i - 1;
+          while (data.charAt(j) != '}' && j >= 0) {
+            tag = tag + data.charAt(j);
+            j--;
           }
-          selector = this.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim()
-          let k = i
-          while (data.charAt(k - 1) !== '}') {
-            property += data.charAt(k)
-            k++
+
+          tag = this.reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
+
+          let k = i;
+          while (data.charAt(k - 1) != '}') {
+            property = property + data.charAt(k);
+            k++;
           }
-          property = property.replace('{', '').replace('}', '').trim()
-          if (Object.keys(SelectorsWzDeclaretions).includes(selector.trim())) {
-            const oldProp = SelectorsWzDeclaretions[selector]
-            const newProp = oldProp + property
-            SelectorsWzDeclaretions[selector] = newProp
-          } else {
-            SelectorsWzDeclaretions[selector] = property
+          property = property.replace('{', '').replace('}', '').trim();
+          if (Object.keys(TagsProps).includes(tag.trim())) {
+            let oldProp = TagsProps[tag];
+            let newProp = oldProp + property;
+            TagsProps[tag] = newProp;
           }
-          selector = ''
-          property = ''
+          else {
+            TagsProps[tag] = property;
+          }
+          tag = '';
+          property = '';
+
+
         }
       }
     } catch (e) {
       console.log(e)
     }
-    const NoDuplication: any = []
-    for (const tp in SelectorsWzDeclaretions) {
-      const eachProps = SelectorsWzDeclaretions[tp].split(';')
-      for (const ep in eachProps) {
-        eachProps[ep] = eachProps[ep].replace(/\r/g, '').replace(/\n/g, '').trim()
+    //************************************************************************************************
+
+    let NoDuplication: any[] = []; // the array of rules it is going to be returned at last
+    for (let tp in TagsProps) {
+      let eachProps = TagsProps[tp].split(';'); //split the string so we can take a look at each rules
+      for (let ep in eachProps) {
+        eachProps[ep] = eachProps[ep].replace(/\r/g, '').replace(/\n/g, '').trim();
       }
-      const removeDuplication: any = []
-      for (const ep in eachProps) {
-        if (eachProps[ep] !== '') {
-          let rule = eachProps[ep].split(':')
+      let removeDuplication: String[] = []; //if a property name mentioned the more than once in the same tag this dictionary will take the last rule mentioned.
+      for (let ep in eachProps) {
+        if (eachProps[ep] != '') {
+          let rule: any[] = eachProps[ep].split(':'); //split the property name and the value
           try {
             if (color.rules.includes(rule[0].trim())) {
-              const hex = color.converter(rule)
-              if (hex !== undefined) {
-                rule = [rule[0], hex[rule[0]]]
+              let hex = color.converter(rule)
+              if (hex != undefined) {
+                rule = [rule[0], hex[rule[0]]];
+                // console.log(rule[0], hex[rule[0]].join(' '))
               }
+
             }
           } catch {
             continue
           }
+
           if (Object.keys(removeDuplication).includes(rule[0])) {
             if (!removeDuplication[rule[0]].includes('!important')) {
-              removeDuplication[rule[0]] = rule[1]
-            } else if (rule[1].includes('!important')) {
-              removeDuplication[rule[0]] = rule[1]
+              removeDuplication[rule[0]] = rule[1];
             }
-          } else {
-            removeDuplication[rule[0]] = rule[1]
+            else if (rule[1].includes('!important')) {
+              removeDuplication[rule[0]] = rule[1];
+
+            }
+          }
+          else {
+            removeDuplication[rule[0]] = rule[1];
           }
         }
       }
-      NoDuplication[tp] = removeDuplication
+      NoDuplication[tp] = removeDuplication;
     }
-    let toBEWritten = ''
-    for (const n in NoDuplication) {
-      let tempProp = ''
-      for (const ree in NoDuplication[n]) {
-        tempProp = tempProp + '   ' + ree + ' : ' + NoDuplication[n][ree] + ';\n'
-      }
-      toBEWritten = toBEWritten + n + ' {\n' + tempProp + '}\n\n'
-    }
-    // return NoDuplication;
-    return (css.parse(toBEWritten))
-  }
 
-  mediaSelectors(x: any) {
-    const SelectorsWzDeclaretions: any = []
+
+    let toBEWritten = '';
+    for (let n in NoDuplication) {
+      let tempProp = "";
+      for (let ree in NoDuplication[n]) {
+        tempProp = tempProp + "   " + ree + " : " + NoDuplication[n][ree] + ";\n";
+      }
+      toBEWritten = toBEWritten + n + " {\n" + tempProp + "}\n\n";
+    }
+    // console.log(((css.parse(toBEWritten))))
+
+    // return NoDuplication;
+    return (css.parse(toBEWritten));
+  };
+  MediaTags(x: any) {
+    let TagsProps: any[] = [];
     const data = css.stringify(x[1])
+
+    // console.log(TagsProps)
+
 
     //***********************************************************************************************
     try {
       for (let i = 0; i < data.length; i++) {
-        let selector = ''
-        let property = ''
-        if (data.charAt(i) === '{') {
-          let j = i - 1
-          while (data.charAt(j) !== '}' && j >= 0) {
-            selector += data.charAt(j)
-            j--
+        let tag: any = '';
+        let property = '';
+        if (data.charAt(i) == '{') {
+          let j = i - 1;
+          while (data.charAt(j) != '}' && j >= 0) {
+            tag = tag + data.charAt(j);
+            j--;
           }
-          let openselector = 0
-          let closeselector = 0
-          let k = i
+          let opentag = 0;
+          let closetag = 0;
+          let k = i;
           while (k < data.length) {
-            property += data[k]
-            if (data[k] === '{') {
-              openselector++
-            } else if (data[k] === '}') {
-              closeselector++
+            property = property + data[k];
+            if (data[k] == '{') {
+              opentag++;
             }
-            if (openselector === closeselector) {
-              selector = this.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim()
-              if (Object.keys(SelectorsWzDeclaretions).includes(selector.trim())) {
-                const oldProp = SelectorsWzDeclaretions[selector]
-                const newProp = oldProp + property.substring(1, property.length - 2)
-                SelectorsWzDeclaretions[selector] = newProp
-              } else {
-                SelectorsWzDeclaretions[selector] = property.substring(1, property.length - 2)
+            else if (data[k] == '}') {
+              closetag++;
+            }
+            if (opentag == closetag) {
+              tag = this.reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
+              if (Object.keys(TagsProps).includes(tag.trim())) {
+                let oldProp = TagsProps[tag];
+                let newProp = oldProp + property.substring(1, property.length - 2);
+                TagsProps[tag] = newProp;
               }
-              openselector = 0
-              closeselector = 0
-              selector = ''
-              property = ''
-              i = k + 1
-              break
+              else {
+                TagsProps[tag] = property.substring(1, property.length - 2);
+              }
+              opentag = 0;
+              closetag = 0;
+              tag = '';
+              property = '';
+              i = k + 1;
+              break;
             }
-            k++
+            k++;
           }
         }
       }
@@ -143,25 +162,34 @@ export default class Cleaner implements Optimizer {
       console.log(e)
     }
     //************************************************************************************************************
-    const NoDuplication: any = []
-    for (const tp in SelectorsWzDeclaretions) {
-      const prepared = new Loader('').construct(SelectorsWzDeclaretions[tp])
-      NoDuplication[tp] = this.nonMediaSelectors(prepared)
+
+    let NoDuplication: any[] = [];
+    for (let tp in TagsProps) {
+      let prepared = new Loader('').construct(TagsProps[tp]);
+      NoDuplication[tp] = this.NonMediaTags(prepared);
     }
-    let toBEWritten = ''
-    for (const m in NoDuplication) {
-      toBEWritten = toBEWritten + m + '{\n' + css.stringify(NoDuplication[m]) + '\n\n}'
+    let toBEWritten = '';
+    for (let m in NoDuplication) {
+
+      toBEWritten = toBEWritten + m + "{\n" + css.stringify(NoDuplication[m]) + "\n\n}";
     }
+    toBEWritten = cssbeautify(toBEWritten, {
+      indent: '  ',
+      openbrace: 'separate-line',
+      autosemicolon: true
+    });
+
     // return NoDuplication;
-    return (css.parse(toBEWritten))
-  }
-
-  reverseString(str: any) {
-    let newString = ''
+    return (css.parse(toBEWritten));
+  };
+  reverseString(str: String) {
+    let newString = "";
     for (let i = str.length - 1; i >= 0; i--) {
-      newString += str[i]
+      newString += str[i];
     }
-    return newString
+    return newString;
   }
-}
+  /**************************************************** Helper Functions **********************************************/
 
+
+}

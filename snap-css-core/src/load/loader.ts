@@ -1,3 +1,5 @@
+import { exit } from "process";
+
 export default class Loader {
   validator = require('csstree-validator');
   fs = require('fs');
@@ -8,6 +10,7 @@ export default class Loader {
   constructor(
     public inputPath: string
   ) { }
+
   scan() {
     var data: string = '';
     try {
@@ -26,13 +29,15 @@ export default class Loader {
     if (validated == 1) {
       let cleared = this.clearComments(data);
       let constructed = this.construct(cleared);
-      // console.log(constructed)
+
       return constructed;
     }
     else {
       return 'invalid'
     }
+
   }
+
   validate(data: string) {
     let result = this.validator.validate(data);
     if (result.length == 0) {
@@ -43,66 +48,69 @@ export default class Loader {
       return 0;
     }
   }
+
   clearComments(data: any) {
     var x = this.strip(data); //=> var t;
     return x;
   }
+
   construct(data: string) {
-    let nonMediaSelectorProp: any = [];
-    let mediaSelectorProp: any = [];
+    let nonMediaTagProp: string[] = [];
+    let mediaTagProp: string[] = [];
     for (let i = 0; i < data.length; i++) {
-      let selector = '';
+      let tag: any = '';
       let property = '';
       if (data.charAt(i) == '{') {
         let j = i - 1;
         while (data.charAt(j) != '}' && j >= 0) {
-          selector = selector + data.charAt(j);
+          tag = tag + data.charAt(j);
           j--;
         }
-        if (!this.reverseString(selector).includes('@')) {
-          selector = this.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim();
+        if (!reverseString(tag).includes('@')) {
+          tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
+
           let k = i;
           while (data.charAt(k - 1) != '}') {
             property = property + data.charAt(k);
             k++;
           }
           property = property.replace('{', '').replace('}', '').trim();
-          if (Object.keys(nonMediaSelectorProp).includes(selector.trim())) {
-            let oldProp = nonMediaSelectorProp[selector];
+          if (Object.keys(nonMediaTagProp).includes(tag.trim())) {
+            let oldProp = nonMediaTagProp[tag];
             let newProp = oldProp + property;
-            nonMediaSelectorProp[selector] = newProp;
+            nonMediaTagProp[tag] = newProp;
           }
           else {
-            nonMediaSelectorProp[selector] = property;
+            nonMediaTagProp[tag] = property;
           }
-          selector = '';
+          tag = '';
           property = '';
         }
         else {
-          let openselector = 0;
-          let closeselector = 0;
+          let opentag = 0;
+          let closetag = 0;
           let j = i;
           while (j < data.length) {
             property = property + data[j];
             if (data[j] == '{') {
-              openselector++;
+              opentag++;
             }
             else if (data[j] == '}') {
-              closeselector++;
+              closetag++;
             }
-            if (openselector == closeselector) {
-              selector = this.reverseString(selector).replace(/\n/g, '').replace(/\r/g, '').trim();
-              if (Object.keys(mediaSelectorProp).includes(selector.trim())) {
-                let oldProp = mediaSelectorProp[selector];
+            if (opentag == closetag) {
+              tag = reverseString(tag).replace(/\n/g, '').replace(/\r/g, '').trim();
+              if (Object.keys(mediaTagProp).includes(tag.trim())) {
+                let oldProp = mediaTagProp[tag];
                 let newProp = oldProp + property.substring(1, property.length - 2);
-                mediaSelectorProp[selector] = newProp;
+                mediaTagProp[tag] = newProp;
               }
               else {
-                mediaSelectorProp[selector] = property.substring(1, property.length - 2);
+                mediaTagProp[tag] = property.substring(1, property.length - 2);
               }
-              openselector = 0;
-              closeselector = 0;
-              selector = '';
+              opentag = 0;
+              closetag = 0;
+              tag = '';
               property = '';
               i = j + 1;
               break;
@@ -112,7 +120,8 @@ export default class Loader {
         }
       }
     }
-    let result = [nonMediaSelectorProp, mediaSelectorProp];
+
+    let result = [nonMediaTagProp, mediaTagProp];
     let mediaSelectorsStr = '';
     let nonMediaSelectorsStr = '';
     for (let r in result[0]) {
@@ -124,12 +133,16 @@ export default class Loader {
     result = [this.css.parse(nonMediaSelectorsStr), this.css.parse(mediaSelectorsStr)]
     return result;
   }
-  reverseString(str: string) {
-    var newString = "";
-    for (var i = str.length - 1; i >= 0; i--) {
-      newString += str[i];
-    }
-    return newString;
-  }
 }
 
+
+//**********************************************helper functions***********************************************
+
+
+function reverseString(str: string) {
+  var newString = "";
+  for (var i = str.length - 1; i >= 0; i--) {
+    newString += str[i];
+  }
+  return newString;
+}

@@ -3,8 +3,8 @@ import Compressor from './optimize/compress/compressor'
 import Restructurer from './optimize/restructure/restructurer'
 import Cleaner from './optimize/clean/cleaner'
 import Suggester from './optimize/suggest/suggester'
+import CSS from './css/css'
 import Scanner from './load/scanner'
-import Loader from './load/loader2'
 
 class SnapCss {
   private keys = ['r', 'c', 'k', 's']
@@ -14,21 +14,18 @@ class SnapCss {
   public getOptimizers = (params: string) => this.optimizers.filter(
     (opt, ind) => params.includes(this.keys[ind]) || params.includes('a'))
 
-  // eslint-disable-next-line no-console
-  public getCSS(css: string, display: (msg: string[]) => any = console.log, load = Loader.loadCSS) {
-    const result = load(css)
-    display(result[1])
-    return result[0]
+  public getCSS(css: string) {
+    // Here is to handle how the loader loads the css file and turns it into text or just return text after validating it menamen or creating CSS object there
+    // const loader = new Loader(path)
+    return CSS.fromString(css)
   }
 
-  // eslint-disable-next-line no-console
-  public getCSSFromFile(path: string, display: (msg: string[]) => any = console.log) {
-    return this.getCSS(path, display, Loader.loadFromFile)
+  public getCSSFromFile(path: string) {
+    return this.getCSS(Scanner.scanFile(path))
   }
 
-  // eslint-disable-next-line no-console
-  public exportFile(path: string, data: string, display: (msg: string[]) => any = console.log) {
-    display([Scanner.exportFile(path, data)])
+  public exportFile(path: string, data: string) {
+    return Scanner.exportFile(path, data)
   }
 }
 
