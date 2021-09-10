@@ -27,6 +27,10 @@ class SnapCss {
   public exportFile(path: string, data: string) {
     return Scanner.exportFile(path, data)
   }
+
+  public add(...a: number[]) {
+    return a.reduce((acc, val) => acc + val, 0)
+  }
 }
 
 export = SnapCss
