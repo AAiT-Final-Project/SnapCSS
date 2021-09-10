@@ -1,11 +1,7 @@
 <template>
   <div id="app">
     <div class="navigation">
-      <img
-        src="../assets/image/logo.png"
-        alt=""
-        class="logo"
-      >
+      <img src="../assets/image/logo.png" alt="" class="logo" />
     </div>
     <div class="main">
       <div class="editors">
@@ -13,58 +9,34 @@
           <div class="header">
             <div class="options">
               <label class="switch">
-                <input
-                  value="clean"
-                  type="checkbox"
-                  checked
-                >
-                <span class="slider round" />
+                <input value="clean" type="checkbox" checked />
+                <span class="slider round"></span>
               </label>
-              <h4 class="labels">
-                CSS Clean
-              </h4>
+              <h4 class="labels">CSS Clean</h4>
             </div>
 
             <div class="options">
               <label class="switch">
-                <input
-                  value="restructure"
-                  type="checkbox"
-                  checked
-                >
-                <span class="slider round" />
+                <input value="restructure" type="checkbox" checked />
+                <span class="slider round"></span>
               </label>
-              <h4 class="labels">
-                CSS Restructure
-              </h4>
+              <h4 class="labels">CSS Restructure</h4>
             </div>
 
             <div class="options">
               <label class="switch">
-                <input
-                  value="compress"
-                  type="checkbox"
-                  checked
-                >
-                <span class="slider round" />
+                <input value="compress" type="checkbox" checked />
+                <span class="slider round"></span>
               </label>
-              <h4 class="labels">
-                CSS Compress
-              </h4>
+              <h4 class="labels">CSS Compress</h4>
             </div>
 
             <div class="options">
               <label class="switch">
-                <input
-                  value="suggest"
-                  type="checkbox"
-                  checked
-                >
-                <span class="slider round" />
+                <input value="suggest" type="checkbox" checked />
+                <span class="slider round"></span>
               </label>
-              <h4 class="labels">
-                CSS Suggestion
-              </h4>
+              <h4 class="labels">CSS Suggestion</h4>
             </div>
           </div>
           <MonacoEditor
@@ -76,40 +48,31 @@
             code
             @mounted="onMounted"
             @codeChange="onCodeChange"
-          />
+          >
+          </MonacoEditor>
           <div class="editor__footer">
             <div class="editor__footer--left">
-              <div
-                id="btnFileUpload"
-                class="editor__btn uploadBtn"
-              >
+              <div class="editor__btn uploadBtn" id="btnFileUpload">
                 <img
                   class="icons"
                   src="../assets/image/cloud-upload-icon-16.png"
-                >
-                <h4 class="icon_lebel">
-                  Upload File
-                </h4>
+                />
+                <h4 class="icon_lebel">Upload File</h4>
               </div>
 
               <input
-                id="FileUpload1"
                 type="file"
                 accept=".css"
+                id="FileUpload1"
                 style="display: none"
-              >
+              />
 
-              <div
-                class="editor__btn loadBtn"
-                @click="loadUrl"
-              >
+              <div @click="loadUrl" class="editor__btn loadBtn">
                 <img
                   class="icons"
                   src="../assets/image/link-icon-gray-grey-link-icon-11562963096unfmtzimkj.png"
-                >
-                <h4 class="icon_lebel">
-                  Load URL
-                </h4>
+                />
+                <h4 class="icon_lebel">Load URL</h4>
               </div>
               <button
                 style="
@@ -117,8 +80,8 @@
                   border-color: #19a500;
                   margin-right: 15px;
                 "
-                class="editor__btn editor__run"
                 @click="run"
+                class="editor__btn editor__run"
               >
                 Snap
               </button>
@@ -127,7 +90,7 @@
         </div>
 
         <div class="output">
-          <div class="header" />
+          <div class="header"></div>
           <MonacoEditor
             id="editor2"
             width="100%"
@@ -137,33 +100,34 @@
             language="css"
             :options="options"
             @mounted="resultMounted"
-          />
+          >
+          </MonacoEditor>
           <div
             style="border: 0; border-left: 1px solid #dadada"
             class="editor__footer"
           >
             <div class="editor__footer--left">
               <div
+                @click="downloadCode"
                 style="background-color: white; border: 0px; width: max-content"
                 class="editor__btn editor__run"
-                @click="downloadCode"
               >
                 <img
                   style="width: 25px; height: 25px"
                   class="icons"
                   src="../assets/image/download.png"
-                >
+                />
               </div>
               <div
+                @click="copyCode"
                 style="background-color: white; border: 0px; width: max-content"
                 class="editor__btn editor__run"
-                @click="copyCode"
               >
                 <img
                   style="width: 25px; height: 25px"
                   class="icons"
                   src="../assets/image/copy.png"
-                >
+                />
               </div>
             </div>
           </div>
@@ -172,30 +136,16 @@
     </div>
     <div id="htmlButton">
       <h2>To see the demo insert your html file here</h2>
-      <input
-        id="input1"
-        type="file"
-        accept=".html"
-      >
+      <input type="file" id="input1" accept=".html" />
     </div>
     <div id="displayHtml">
       <div id="iframeL">
         <h2>Before</h2>
-        <iframe
-          id="before"
-          src=""
-          width="100%"
-          height="500px"
-        />
+        <iframe id="before" src="" width="100%" height="500px"></iframe>
       </div>
       <div id="iframeR">
         <h2>After</h2>
-        <iframe
-          id="after"
-          width="100%"
-          height="500px"
-          src=""
-        />
+        <iframe id="after" width="100%" height="500px" src=""></iframe>
       </div>
     </div>
   </div>
@@ -279,6 +229,7 @@ h2 {
   width: 100%;
   background-color: #fffffe;
   border-bottom: 2px solid #dadada;
+  padding: 1%;
   height: 50px;
 }
 
@@ -347,8 +298,7 @@ input:checked + .slider:before {
 .options {
   display: flex;
   flex-direction: row;
-      margin-right: 15px;
-    margin-left: 5px;
+  margin-right: 20px;
   align-items: center;
 }
 
@@ -390,8 +340,6 @@ input:checked + .slider:before {
   margin-bottom: 8px;
   float: left;
   display: flex;
-margin-left: 5px;
-cursor:pointer
 }
 .loadBtn {
   align-items: center;
@@ -457,9 +405,7 @@ cursor:pointer
   border-radius: 50%;
 }
 </style>
-<script>
-
-
+<script lang="ts">
 import MonacoEditor from "vue-monaco-editor";
 import Swal from "sweetalert2";
 
@@ -477,16 +423,16 @@ export default {
   components: {
     MonacoEditor,
   },
+  mounted() {
+    const input = document.querySelector("#input1");
+    input.addEventListener("change", this.readSingleHtml, false);
+  },
   data() {
     return {
       options: {
         readOnly: true,
       },
     };
-  },
-  mounted() {
-    const input = document.querySelector("#input1");
-    input.addEventListener("change", this.readSingleHtml, false);
   },
   created: function () {
     this.restructure = true;
@@ -547,25 +493,21 @@ export default {
       });
     },
     run() {
-				let result = '';
+     
         if (this.clean == true) {
-					result = result+'clear\n'
-          this.output.getModel().setValue(result)
+          console.log('clear')
         }
 
         if (this.compress == true) {
-          result = result+'compress\n'
-          this.output.getModel().setValue(result)
+          console.log('compress')
         }
 
         if (this.restructure == true) {
-          result = result+'restructure\n'
-          this.output.getModel().setValue(result)
+          console.log('restructure')
         }
 
         if (this.suggest == true) {
-          result = result+'suggest\n'
-          this.output.getModel().setValue(result)
+          console.log('suggest')
       }
     },
 
@@ -647,7 +589,6 @@ export default {
     },
 
     readSingleFile(e) {
-
       this.output.getModel().setValue("");
       var file = e.target.files[0];
       if (!file) {
