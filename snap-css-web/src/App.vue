@@ -1,7 +1,8 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+    <img src="https://study.com/cimages/multimages/16/solid_shape_dice.jpg" alt="Snap CSS" class="logo" width="40"/>
+<!--    <router-link to="/">Home</router-link> |-->
+<!--    <router-link to="/about">About</router-link>-->
   </div>
   <router-view />
 </template>

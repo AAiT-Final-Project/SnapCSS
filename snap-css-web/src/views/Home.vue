@@ -1,7 +1,8 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+<!--    <img alt="Vue logo" src="../assets/logo.png" />-->
+<!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />-->
+    <monaco-editor />
   </div>
 </template>
 
@@ -9,6 +10,7 @@
 import { Options, Vue } from "vue-class-component";
 import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 import SnapCss from "snappy-css";
+import MonacoEditor from "@/components/MonacoEditor.vue";
 
 @Options({
   mounted() {
@@ -18,6 +20,7 @@ import SnapCss from "snappy-css";
     optimizers.forEach((optimizer) => (css = optimizer.optimize(css)));
   },
   components: {
+    MonacoEditor,
     HelloWorld,
   },
 })
