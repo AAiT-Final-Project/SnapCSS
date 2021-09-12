@@ -1,49 +1,41 @@
 import * as fs from 'fs'
 
 type ScanFunction = (path: string) => string;
-type ExportFunction = (path: string, data: string) => string
+type ExportFunction = (path: string, data: string) => void
 
 export default class Scanner {
-  static BAD_EXTENSION_MSG = 'FileError: File type is not supported. Use (.css, .html, .vue)'
-
-  static READ_ERROR_MSG = 'FileError: Could not load from file'
-
-  static WRITE_SUCCESS_MSG = 'Successfully written into file'
-
-  static WRITE_ERROR_MSG = 'FileError: Could not write into file'
-
   // TODO Implement the file specific scanners and exporters
   private static scanCSS: ScanFunction = (path: string) => {
     try {
       return fs.readFileSync(path, 'utf8')
     } catch {
-      return Scanner.READ_ERROR_MSG
+      return ''
     }
   }
 
   private static scanHTML: ScanFunction = (path: string) => {
-    return Scanner.READ_ERROR_MSG
+    return path
   }
 
   private static scanVue: ScanFunction = (path: string) => {
-    return Scanner.READ_ERROR_MSG
+    return path
   }
 
   private static exportPlain: ExportFunction = (path: string, data: string) => {
     try {
       fs.writeFileSync(path, data)
     } catch {
-      return Scanner.WRITE_ERROR_MSG
+      return 'Could not write File'
     }
-    return Scanner.WRITE_SUCCESS_MSG
+    return path + data
   }
 
   private static exportHTML: ExportFunction = (path: string, data: string) => {
-    return Scanner.WRITE_ERROR_MSG
+    return path + data
   }
 
   private static exportVue: ExportFunction = (path: string, data: string) => {
-    return Scanner.WRITE_ERROR_MSG
+    return path + data
   }
 
   private static scanner: { [type: string]: ScanFunction } = {
@@ -56,7 +48,7 @@ export default class Scanner {
 
   static scanFile(inputPath: string) {
     const type = inputPath.split('.').pop()
-    return type && type in Scanner.scanner ? Scanner.scanner[type](inputPath) : Scanner.BAD_EXTENSION_MSG
+    return type && type in Scanner.scanner ? Scanner.scanner[type](inputPath) : ''
   }
 
   static exportFile(outputPath: string, data: string) {

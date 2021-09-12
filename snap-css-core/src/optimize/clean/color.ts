@@ -2,118 +2,101 @@ export const rules = ['color', 'border', 'border-top', 'border-right', 'border-b
     'border-top-color', 'text-shadow', 'border-right-color', 'border-bottom-color', 'border-left-color',
     'background-color', 'outline', 'outline-color', 'border-block-end', 'border-block-end-color', 'outline', 'box-shadow']
 
-export function converter(color: ColorDeclaretion) {
-    const result: any = [];
-    if (color.property.includes('color')) {
+export function converter(color: any) {
+    const result: String[] = [];
+    if (color[0].includes('color')) {
 
-        if (color.value.includes('rgba')) {
-            const rgbaVal = color.value.substring(color.value.indexOf('rgba'), color.value.indexOf(')') + 1);
+        if (color[1].includes('rgba')) {
+            const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
             const hexVal = RGBAToHexA(rgbaVal);
-            color.value = color.value.replace(rgbaVal, hexVal)
-            result[color.property] = color.value;
+            color[1] = color[1].replace(rgbaVal, hexVal)
+            result[color[0]] = color[1];
+            return result
+
         }
-        else if (color.value.includes('rgb')) {
-            const rgbaVal = color.value.substring(color.value.indexOf('rgba'), color.value.indexOf(')') + 1);
+        else if (color[1].includes('rgb')) {
+            const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
             const hexVal = RGBAToHexA(rgbaVal);
-            color.value = color.value.replace(rgbaVal, hexVal)
-            result[color.property] = color.value;
+            color[1] = color[1].replace(rgbaVal, hexVal)
+            result[color[0]] = color[1];
+            return result
         }
         else {
-            if (!color.value.includes('!important')) {
-                if (colourNameToHex(color.value.trim()) != false) {
-                    result[color.value] = colourNameToHex(color.value.trim());
-                }
-                else if (color.value.includes('#') && color.value.trim().split('').length == 4) {
-                    const hex6 = color.value.split("").map((item: any) => {
-                        if (item == "#") { return item }
-                        return item + item;
-                    }).join("")
-                    result[color.property] = hex6.toString()
+            if (!color[1].includes('!important')) {
+                if (colourNameToHex(color[1]) != false) {
+                    result[color[0]] = colourNameToHex(color[1]);
                 }
                 else {
-                    result[color.property] = color.value;
+                    result[color[0]] = color[1];
                 }
             }
             else {
-                const splited = color.value.trim().split(' ');
+                const splited = color[1].trim().split(' ');
                 if (colourNameToHex(splited[0]) != false) {
                     splited[0] = colourNameToHex(splited[0]);
-                    result[color.property] = splited.join(' ');
-                }
-                else if (splited[0].includes('#') && splited[0].trim().split('').length == 4) {
-                    const hex6 = splited[0].split("").map((item: any) => {
-                        if (item == "#") { return item }
-                        return item + item;
-                    }).join("")
-                    splited[0] = hex6.toString();
-                    result[color.property] = splited.join(' ');
+                    result[color[0]] = splited.join(' ');
                 }
                 else {
-                    result[color.property] = color.value;
+                    result[color[0]] = color[1];
                 }
-
             }
+            return result;
         }
-        return result
+
 
     }
-    if (color.property == 'text-shadow' || color.property == 'box-shadow' || color.property.trim() == 'border' || color.property.trim() == 'border-top' ||
-        color.property.trim() == 'border-right' || color.property.trim() == 'border-bottom' || color.property.trim() == 'border-left' ||
-        color.property.trim() == 'border-block-end' || color.property.trim() == 'outline') {
-        const result: any = [];
-        if (color.value.includes('rgba')) {
-            const rgbaVal = color.value.substring(color.value.indexOf('rgba'), color.value.indexOf(')') + 1);
+    if (color[0] == 'text-shadow' || color[0] == 'box-shadow' || color[0].trim() == 'border' || color[0].trim() == 'border-top' ||
+        color[0].trim() == 'border-right' || color[0].trim() == 'border-bottom' || color[0].trim() == 'border-left' ||
+        color[0].trim() == 'border-block-end' || color[0].trim() == 'outline') {
+        const result: String[] = [];
+        if (color[1].includes('rgba')) {
+            const rgbaVal = color[1].substring(color[1].indexOf('rgba'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
             const hexVal = RGBAToHexA(rgbaVal);
-            color.value = color.value.replace(rgbaVal, hexVal)
-            result[color.property] = color.value;
+            color[1] = color[1].replace(rgbaVal, hexVal)
+            result[color[0]] = color[1];
+            return result
         }
-        else if (color.value.includes('rgb')) {
-            const rgbVal = color.value.substring(color.value.indexOf('rgb'), color.value.indexOf(')') + 1);
+        else if (color[1].includes('rgb')) {
+            const rgbVal = color[1].substring(color[1].indexOf('rgb'), color[1].indexOf(')') + 1);
+            // console.log(rgbaVal)
             const hexVal = RGBToHex(rgbVal);
-            color.value = color.value.replace(rgbVal, hexVal)
-            result[color.property] = color.value;
+            color[1] = color[1].replace(rgbVal, hexVal)
+            result[color[0]] = color[1];
+            return result
         }
         else {
-            let splited = color.value.trim().split(' ');
+            let splited = color[1].trim().split(' ');
 
-            if (!color.value.includes('!important')) {
+            if (!color[1].includes('!important')) {
                 if (colourNameToHex(splited[splited.length - 1].trim()) != false) {
                     splited[splited.length - 1] = colourNameToHex(splited[splited.length - 1].trim())
-                    result[color.property] = splited.join(' ')
-                }
-                else if (splited[splited.length - 1].includes('#') && splited[splited.length - 1].split('').length == 4) {
-
-                    const hex6 = splited[splited.length - 1].split("").map((item: any) => {
-                        if (item == "#") { return item }
-                        return item + item;
-                    }).join("")
-                    splited[splited.length - 1] = hex6.toString();
-                    result[color.property] = splited.join(' ')
+                    result[color[0]] = splited.join(' ')
                 }
                 else {
-                    result[color.property] = color.value
+                    result[color[0]] = color[1]
                 }
+                return result
             }
             else {
                 if (colourNameToHex(splited[splited.length - 2].trim()) != false) {
                     splited[splited.length - 2] = colourNameToHex(splited[splited.length - 2].trim())
-                    result[color.property] = splited.join(' ')
-                }
-                else if (splited[splited.length - 2].includes('#') && splited[splited.length - 2].trim().split('').length == 4) {
-                    const hex6 = splited[splited.length - 2].split("").map((item: any) => {
-                        if (item == "#") { return item }
-                        return item + item;
-                    }).join("")
-                    splited[splited.length - 2] = hex6.toString();
-                    result[color.property] = splited.join(' ');
+                    result[color[0]] = splited.join(' ')
                 }
                 else {
-                    result[color.property] = color.value
+                    result[color[0]] = color[1]
                 }
+                return result
             }
         }
-        return result
+        // console.log(splited)
+
+
     }
+
+
 }
 
 
@@ -203,8 +186,4 @@ function RGBToHex(rgb: any) {
         b = "0" + b;
 
     return "#" + r + g + b;
-}
-type ColorDeclaretion = {
-    property: string;
-    value: string;
 }

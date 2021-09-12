@@ -1,28 +1,25 @@
-
-let loader_1 = require("../../load/loader");
 import Optimizer from '../optimizer'
 import CSS from '../../css/css'
+import Loader from '../../load/loader';
 const css = require('css');
-const color = require('./color')
-
+const cssbeautify = require('cssbeautify');
+const color = require('../clean/color')
 
 export default class Cleaner implements Optimizer {
-
   optimize(input: CSS): CSS {
     return input
   }
-  //this function takes care of rules without @ character in their names. 
-  //it takes an array from the loader class
-  //the array it gets from loader is structured like [[NonMediaTags],[MediaTags]] 
-  //at index 0 it has the Non @ rules and at index 1 it has rules wz @
-  NonMediaTags(x: any[]) {
-    let TagsProps: any[] = []; //fetch the Non@ rules
+  NonMediaTags(x: any) {
+    let TagsProps: String[] = []; //fetch the Non@ rules
     const data = css.stringify(x[0]);
+    // console.log(css.stringify(TagsProps))
+
+
     //***********************************************************************************************
     try {
       for (let i = 0; i < data.length; i++) {
         let tag: any = '';
-        let property: any = '';
+        let property = '';
         if (data.charAt(i) == '{') {
           let j = i - 1;
           while (data.charAt(j) != '}' && j >= 0) {
@@ -48,6 +45,8 @@ export default class Cleaner implements Optimizer {
           }
           tag = '';
           property = '';
+
+
         }
       }
     } catch (e) {
@@ -55,22 +54,24 @@ export default class Cleaner implements Optimizer {
     }
     //************************************************************************************************
 
-    let NoDuplication: any = []; // the array of rules it is going to be returned at last
+    let NoDuplication: any[] = []; // the array of rules it is going to be returned at last
     for (let tp in TagsProps) {
       let eachProps = TagsProps[tp].split(';'); //split the string so we can take a look at each rules
       for (let ep in eachProps) {
         eachProps[ep] = eachProps[ep].replace(/\r/g, '').replace(/\n/g, '').trim();
       }
-      let removeDuplication: any = []; //if a property name mentioned the more than once in the same tag this dictionary will take the last rule mentioned.
+      let removeDuplication: String[] = []; //if a property name mentioned the more than once in the same tag this dictionary will take the last rule mentioned.
       for (let ep in eachProps) {
         if (eachProps[ep] != '') {
-          let rule = eachProps[ep].split(':'); //split the property name and the value
+          let rule: any[] = eachProps[ep].split(':'); //split the property name and the value
           try {
             if (color.rules.includes(rule[0].trim())) {
               let hex = color.converter(rule)
               if (hex != undefined) {
                 rule = [rule[0], hex[rule[0]]];
+                // console.log(rule[0], hex[rule[0]].join(' '))
               }
+
             }
           } catch {
             continue
@@ -102,17 +103,22 @@ export default class Cleaner implements Optimizer {
       }
       toBEWritten = toBEWritten + n + " {\n" + tempProp + "}\n\n";
     }
+    // console.log(((css.parse(toBEWritten))))
+
     // return NoDuplication;
     return (css.parse(toBEWritten));
   };
   MediaTags(x: any) {
-    let TagsProps: any = [];
+    let TagsProps: any[] = [];
     const data = css.stringify(x[1])
+
+    // console.log(TagsProps)
+
 
     //***********************************************************************************************
     try {
       for (let i = 0; i < data.length; i++) {
-        let tag = '';
+        let tag: any = '';
         let property = '';
         if (data.charAt(i) == '{') {
           let j = i - 1;
@@ -157,9 +163,9 @@ export default class Cleaner implements Optimizer {
     }
     //************************************************************************************************************
 
-    let NoDuplication: any = [];
+    let NoDuplication: any[] = [];
     for (let tp in TagsProps) {
-      let prepared = new loader_1["default"]('').construct(TagsProps[tp]);
+      let prepared = new Loader('').construct(TagsProps[tp]);
       NoDuplication[tp] = this.NonMediaTags(prepared);
     }
     let toBEWritten = '';
@@ -167,15 +173,23 @@ export default class Cleaner implements Optimizer {
 
       toBEWritten = toBEWritten + m + "{\n" + css.stringify(NoDuplication[m]) + "\n\n}";
     }
+    toBEWritten = cssbeautify(toBEWritten, {
+      indent: '  ',
+      openbrace: 'separate-line',
+      autosemicolon: true
+    });
+
     // return NoDuplication;
     return (css.parse(toBEWritten));
-  }
-  reverseString(str: any) {
+  };
+  reverseString(str: String) {
     let newString = "";
     for (let i = str.length - 1; i >= 0; i--) {
       newString += str[i];
     }
     return newString;
-  };
-};
+  }
+  /**************************************************** Helper Functions **********************************************/
 
+
+}

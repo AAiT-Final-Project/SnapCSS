@@ -27,7 +27,7 @@ class SnapCli extends Command {
     // const trial = CSS.fromString('Trial CSS')
     // eslint-disable-next-line no-console
     // console.log(trial.toString())
-    // this.log('Here is the CLI Running space, at ./src/cli.ts')
+    this.log('Here is the CLI Running space, at ./src/cli.ts')
 
     // this should be what the CLI runs after parsing the inputs any way it wants
     const snap = new SnapCss()
