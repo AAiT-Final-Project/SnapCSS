@@ -1,14 +1,12 @@
 <template>
-  <div id="nav" class="shadow">
+  <nav id="nav" class="shadow">
     <img
       src="@/assets/images/logo.png"
       alt="Snap CSS"
       class="logo"
-      height="60"
+      height="50"
     />
-    <!--    <router-link to="/">Home</router-link> |-->
-    <!--    <router-link to="/about">About</router-link>-->
-  </div>
+  </nav>
   <router-view />
 </template>
 
@@ -53,5 +51,54 @@ body {
 }
 .shadow-none {
   box-shadow: none !important;
+}
+.shadow-in {
+  box-shadow: 0 0 5px #dededede inset !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.d-none {
+  display: none;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.editor__btn {
+  height: 30px;
+  margin: 8px;
+  float: left;
+  display: flex;
+
+  align-items: center;
+  background-color: white;
+  border-width: 1px;
+}
+
+.icon_label {
+  font-size: 12px;
+  font-family: sans-serif;
+  color: gray;
+  margin: 10px 10px;
 }
 </style>
