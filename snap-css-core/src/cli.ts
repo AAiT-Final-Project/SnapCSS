@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 import {Command, flags} from '@oclif/command'
 import SnapCss = require('./index')
+// import JsonExporter from './optimize/suggest/json-exporter'
 
 class SnapCli extends Command {
   static description = 'describe the command here'
@@ -25,13 +27,13 @@ class SnapCli extends Command {
     //   this.log(`you input --force and --file: ${args.file}`)
     // }
     // const trial = CSS.fromString('Trial CSS')
-    // eslint-disable-next-line no-console
     // console.log(trial.toString())
     this.log('Here is the CLI Running space, at ./src/cli.ts')
 
     // this should be what the CLI runs after parsing the inputs any way it wants
+    const listLogger = (messages: string[]) => messages.forEach(message => this.log(message))
     const snap = new SnapCss()
-    const optimizers = snap.getOptimizers('a')
+    const optimizers = snap.getOptimizers('s')
     const css = snap.getCSS(`
     @media screen and (min-width: 480px) {
       .body:hover{
@@ -46,12 +48,14 @@ class SnapCli extends Command {
     #max {
       padding: 50px;
       height: 100%;
-    }`)
+    }`, listLogger)
+
     optimizers.forEach(optimizer => optimizer.optimize(css))
     // this.log(css.toString())
     // snap.exportFile('./trial.json', JSON.stringify(css.toObject()))
-    snap.exportFile('./trial.css', css.toString())
-    this.log(snap.getCSSFromFile('./trial.css').toString())
+    snap.exportFile('./trial.css', css.toString(), listLogger)
+    this.log(snap.getCSSFromFile('./trial.css', listLogger).toString())
+    // JsonExporter.start()
   }
 }
 
