@@ -2,7 +2,7 @@
   <div class="home" style="padding: 100px">
     <!--    <img alt="Vue logo" src="../assets/logo.png" />-->
     <!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />-->
-
+    {{ image }}
     <div class="main shadow-lg rounded" style="margin: auto; overflow: hidden">
       <div class="header shadow-sm">
         <div class="options">
@@ -48,19 +48,18 @@
             <div class="editor__footer">
               <div class="editor__footer--left">
                 <button
+                  @click="onPickFile(this.$refs.cssFileInput)"
                   class="editor__btn rounded shadow-lg"
-                  id="btnFileUpload"
-                  @click="uploadCSS"
                 >
-                  <mdi :path="mdiFileUpload" size="20" />
+                  <mdi :path="mdiFileUploadOutline" size="20" />
                   <span class="icon_label">Upload File</span>
                 </button>
-
                 <input
                   type="file"
-                  accept=".css"
-                  id="FileUpload1"
                   style="display: none"
+                  ref="cssFileInput"
+                  accept=".css"
+                  @change="uploadCSS"
                 />
 
                 <button @click="loadUrl" class="editor__btn rounded shadow-lg">
@@ -77,10 +76,6 @@
                 </button>
               </div>
             </div>
-            <div id="htmlButton">
-              <h2>To see the demo insert your html file here</h2>
-              <input type="file" id="input1" accept=".html" />
-            </div>
           </div>
         </editor>
         <editor
@@ -91,17 +86,16 @@
         >
           <div class="editor__footer">
             <div class="editor__footer--left" style="text-align: right">
-              <button
-                class="editor__btn rounded shadow-lg right"
-                @click="downloadCode"
-              >
-                <mdi
-                  :path="mdiFileDownload"
-                  size="20"
-                  style="margin-left: 10px"
-                />
-                <span class="icon_label">Download Code</span>
-              </button>
+              <a :href="downloadUrl" :download="`Optimized ${cssFileName}`">
+                <button class="editor__btn rounded shadow-lg right">
+                  <mdi
+                    :path="mdiFileDownload"
+                    size="20"
+                    style="margin-left: 10px"
+                  />
+                  <span class="icon_label">Download Code</span>
+                </button>
+              </a>
 
               <button
                 class="editor__btn rounded shadow-lg right"
@@ -120,7 +114,27 @@
       </div>
     </div>
     <div class="html">
-      <div id="displayHtml">
+      <div id="htmlButton">
+        <h2>To see the demo insert your html file here</h2>
+
+        <button
+          @click="onPickFile(this.$refs.htmlFileInput)"
+          class="editor__btn rounded shadow-lg"
+        >
+          <mdi :path="mdiLanguageHtml5" size="20" />
+          <span class="icon_label">Upload HTML</span>
+        </button>
+        <input
+          type="file"
+          style="display: none"
+          ref="htmlFileInput"
+          accept=".html"
+          @change="onFilePicked"
+        />
+        <!--        <input type="file" id="input1" accept=".html" />-->
+      </div>
+
+      <div id="displayHtml" :style="displayHTML">
         <div id="iframeL">
           <h2>Before</h2>
           <iframe id="before" src="" width="100%" height="500px"></iframe>
@@ -143,9 +157,10 @@ import Editor from "@/components/Editor.vue";
 import {
   mdiLink,
   mdiAutoFix,
-  mdiFileUpload,
+  mdiFileUploadOutline,
   mdiContentCopy,
   mdiFileDownload,
+  mdiLanguageHtml5,
 } from "@mdi/js";
 import Mdi from "@/components/Mdi.vue";
 import sweetAlert from "sweetalert2";
@@ -153,16 +168,31 @@ import sweetAlert from "sweetalert2";
 @Options({
   data() {
     return {
-      mdiContentCopy,
-      mdiFileDownload,
-      mdiFileUpload,
       mdiLink,
       mdiAutoFix,
+      mdiFileUploadOutline,
+      mdiContentCopy,
+      mdiFileDownload,
+      mdiLanguageHtml5,
       optimizers: ["r", "c", "k", "s"],
       inputText: "// code",
       outputText: "",
       snap: new SnapCss(),
+      cssFileName: "CSS.css",
+      htmlFileName: "file.html",
     };
+  },
+  computed: {
+    displayHTML() {
+      return `display: ${
+        (this.inputText.length && this.outputText.length) == 0 ? "none" : "flex"
+      }`;
+    },
+    downloadUrl() {
+      return `data:text/plain;charset=utf-8, ${encodeURIComponent(
+        this.outputText
+      )}`;
+    },
   },
   components: {
     Editor,
@@ -170,10 +200,10 @@ import sweetAlert from "sweetalert2";
     Mdi,
   },
   methods: {
-    async loadUrl() {
+    loadUrl() {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
-      await sweetAlert.fire({
+      sweetAlert.fire({
         title: "Enter CSS URL",
         input: "text",
         backdrop: true,
@@ -184,17 +214,27 @@ import sweetAlert from "sweetalert2";
         showCancelButton: false,
         confirmButtonText: "Load",
         // showLoaderOnConfirm: true,
-        async preConfirm(url) {
-          const response = await fetch(url, { mode: "no-cors" });
-          self.inputText = await response.json();
-          console.log(self.inputText);
+        preConfirm(url: string) {
+          let valid = !!url.match(
+            /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)?/gi
+          );
+          console.log(valid);
+          if (valid)
+            fetch(url)
+              .then((response) => response.text())
+              .then(
+                (data) => (self.inputText = data),
+                () => (valid = false)
+              );
+          if (!valid)
+            sweetAlert.fire({
+              icon: "error",
+              title: "Invalid URL",
+              text: "Could not load CSS from the URL",
+            });
         },
         allowOutsideClick: () => !sweetAlert.isLoading(),
       });
-    },
-
-    uploadCSS() {
-      return 1 + 1;
     },
     optimize() {
       if (!this.inputText.length) {
@@ -225,6 +265,26 @@ import sweetAlert from "sweetalert2";
         });
       }
     },
+    onPickFile: (button: HTMLInputElement) => button.click(),
+    uploadCSS(event: any) {
+      const files = event.target ? event.target.files : [];
+      this.cssFileName = files[0].name;
+      const reader = new FileReader();
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const self = this;
+      reader.onload = (e: any) => (self.inputText = e.target.result);
+      reader.readAsText(files[0]);
+      this.cssFileName = files[0].name;
+    },
+    onFilePicked(event: any) {
+      const files = event.target.files;
+      const fileReader = new FileReader();
+      fileReader.addEventListener("load", () => {
+        this.imageUrl = fileReader.result;
+      });
+      fileReader.readAsDataURL(files[0]);
+      this.image = files[0];
+    },
     displayContents(contents: string) {
       this.input.getModel().setValue(contents);
     },
@@ -250,8 +310,14 @@ import sweetAlert from "sweetalert2";
       );
     },
     downloadCode() {
+      this.downloadUrl = `data:text/plain;charset=utf-8, ${encodeURIComponent(
+        this.outputText
+      )}`;
+      if (this.outputText.trim().length) {
+        this.$refs.downloader.click();
+      }
       const data = this.output.getModel().getValue();
-      if (data.trim().length > 0) {
+      if (this.outputText.trim().length && this.downloadUrl.length) {
         const element = document.createElement("a");
         element.setAttribute(
           "href",
@@ -272,10 +338,8 @@ export default class Home extends Vue {}
 #htmlButton {
   margin-top: 10px;
   margin-left: 75px;
-  display: none;
 }
 #displayHtml {
-  display: none;
   width: 100%;
   justify-content: center;
 }
