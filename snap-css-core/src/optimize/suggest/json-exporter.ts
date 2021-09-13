@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Loader from '../../load/loader2'
 import Scanner from '../../load/scanner'
 import {execSync} from 'child_process'
@@ -22,7 +23,6 @@ export default class JsonExporter {
   private static getObject(inputPath: string, prefix = '') {
     const results: object[] = []
     const [result, message] =  Loader.loadFromFile(inputPath)
-    // eslint-disable-next-line no-console
     console.log(message)
     result.ruleSets.forEach(ruleSet => {
       ruleSet.rules.forEach(rule => {
@@ -34,11 +34,9 @@ export default class JsonExporter {
 
   private static parseCSSVars() {
     JsonExporter.trainingData.forEach(data => {
-      // eslint-disable-next-line no-console
       console.log('Parsing custom vars for:', data[0])
       const path = `./frameworks/css/${data[0]}.min.css`
       const output = postcss([cssVariables()]).process(Scanner.scanFile(path)).css
-      // eslint-disable-next-line no-console
       console.log(Scanner.exportFile(path, output))
     })
   }

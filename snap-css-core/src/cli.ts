@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {Command, flags} from '@oclif/command'
 import SnapCss = require('./index')
 // import JsonExporter from './optimize/suggest/json-exporter'
@@ -26,7 +27,6 @@ class SnapCli extends Command {
     //   this.log(`you input --force and --file: ${args.file}`)
     // }
     // const trial = CSS.fromString('Trial CSS')
-    // eslint-disable-next-line no-console
     // console.log(trial.toString())
     this.log('Here is the CLI Running space, at ./src/cli.ts')
 
