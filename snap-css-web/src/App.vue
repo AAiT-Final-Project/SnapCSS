@@ -27,8 +27,7 @@ body {
 }
 
 #nav {
-  padding: 25px;
-  text-align: center;
+  padding: 15px;
 }
 
 #nav a {
@@ -43,15 +42,19 @@ body {
 .shadow-sm {
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1) !important;
 }
+
 .shadow {
   box-shadow: 0 0.35rem 0.75rem rgba(0, 0, 0, 0.07) !important;
 }
+
 .shadow-lg {
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
 }
+
 .shadow-none {
   box-shadow: none !important;
 }
+
 .shadow-in {
   box-shadow: 0 0 5px #dededede inset !important;
 }

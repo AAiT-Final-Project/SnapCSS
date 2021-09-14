@@ -1,5 +1,5 @@
 <template>
-  <div class="preview" :class="showHTML">
+  <div class="preview">
     <div class="preview-title">
       <h1>Demo The Style</h1>
       <h2>
@@ -20,7 +20,7 @@
       </h2>
     </div>
 
-    <div class="d-flex justify-center text-center">
+    <div class="justify-center text-center" :class="showHTML">
       <div class="frame-container">
         <h2>Unoptimized CSS</h2>
         <iframe
@@ -61,7 +61,12 @@ import Mdi from "@/components/Mdi.vue";
   },
   computed: {
     showHTML() {
-      return this.input.length + this.output.length == 0 ? "d-none" : "d-block";
+      return this.htmlText ? "d-flex" : "d-none";
+    },
+  },
+  watch: {
+    output() {
+      this.displayHtml();
     },
   },
   data() {
@@ -74,13 +79,16 @@ import Mdi from "@/components/Mdi.vue";
         { name: "Compress CSS", value: "k" },
       ],
       optimizers: ["c", "r", "s", "k"],
+      htmlText: "",
     };
   },
   methods: {
     onPickFile: (button: HTMLInputElement) => button.click(),
     uploadHTML(event: any) {
       this.readFile(event, (e: any) => {
-        this.displayHtml(e.target.result);
+        window.scrollBy({ top: 1000, behavior: "smooth" });
+        this.htmlText = e.target.result;
+        this.displayHtml();
       });
     },
     makeHTMLContent(html: string, css: string) {
@@ -112,13 +120,11 @@ import Mdi from "@/components/Mdi.vue";
       reader.readAsText(files[0]);
       this.cssFileName = files[0].name;
     },
-    displayHtml(contents: string) {
-      let before = this.makeHTMLContent(contents, this.input);
+    displayHtml() {
+      let before = this.makeHTMLContent(this.htmlText, this.input);
       this.fillFrame(this.$refs.unoptimizedPreview, before);
-      let after = this.makeHTMLContent(contents, this.output);
+      let after = this.makeHTMLContent(this.htmlText, this.output);
       this.fillFrame(this.$refs.optimizedPreview, after);
-
-      window.scrollBy({ top: 1000, behavior: "smooth" });
     },
   },
 })
