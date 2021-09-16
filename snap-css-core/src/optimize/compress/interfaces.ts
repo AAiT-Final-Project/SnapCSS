@@ -1,20 +1,21 @@
 export interface Shorthand {
     shorthandName: string;
     shorthandProperties: string[];
-  }
-
-export interface Declaration {
-    type: string;
-    property: string;
-    value: string;
 }
 
-export interface Declarations {
-    [key: string]: Declaration;
-}
-
-export interface Rule {
-    type: string;
-    selectors: string[];
-    declarations: Declaration[];
+export interface CSSObject {
+    ruleSets: {
+        name: string;
+        params: string;
+        rules: {
+            selector: string;
+            declarations: {
+                property: string;
+                value: string;
+                type: string;
+                unit: string;
+                important: boolean;
+            }[];
+        }[];
+    }[];
 }
