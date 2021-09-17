@@ -158,7 +158,7 @@ export const shorthands = [
     computedValue: shorthandBorderImage,
   }, {
     shorthandName: 'background',
-    shorthandProperties: ['background-color', 'background-image', 'background-repeat', 'background-position', 'background-attachment', 'background-origin', 'background-clip', 'background-size'],
+    shorthandProperties: ['background-image', 'background-repeat', 'background-position', 'background-attachment', 'background-origin', 'background-clip', 'background-size', 'background-color'],
     computedValue: shorthandBackground,
   },
 ]
