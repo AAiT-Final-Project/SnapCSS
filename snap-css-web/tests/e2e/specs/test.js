@@ -29,7 +29,11 @@ describe("My First Test", () => {
   });
 
   it("writes input text", () => {
-    cy.get(".input .view-lines").click().type(`{enter}.main {{}width: 50px{}}`);
+    const input = ".main {width: 50px}";
+    cy.get(".input .view-lines")
+      .click()
+      .type("{enter}")
+      .type(input, { parseSpecialCharSequences: false });
 
     // this is a representation of what is expected in each row and each column (you can inspect on chrome to see what is expected)
     // empty spaces cause issues somehow so best not to check for them so use just "code" instead of "// code" until we have an alternative
