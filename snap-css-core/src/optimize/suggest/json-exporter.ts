@@ -12,7 +12,7 @@ export default class JsonExporter {
     ['foundation', 'foundation-'],
     ['material-components-web', 'mdc-'],
     ['materialize', 'materialize-'],
-    ['mdb', 'materialize-'],
+    ['mdb', 'md-'],
     ['pure', 'pure-'],
     ['semantic', ''],
     ['skeleton', ''],
@@ -66,7 +66,6 @@ export default class JsonExporter {
       if (res.rules.length > 0) final.push(res)
     })
     const message = Scanner.exportFile('./frameworks/data.json', JSON.stringify(final))
-    // eslint-disable-next-line no-console
     console.log(message)
   }
 }
