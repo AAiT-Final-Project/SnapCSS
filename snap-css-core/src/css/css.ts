@@ -15,6 +15,15 @@ export default class CSS {
     public ruleSets: RuleSet[] = []
   ) {}
 
+  public deleteRuleSetsByIndex(...indices: number[]) {
+    const result: RuleSet[] = []
+    const set = new Set(indices)
+    this.ruleSets.forEach((ruleSet, i) => {
+      if (!set.has(i)) result.push(ruleSet)
+    })
+    this.ruleSets = result
+  }
+
   public toString() {
     return this.ruleSets.join('\n')
   }

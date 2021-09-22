@@ -65,6 +65,10 @@ export default class RuleSet {
     return result
   }
 
+  public getDeclaration(...indices: number[]) {
+    return this.rules[indices[0]].declarations[indices[1]]
+  }
+
   public toString() {
     let result = ''
     if (this.name !== '') result += `@${this.name} ${this.params} {\n`
