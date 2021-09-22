@@ -2,6 +2,11 @@ import * as postcss from 'postcss'
 const expander = require('shortcss')
 
 export default class Declaration {
+  public static makeDeclaration(prop: string, valueString: string, important: boolean) {
+    const [value, type, unit] = this.processValue(valueString)
+    return new Declaration(prop, value, type, unit, important)
+  }
+
   private static processValue(value: string) {
     const separated = value.split(/([0-9.\-+]+)/).filter(x => x.length)
     const options = [
@@ -22,12 +27,8 @@ export default class Declaration {
     const expanded: {string: string} = expander.expand(decl.prop, decl.value)
     const result: Declaration[] = []
 
-    Object.entries(expanded).forEach(
-      ([prop, val]) => {
-        const [value, type, unit] = this.processValue(val)
-        result.push(new Declaration(prop, value, type, unit, decl.important))
-      }
-    )
+    Object.entries(expanded).forEach(([prop, val]) =>
+      result.push(this.makeDeclaration(prop, val, decl.important)))
     return result
   }
 
@@ -40,7 +41,9 @@ export default class Declaration {
   ) {
   }
 
-  public toString = () => `${this.property} : ${this.value}${this.unit}${this.important ? ' !important' : ''};`
+  public getValueString = () => `${this.value}${this.unit}`
+
+  public toString = () => `${this.property} : ${this.getValueString()}${this.important ? ' !important' : ''};`
 
   public toObject = () => {
     return {

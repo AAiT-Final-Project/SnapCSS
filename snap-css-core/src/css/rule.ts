@@ -3,24 +3,36 @@ import Declaration from './declaration'
 
 export default class Rule {
   static fromAST(rule: postcss.Rule, padding = '') {
-    const result = new Rule(rule.selector, padding)
+    const result = new Rule(rule.selector, [], padding)
     rule.walkDecls(decl => {
       result.declarations.push(...Declaration.fromAST(decl))
     })
     return result
   }
 
-  public declarations: Declaration[] = []
-
   private suggestions: string[] = []
 
   constructor(
     public selector: string,
+    public declarations: Declaration[] = [],
     public padding = ''
   ) {}
 
-  makeSuggestions() {
-    this.suggestions = ['.home', 'div']
+  public addDeclaration(declaration: Declaration, index = this.declarations.length) {
+    this.declarations.splice(index, 0, declaration)
+  }
+
+  public deleteDeclarationsByIndex(...indices: number[]) {
+    const result: Declaration[] = []
+    const set = new Set(indices)
+    this.declarations.forEach((decl, i) => {
+      if (!set.has(i)) result.push(decl)
+    })
+    this.declarations = result
+  }
+
+  public makeSuggestions(suggestions: string[]) {
+    this.suggestions = suggestions
   }
 
   public toString() {
