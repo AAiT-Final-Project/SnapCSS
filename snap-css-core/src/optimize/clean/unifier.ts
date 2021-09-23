@@ -1,7 +1,16 @@
 import RuleSet from '../../css/rule-set'
 import Declaration from '../../css/declaration'
+import * as fs from 'fs'
+import * as path from 'path'
+
+interface ColorNameMap {
+  [name: string]: string;
+}
 
 export default class Unifier {
+  private static nameValues: ColorNameMap = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'color-names.json'), 'utf8'))
+
   public static unifyValues(ruleSet: RuleSet, indices: Set<string>) {
     indices.forEach(indString => {
       const argPattern = /\(\s*([^)]+?)\s*\)/
@@ -41,7 +50,8 @@ export default class Unifier {
           const [r, g, b] = [small[1] + small[1], small[2] + small[2], small[3] + small[3]]
           newVal = `#${r}${g}${b}${small.length === 5 ? small[4] + small[4] : ''}`
         }
-      }
+      } else if (declaration.type === 'STRING' && this.nameValues[small])
+        newVal = this.nameValues[small]
 
       if (newVal !== declaration.value) {
         const [value, type, unit] = Declaration.processValue(newVal)
