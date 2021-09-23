@@ -1,6 +1,10 @@
 import Rule from './rule'
 import * as postcss from 'postcss'
 
+interface DeclarationMap {
+  [key: string]: number[][];
+}
+
 export default class RuleSet {
   static fromAST(block: postcss.AtRule | postcss.Root) {
     if (block instanceof postcss.AtRule) {
@@ -27,6 +31,54 @@ export default class RuleSet {
     public params: string = '',
   ) {}
 
+  public addRule(rule: Rule, index = this.rules.length) {
+    this.rules.splice(index, 0, rule)
+  }
+
+  public deleteRulesByIndex(...indices: number[]) {
+    indices.sort((i1, i2) => {
+      if (i1 > i2) return -1
+      if (i1 < i2) return 1
+      return 0
+    })
+    const result: Rule[] = []
+    const set = new Set(indices)
+    this.rules.forEach((rule, i) => {
+      if (!set.has(i)) result.push(rule)
+    })
+    this.rules = result
+  }
+
+  public deleteDeclarationsByIndex(...indices: number[][]) {
+    indices.sort((i1, i2) => {
+      if (i1 > i2) return -1
+      if (i1 < i2) return 1
+      return 0
+    })
+    indices.forEach(index => {
+      const rule = this.rules[index[0]]
+      rule.deleteDeclarationsByIndex(index[1])
+    })
+  }
+
+  public getSelectorDeclarations() {
+    const result: DeclarationMap = {}
+    this.rules.forEach((rule, i) => {
+      rule.selector.split(',').forEach(selector => {
+        rule.declarations.forEach((decl, j) => {
+          const key = `${selector.trim()}|${decl.property}`
+          if (!result[key]) result[key] = []
+          result[key].push([i, j])
+        })
+      })
+    })
+    return result
+  }
+
+  public getDeclaration(...indices: number[]) {
+    return this.rules[indices[0]].declarations[indices[1]]
+  }
+
   public toString() {
     let result = ''
     if (this.name !== '') result += `@${this.name} ${this.params} {\n`
@@ -35,7 +87,7 @@ export default class RuleSet {
     return result + '\n'
   }
 
-  public toObject = () => {
+  public toObject() {
     return {
       name: this.name,
       params: this.params,
