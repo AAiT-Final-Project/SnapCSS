@@ -23,6 +23,11 @@ export default class Rule {
   }
 
   public deleteDeclarationsByIndex(...indices: number[]) {
+    indices.sort((i1, i2) => {
+      if (i1 > i2) return -1
+      if (i1 < i2) return 1
+      return 0
+    })
     const result: Declaration[] = []
     const set = new Set(indices)
     this.declarations.forEach((decl, i) => {

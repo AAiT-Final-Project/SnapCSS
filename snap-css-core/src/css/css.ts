@@ -16,6 +16,11 @@ export default class CSS {
   ) {}
 
   public deleteRuleSetsByIndex(...indices: number[]) {
+    indices.sort((i1, i2) => {
+      if (i1 > i2) return -1
+      if (i1 < i2) return 1
+      return 0
+    })
     const result: RuleSet[] = []
     const set = new Set(indices)
     this.ruleSets.forEach((ruleSet, i) => {

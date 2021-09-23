@@ -7,7 +7,7 @@ export default class Declaration {
     return new Declaration(prop, value, type, unit, important)
   }
 
-  private static processValue(value: string) {
+  public static processValue(value: string) {
     const separated = value.split(/([0-9.\-+]+)/).filter(x => x.length)
     const options = [
       ['^[-+]?\\d*\\.?\\d+[a-zA-Z]+$', separated[0], 'DIMENSION', separated[1]],

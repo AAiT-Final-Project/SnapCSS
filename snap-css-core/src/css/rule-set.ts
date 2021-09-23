@@ -36,6 +36,11 @@ export default class RuleSet {
   }
 
   public deleteRulesByIndex(...indices: number[]) {
+    indices.sort((i1, i2) => {
+      if (i1 > i2) return -1
+      if (i1 < i2) return 1
+      return 0
+    })
     const result: Rule[] = []
     const set = new Set(indices)
     this.rules.forEach((rule, i) => {
@@ -45,6 +50,11 @@ export default class RuleSet {
   }
 
   public deleteDeclarationsByIndex(...indices: number[][]) {
+    indices.sort((i1, i2) => {
+      if (i1 > i2) return -1
+      if (i1 < i2) return 1
+      return 0
+    })
     indices.forEach(index => {
       const rule = this.rules[index[0]]
       rule.deleteDeclarationsByIndex(index[1])
