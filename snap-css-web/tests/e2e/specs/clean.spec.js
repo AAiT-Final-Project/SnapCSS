@@ -1,15 +1,7 @@
 // https://docs.cypress.io/api/introduction/api.html
 /// <reference types="cypress" />
 
-function checkEditor(editor, expected) {
-  cy.get(editor).each(function (line, i) {
-    cy.wrap(line)
-      .find('span[class]')
-      .each((col, j) => {
-        if (expected[i][j]) cy.wrap(col).contains(expected[i][j]);
-      });
-  });
-}
+import { checkEditor } from '../common';
 
 beforeEach(() => {
   // until we ever fix the unexpected usage exception, we can just ignore it
@@ -34,7 +26,9 @@ describe('Clean CSS E2e test', () => {
     cy.get('#snap-btn').click();
     cy.get('.swal2-popup').should('be.visible').contains('Success');
 
-    // checkEditor('.output .view-line', TC_Clean_001_EXPECTED);
+    // cy.fixture('/clean/tc_clean_001_expected.json').then((expected) => {
+    //   checkEditor('.output .view-line', expected, cy);
+    // });
   });
 
   it('TC_Clean_002 - Check that non-redundant declarations are not removed', () => {
@@ -52,7 +46,9 @@ describe('Clean CSS E2e test', () => {
     cy.get('#snap-btn').click();
     cy.get('.swal2-popup').should('be.visible').contains('Success');
 
-    // checkEditor('.output .view-line', TC_Clean_002_EXPECTED);
+    // cy.fixture('/clean/tc_clean_002_expected.json').then((expected) => {
+    // checkEditor('.output .view-line', expected);
+    // });
   });
 
   it('TC_Clean_003 - Check that multiple value representations are combined into one', () => {
@@ -70,6 +66,8 @@ describe('Clean CSS E2e test', () => {
     cy.get('#snap-btn').click();
     cy.get('.swal2-popup').should('be.visible').contains('Success');
 
-    // checkEditor('.output .view-line', TC_Clean_003_EXPECTED);
+    // cy.fixture('/clean/tc_clean_003_expected.json').then((expected) => {
+    // checkEditor('.output .view-line', expected);
+    // });
   });
 });

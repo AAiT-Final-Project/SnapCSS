@@ -1,21 +1,8 @@
 // https://docs.cypress.io/api/introduction/api.html
 /// <reference types="cypress" />
 
-import {
-  TC_LOAD_001_EXPECTED,
-  TC_LOAD_002_EXPECTED,
-  TC_LOAD_002_INPUT,
-} from '../testData';
-
-function checkEditor(editor, expected) {
-  cy.get(editor).each(function (line, i) {
-    cy.wrap(line)
-      .find('span[class]')
-      .each((col, j) => {
-        if (expected[i][j]) cy.wrap(col).contains(expected[i][j]);
-      });
-  });
-}
+import { TC_LOAD_002_INPUT } from '../testData';
+import { checkEditor } from '../common';
 
 function checkEmptyEditor(editor) {
   cy.get(editor).each(function (line) {
@@ -31,7 +18,7 @@ beforeEach(() => {
   cy.visit('/');
 });
 
-describe('Snap CSS - E2e Test', () => {
+describe('Load CSS - E2e Test', () => {
   it('Visits the app root url', () => {
     cy.get('nav');
   });
@@ -52,7 +39,7 @@ describe('Snap CSS - E2e Test', () => {
     // empty spaces cause issues somehow so best not to check for them so use just "code" instead of "// code" until we have an alternative
     const expected = [['code'], ['.main', '{', 'width:', '', '50px', , '}']];
     // one could use ".output .view-line" to check on the output
-    checkEditor('.input .view-line', expected);
+    checkEditor('.input .view-line', expected, cy);
   });
 });
 
@@ -65,7 +52,9 @@ describe('TS_Load_001', () => {
       'http://localhost:8080/test_resources/valid.css {enter}'
     );
 
-    checkEditor('.input .view-line', TC_LOAD_001_EXPECTED);
+    cy.fixture('/load/tc_load_001_expected.json').then((expected) => {
+      checkEditor('.input .view-line', expected, cy);
+    });
   });
 
   it('TC_Load_002 - Check Loading on Web with valid CSS text', () => {
@@ -74,11 +63,11 @@ describe('TS_Load_001', () => {
       .type('{enter}')
       .type(TC_LOAD_002_INPUT, { parseSpecialCharSequences: false });
 
-    checkEditor('.input .view-line', TC_LOAD_002_EXPECTED);
+    cy.fixture('/load/tc_load_002_expected.json').then((expected) => {
+      checkEditor('.input .view-line', expected, cy);
+    });
   });
-});
 
-describe('TS_Load_002', () => {
   it('TC_Load_003 - Check loading of Empty CSS', () => {
     cy.get('#load-url-btn').click();
     cy.get('.swal2-popup').should('be.visible');
@@ -99,9 +88,7 @@ describe('TS_Load_002', () => {
     cy.get('.swal2-icon-error').should('be.visible');
     cy.get('#swal2-title').should('contain', 'Invalid URL');
   });
-});
 
-describe('TS_Load_003', () => {
   it('TC_Load_005 - Check system response to invalid CSS code', () => {
     cy.get('#load-url-btn').click();
     cy.get('.swal2-popup').should('be.visible');
@@ -110,14 +97,12 @@ describe('TS_Load_003', () => {
       'http://localhost:8080/test_resources/invalid.css {enter}'
     );
   });
-});
 
-describe('TS_Load_004', () => {
   it('TC_Load_006 - Check that different files types can get scanned', () => {
     // Need clarification on how to scan from .vue .jsx .html
-  })
+  });
 
   it('TC_Load_007 - Check system response to unsupported file typesa', () => {
     // TODO should be tested after handling other extention
-  })
-})
+  });
+});
