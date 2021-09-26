@@ -9,7 +9,7 @@
             v-model="optimizers"
             @change="() => $emit('update:optimizers', optimizers)"
           />
-          <span class="slider round"></span>
+          <span class="slider round" :id="opt.value + '-switch'"></span>
         </label>
         <h4 class="labels">{{ opt.name }}</h4>
       </div>
@@ -18,18 +18,18 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { Options, Vue } from 'vue-class-component';
 
 @Options({
   data() {
     return {
       switches: [
-        { name: "Clean CSS", value: "c" },
-        { name: "Restructure CSS", value: "r" },
-        { name: "Suggest CSS", value: "s" },
-        { name: "Compress CSS", value: "k" },
+        { name: 'Clean CSS', value: 'c' },
+        { name: 'Restructure CSS', value: 'r' },
+        { name: 'Suggest CSS', value: 's' },
+        { name: 'Compress CSS', value: 'k' },
       ],
-      optimizers: ["c", "r", "s", "k"],
+      optimizers: ['c', 'r', 's', 'k'],
     };
   },
 })
@@ -83,7 +83,7 @@ export default class Switches extends Vue {}
 
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   top: -3px;
   left: -3px;
   height: 20px;

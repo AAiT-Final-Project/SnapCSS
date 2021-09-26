@@ -22,12 +22,14 @@
                   @change="uploadCSS"
                 />
 
-                <button @click="loadUrl" class="editor__btn rounded shadow-lg">
+                <button id='load-url-btn' @click="loadUrl" class="editor__btn rounded shadow-lg">
                   <mdi :path="mdiLink" size="20" />
                   <span class="icon_label">Load URL</span>
                 </button>
                 <button
                   @click="optimize"
+                  style="cursor: pointer"
+                  id="snap-btn"
                   class="editor__btn editor__run shadow-lg rounded"
                 >
                   Snap
@@ -69,22 +71,22 @@
 
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Options, Vue } from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-import SnapCss from "snappy-css";
-import Optimizer from "snappy-css/lib/optimize/optimizer";
-import Editor from "@/components/Editor.vue";
+import { Options, Vue } from 'vue-class-component';
+import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import SnapCss from 'snappy-css';
+import Optimizer from 'snappy-css/lib/optimize/optimizer';
+import Editor from '@/components/Editor.vue';
 import {
   mdiLink,
   mdiAutoFix,
   mdiContentCopy,
   mdiFileDownload,
   mdiFileUploadOutline,
-} from "@mdi/js";
-import Mdi from "@/components/Mdi.vue";
-import sweetAlert from "sweetalert2";
-import Switches from "@/components/Switches.vue";
-import Preview from "@/components/Preview.vue";
+} from '@mdi/js';
+import Mdi from '@/components/Mdi.vue';
+import sweetAlert from 'sweetalert2';
+import Switches from '@/components/Switches.vue';
+import Preview from '@/components/Preview.vue';
 
 @Options({
   data() {
@@ -94,18 +96,18 @@ import Preview from "@/components/Preview.vue";
       mdiContentCopy,
       mdiFileDownload,
       mdiFileUploadOutline,
-      inputText: "// code",
-      outputText: "",
+      inputText: '// code',
+      outputText: '',
       snap: new SnapCss(),
-      cssFileName: "CSS.css",
-      htmlFileName: "file.html",
+      cssFileName: 'CSS.css',
+      htmlFileName: 'file.html',
       switches: [
-        { name: "Clean CSS", value: "c" },
-        { name: "Restructure CSS", value: "r" },
-        { name: "Suggest CSS", value: "s" },
-        { name: "Compress CSS", value: "k" },
+        { name: 'Clean CSS', value: 'c' },
+        { name: 'Restructure CSS', value: 'r' },
+        { name: 'Suggest CSS', value: 's' },
+        { name: 'Compress CSS', value: 'k' },
       ],
-      optimizers: ["c", "r", "s", "k"],
+      optimizers: ['c', 'r', 's', 'k'],
     };
   },
   computed: {
@@ -127,15 +129,15 @@ import Preview from "@/components/Preview.vue";
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
       sweetAlert.fire({
-        title: "Enter CSS URL",
-        input: "text",
+        title: 'Enter CSS URL',
+        input: 'text',
         backdrop: true,
-        inputPlaceholder: "Insert the css link here to load",
+        inputPlaceholder: 'Insert the css link here to load',
         inputAttributes: {
-          autocapitalize: "off",
+          autocapitalize: 'off',
         },
         showCancelButton: false,
-        confirmButtonText: "Load",
+        confirmButtonText: 'Load',
         preConfirm(url: string) {
           let valid = !!url.match(
             /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)?/gi
@@ -150,9 +152,9 @@ import Preview from "@/components/Preview.vue";
               );
           if (!valid)
             sweetAlert.fire({
-              icon: "error",
-              title: "Invalid URL",
-              text: "Could not load CSS from the URL",
+              icon: 'error',
+              title: 'Invalid URL',
+              text: 'Could not load CSS from the URL',
             });
         },
         allowOutsideClick: () => !sweetAlert.isLoading(),
@@ -161,29 +163,29 @@ import Preview from "@/components/Preview.vue";
     optimize() {
       if (!this.inputText.length) {
         sweetAlert.fire({
-          icon: "info",
-          title: "Empty CSS",
-          text: "Insert Css code first",
+          icon: 'info',
+          title: 'Empty CSS',
+          text: 'Insert Css code first',
         });
       } else if (!this.optimizers.length) {
         sweetAlert.fire({
-          icon: "question",
-          title: "What should I do?",
-          text: "Select at least one optimization option",
+          icon: 'question',
+          title: 'What should I do?',
+          text: 'Select at least one optimization option',
           // "\n\n.Detail: " +
           // errors[0]["details"],
         });
       } else {
-        const optimizers = this.snap.getOptimizers(this.optimizers.join(""));
-        let css = this.snap.getCSS("Trial CSS code Goes Here");
+        const optimizers = this.snap.getOptimizers(this.optimizers.join(''));
+        let css = this.snap.getCSS(this.inputText);        
         optimizers.forEach(
           (optimizer: Optimizer) => (css = optimizer.optimize(css))
         );
         this.outputText = css.toString();
         sweetAlert.fire({
-          icon: "success",
-          title: "Success",
-          text: "Successfully Optimized your CSS",
+          icon: 'success',
+          title: 'Success',
+          text: 'Successfully Optimized your CSS',
         });
       }
     },
@@ -205,14 +207,14 @@ import Preview from "@/components/Preview.vue";
       navigator.clipboard.writeText(this.outputText).then(
         () => {
           sweetAlert.fire({
-            icon: "success",
-            title: "Success",
-            text: "Successfully Copied your CSS",
+            icon: 'success',
+            title: 'Success',
+            text: 'Successfully Copied your CSS',
           });
-          console.log("Async: Copying to clipboard was successful!");
+          console.log('Async: Copying to clipboard was successful!');
         },
         (err) => {
-          console.error("Async: Could not copy text: ", err);
+          console.error('Async: Could not copy text: ', err);
         }
       );
     },
