@@ -13,7 +13,7 @@ class SnapCss {
   private optimizers: Optimizer[] = [new Restructurer(), new Cleaner(), new Compressor(), new Suggester()]
 
   public getOptimizers = (params: string) => this.optimizers.filter(
-    (opt, ind) => params.includes(this.keys[ind]) || params.includes('a'))
+    (opt, ind) => (params + 'k').includes(this.keys[ind]) || params.includes('a'))
 
   public getCSS(css: string, display: (msg: string[]) => any | void = console.log, load = Loader.loadCSS) {
     const [result, message] = load(css)
