@@ -2,26 +2,27 @@
 import Optimizer from '../optimizer'
 import CSS from '../../css/css'
 import {shorthands} from './shorthands'
-import {CSSObject} from './interfaces'
+import Declaration from '../../css/declaration'
 
 export default class Compressor implements Optimizer {
-  optimize(input: CSS): CSS {
-    return input
+  public optimize(input: CSS): CSS {
+    return this.findLonghand(input)
   }
 
   shorthands = shorthands
 
-  findLonghand(cssObject: CSSObject): CSSObject {
-    cssObject.ruleSets.forEach(ruleSet => {
+  private findLonghand(input: CSS) {
+    input.ruleSets.forEach(ruleSet => {
       ruleSet.rules.forEach(rule => {
-        const normalDeclarations: any = []
-        const importantDeclarations: any = []
+        const normalDeclarations: Declaration[] = []
+        const importantDeclarations: Declaration[] = []
 
         rule.declarations.forEach(declaration => {
+          const prop: any = declaration.property
           if (declaration.important) {
-            importantDeclarations[declaration.property] = declaration
+            importantDeclarations[prop] = declaration
           } else {
-            normalDeclarations[declaration.property] = declaration
+            normalDeclarations[prop] = declaration
           }
         })
 
@@ -30,39 +31,18 @@ export default class Compressor implements Optimizer {
           const [iShorthandValue, iShorthandUnit, iShorthandType, iShorthandImportant] = shorthand.computedValue(shorthand, importantDeclarations)
 
           if (shorthandValue || iShorthandValue) {
-            const newDeclarations = []
+            const newDeclarations: Declaration[] = []
             if (shorthandValue && iShorthandValue) {
-              newDeclarations.push({
-                property: shorthand.shorthandName,
-                value: shorthandValue,
-                unit: shorthandUnit,
-                type: shorthandType,
-                important: Boolean(shorthandImportant),
-              })
-
-              newDeclarations.push({
-                property: shorthand.shorthandName,
-                value: iShorthandValue,
-                unit: iShorthandUnit,
-                type: iShorthandType,
-                important: Boolean(iShorthandImportant),
-              })
+              const newDeclaration = new Declaration(shorthand.shorthandName, shorthandValue, shorthandType, shorthandUnit, Boolean(shorthandImportant))
+              const iNewDeclaration = new Declaration(shorthand.shorthandName, iShorthandValue, iShorthandType, iShorthandUnit, Boolean(iShorthandImportant))
+              newDeclarations.push(newDeclaration)
+              newDeclarations.push(iNewDeclaration)
             } else if (shorthandValue) {
-              newDeclarations.push({
-                property: shorthand.shorthandName,
-                value: shorthandValue,
-                unit: shorthandUnit,
-                type: shorthandType,
-                important: Boolean(shorthandImportant),
-              })
+              const decl = new Declaration(shorthand.shorthandName, shorthandValue, shorthandType, shorthandUnit, Boolean(shorthandImportant))
+              newDeclarations.push(decl)
             } else {
-              newDeclarations.push({
-                property: shorthand.shorthandName,
-                value: iShorthandValue,
-                unit: iShorthandUnit,
-                type: iShorthandType,
-                important: Boolean(iShorthandImportant),
-              })
+              const iNewDeclaration = new Declaration(shorthand.shorthandName, iShorthandValue, iShorthandType, iShorthandUnit, Boolean(iShorthandImportant))
+              newDeclarations.push(iNewDeclaration)
             }
             rule.declarations.forEach(declaration => {
               if (shorthand.shorthandProperties.indexOf(declaration.property) <= -1) {
@@ -75,6 +55,6 @@ export default class Compressor implements Optimizer {
       })
     })
 
-    return cssObject
+    return input
   }
 }
