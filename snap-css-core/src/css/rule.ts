@@ -12,6 +12,8 @@ export default class Rule {
 
   private suggestions: string[] = []
 
+  private suggested = false
+
   constructor(
     public selector: string,
     public declarations: Declaration[] = [],
@@ -38,12 +40,14 @@ export default class Rule {
 
   public makeSuggestions(suggestions: string[]) {
     this.suggestions = suggestions
+    this.suggested = true
   }
 
   public toString() {
     let result = ''
     const tab = `\n${this.padding}  `
-    result += this.suggestions.length > 0 ? `// Suggested: ${this.suggestions.join(', ')}\n` : '// No Suggestions\n'
+    if (this.suggested)
+      result += this.suggestions.length > 0 ? `// Suggested: ${this.suggestions.join(', ')}\n` : '// No Suggestions\n'
     result += `${this.padding}${this.selector} {${tab}${this.declarations.join(tab)} \n${this.padding}}`
     return result
   }
