@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import {Command, flags} from '@oclif/command'
-import SnapCss = require('./index')
+import snap = require('./index')
 // import JsonExporter from './optimize/suggest/json-exporter'
 
 class SnapCli extends Command {
@@ -31,8 +31,6 @@ class SnapCli extends Command {
 
     // this should be what the CLI runs after parsing the inputs any way it wants
     const listLogger = (messages: string[]) => messages.forEach(message => this.log(message))
-    const snap = new SnapCss()
-    const optimizers = snap.getOptimizers('a')
     let css = snap.getCSS(`
     @media only screen and (max-width: 600px) {
 
@@ -50,8 +48,7 @@ class SnapCli extends Command {
       color: green;
     }`, listLogger)
 
-    // eslint-disable-next-line no-await-in-loop
-    for (const optimizer of optimizers) css = await optimizer.optimize(css)
+    css = await snap.optimize(css, 'a')
     this.log(css.toString())
     // snap.exportFile('./trial.json', JSON.stringify(css.toObject()))
     // snap.exportFile('./trial.css', css.toString(), listLogger)
