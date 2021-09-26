@@ -32,7 +32,7 @@ class SnapCli extends Command {
     // this should be what the CLI runs after parsing the inputs any way it wants
     const listLogger = (messages: string[]) => messages.forEach(message => this.log(message))
     const snap = new SnapCss()
-    const optimizers = snap.getOptimizers('cks')
+    const optimizers = snap.getOptimizers('a')
     let css = snap.getCSS(`
     @media only screen and (max-width: 600px) {
 
@@ -50,6 +50,7 @@ class SnapCli extends Command {
       color: green;
     }`, listLogger)
 
+    // eslint-disable-next-line no-await-in-loop
     for (const optimizer of optimizers) css = await optimizer.optimize(css)
     this.log(css.toString())
     // snap.exportFile('./trial.json', JSON.stringify(css.toObject()))
