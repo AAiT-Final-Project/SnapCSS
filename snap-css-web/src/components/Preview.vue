@@ -5,7 +5,7 @@
       <h2>
         <button
           @click="onPickFile(this.$refs.htmlFileInput)"
-          class="editor__btn rounded shadow-lg"
+          class="editor__btn upload-html-btn rounded shadow-lg"
         >
           <mdi :path="mdiLanguageHtml5" size="20" />
           <span class="icon_label">Upload HTML</span>
@@ -147,5 +147,10 @@ export default class Preview extends Vue {}
   width: 100%;
   box-shadow: none;
   border: #eeeeee solid 1px;
+}
+
+.upload-html-btn{
+  border: 0px;
+  cursor: pointer;
 }
 </style>

@@ -9,7 +9,7 @@
               <div class="editor__footer--left">
                 <button
                   @click="onPickFile(this.$refs.cssFileInput)"
-                  class="editor__btn rounded shadow-lg"
+                  class="editor__btn util-btn"
                 >
                   <mdi :path="mdiFileUploadOutline" size="20" />
                   <span class="icon_label">Upload File</span>
@@ -22,7 +22,7 @@
                   @change="uploadCSS"
                 />
 
-                <button id='load-url-btn' @click="loadUrl" class="editor__btn rounded shadow-lg">
+                <button id='load-url-btn' @click="loadUrl" class="editor__btn util-btn">
                   <mdi :path="mdiLink" size="20" />
                   <span class="icon_label">Load URL</span>
                 </button>
@@ -32,8 +32,7 @@
                   id="snap-btn"
                   class="editor__btn editor__run shadow-lg rounded"
                 >
-                  Snap
-                  <mdi class="icon" :path="mdiAutoFix" size="20" />
+                  SNAP
                 </button>
               </div>
             </div>
@@ -47,16 +46,13 @@
           <div class="editor__footer">
             <div class="editor__footer--left text-right">
               <a :href="downloadUrl" :download="`Optimized ${cssFileName}`">
-                <button class="editor__btn rounded shadow-lg right">
+                <button class="editor__btn util-btn right">
                   <mdi :path="mdiFileDownload" class="icon" size="20" />
                   <span class="icon_label">Download Code</span>
                 </button>
               </a>
 
-              <button
-                class="editor__btn rounded shadow-lg right"
-                @click="copyCode"
-              >
+              <button class="editor__btn util-btn right" @click="copyCode">
                 <mdi :path="mdiContentCopy" class="icon" size="20" />
                 <span class="icon_label">Copy Code</span>
               </button>
@@ -177,7 +173,7 @@ import Preview from '@/components/Preview.vue';
         });
       } else {
         const optimizers = this.snap.getOptimizers(this.optimizers.join(''));
-        let css = this.snap.getCSS(this.inputText);        
+        let css = this.snap.getCSS(this.inputText);
         optimizers.forEach(
           (optimizer: Optimizer) => (css = optimizer.optimize(css))
         );
@@ -227,15 +223,10 @@ export default class Home extends Vue {}
 .input,
 .output {
   width: 50%;
-  border-radius: 15px;
-}
-
-.input {
-  border-right: #19a500 1px solid;
 }
 
 .output {
-  border-left: #19a500 1px solid;
+  border-left: #aaaaaa 1px solid;
 }
 
 .icon {
@@ -243,7 +234,9 @@ export default class Home extends Vue {}
 }
 
 .home {
-  padding: 100px;
+  padding: 100px 0px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .main {
@@ -283,11 +276,25 @@ export default class Home extends Vue {}
   height: 40px;
   width: 120px;
   float: right;
+  display: flex;
+  align-items: center;
   justify-content: center;
   margin: 0 25px 0 0;
-  font-size: 20px;
-  align-items: center;
+  font-size: 16px;
   border: none;
-  padding: 10px 10px;
+  box-shadow: 0 10px 14px rgba(0, 0, 0, .35);
+  padding: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.util-btn {
+  border: 0px solid #ddd;
+  cursor: pointer;
+  color: #3c3c3c;
+}
+
+.util-btn:hover {
+  color: #19a500 !important;
 }
 </style>

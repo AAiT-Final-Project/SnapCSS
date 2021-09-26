@@ -1,22 +1,49 @@
 <template>
   <nav id="nav" class="shadow">
-    <img
-      src="@/assets/images/logo.png"
-      alt="Snap CSS"
-      class="logo"
-      height="50"
-    />
+    <img src="@/assets/snap.svg" alt="Snap CSS" class="logo" height="35" />
+    <div class="snap_logo_label">SNAP CSS</div>
   </nav>
   <router-view />
+  <footer style="background: white">
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 25px 0px;
+      "
+    >
+      <!-- <div> -->
+      <div>Avaliable on</div>
+      <div style="display: flex; align-items: center; justify-content: center">
+        <img src="https://img.icons8.com/color/48/000000/npm.png" />
+        <img
+          width="30"
+          style="margin-left: 10px"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/1024px-Visual_Studio_Code_1.35_icon.svg.png"
+        />
+        <img
+          style="margin-left: 10px"
+          src="https://img.icons8.com/ios-glyphs/30/000000/github.png"
+        />
+      </div>
+      <div>©{{ new Date().getFullYear() }} Snap-CSS</div>
+    </div>
+    <!-- </div> -->
+  </footer>
 </template>
 
 <style>
 body {
   margin: 0;
+  background: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -28,6 +55,10 @@ body {
 
 #nav {
   padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
 }
 
 #nav a {
@@ -100,8 +131,16 @@ body {
 
 .icon_label {
   font-size: 12px;
-  font-family: sans-serif;
-  color: gray;
-  margin: 10px 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 10px 10px 10px 5px;
+}
+
+.snap_logo_label {
+  font-weight: 500;
+  font-size: 25px;
+  color: #19a500;
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -43,6 +43,7 @@ export default class Switches extends Vue {}
   background-color: #fffffe;
   padding: 1%;
   height: 50px;
+  border-bottom: 1px solid #aaa;
 }
 
 .switch {
@@ -113,7 +114,7 @@ input:checked + .slider:before {
   margin-right: 20px;
   align-items: center;
 
-  color: #111;
+  color: #3c3c3c;
   font-weight: bold;
   line-height: 1;
   text-align: center;
@@ -122,8 +123,9 @@ input:checked + .slider:before {
 
 .labels {
   width: max-content;
-  font-family: -webkit-pictograph, serif;
-  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
 }
 
 .slider.round,

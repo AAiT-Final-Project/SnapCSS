@@ -1,5 +1,5 @@
 <template>
-  <div class="editor" style="padding: 3px 10px; overflow: hidden">
+  <div class="editor" style="padding: 0px; overflow: hidden">
     <MonacoEditor
       :value="code"
       width="100%"
