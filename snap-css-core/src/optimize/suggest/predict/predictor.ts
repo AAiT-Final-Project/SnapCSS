@@ -28,7 +28,7 @@ export default class Predictor {
       vocabs.forEach(list => {
         this.vocabs.push({} as Vocab)
         list.forEach((word, i) => {
-          this.vocabs[this.vocabs.length - 1][word] = i + 1
+          this.vocabs[this.vocabs.length - 1][word] = i
         })
       })
     } catch {

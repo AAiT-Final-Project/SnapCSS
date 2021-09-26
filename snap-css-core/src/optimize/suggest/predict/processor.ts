@@ -91,7 +91,8 @@ export default class Processor {
 
   public static categorize(rows: any[][], col: number, vocab: Vocab) {
     rows.forEach(row => {
-      row[col] = vocab[row[col] as string]
+      const key = row[col] as string
+      row[col] = vocab[key] ? vocab[key] : 0
     })
     return rows
   }

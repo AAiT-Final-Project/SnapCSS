@@ -40,7 +40,10 @@ class SnapCli extends Command {
 
     #max {
       color: #fac452;
-      color: yellowgreen;
+      width: 400px;
+      height: 300px;
+      display: block;
+      margin: 0;
     }
 
     #max {
