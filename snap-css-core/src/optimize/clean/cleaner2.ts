@@ -5,7 +5,7 @@ import RuleSet from '../../css/rule-set'
 import Unifier from './unifier'
 
 export default class Cleaner implements Optimizer {
-  public optimize(input: CSS): CSS {
+  public async optimize(input: CSS): Promise<CSS> {
     input.ruleSets.forEach(ruleSet => {
       const picked = this.findUsed(ruleSet)
       Unifier.unifyValues(ruleSet, picked)

@@ -43,8 +43,7 @@ export default class Rule {
   public toString() {
     let result = ''
     const tab = `\n${this.padding}  `
-    if (this.suggestions.length > 0)
-      result += `// Suggested Selectors -> ${this.suggestions.join(', ')}\n`
+    result += this.suggestions.length > 0 ? `// Suggested: ${this.suggestions.join(', ')}\n` : '// No Suggestions\n'
     result += `${this.padding}${this.selector} {${tab}${this.declarations.join(tab)} \n${this.padding}}`
     return result
   }

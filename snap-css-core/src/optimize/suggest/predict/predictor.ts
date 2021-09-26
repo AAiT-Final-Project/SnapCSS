@@ -1,95 +1,74 @@
 /* eslint-disable no-console */
 import * as fs from 'fs'
+import * as path from 'path'
+import Rule from '../../../css/rule'
+import Processor from './processor'
 const onnx = require('onnxjs-node')
 
 export interface Vocab {
   [key: string]: number;
 }
 
+export interface Dict {
+  [key: string]: any[];
+}
+
 export default class Predictor {
   private session = new onnx.InferenceSession()
 
-  private vocab: string[] = []
+  private vocabs: Vocab[] = []
 
-  public async loadModel(modelPath = './src/optimize/suggest/model/export.onnx', vocabPath = './src/optimize/suggest/model/css.vocab.txt') {
-    await this.session.loadModel(modelPath)
+  private outputs: string[] = []
+
+  public async loadModel(modelPath = 'suggester.onnx', vocabName = 'vocab.json') {
+    await this.session.loadModel(path.join(__dirname, '..', 'model', modelPath))
     try {
-      // read all vocabs here perhaps
-      this.vocab = fs.readFileSync(vocabPath, 'utf8').split('\n')
+      const vocabs = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'model', vocabName), 'utf8')) as string[][]
+      this.outputs = vocabs[vocabs.length - 1]
+      vocabs.forEach(list => {
+        this.vocabs.push({} as Vocab)
+        list.forEach((word, i) => {
+          this.vocabs[this.vocabs.length - 1][word] = i + 1
+        })
+      })
     } catch {
       console.log('Could not Load Vocab')
     }
   }
 
-  public async predict(rule: object) {
+  public async predict(rule: Rule) {
+    if (rule.declarations.length <= 3) return []
     const result: string[] = []
-    const inputs = Predictor.makeData(rule)
+    const inputs = this.makeData(rule)
     const outputMap = await this.session.run(inputs)
     const outputTensor = outputMap.get('output')
     for (let i = 0; i < outputTensor.dims[0]; i++) {
       let biggest = 0
-      for (let j = 0; j < outputTensor.dims[1]; j++) {
+      for (let j = 0; j < outputTensor.dims[1]; j++)
         if (outputTensor.get(i, j) > outputTensor.get(i, biggest)) biggest = j
-      }
-      result.push(this.vocab[biggest])
+      result.push(this.outputs[biggest])
     }
     return result
   }
 
-  private static makeData(rule: object) {
-    console.log(rule)
+  private makeData(rule: Rule) {
+    let rows = Processor.processRule(rule)
+    for (let i = 0; i < 6; i++) Processor.categorize(rows, i, this.vocabs[i])
+    rows = Processor.fillMissing(rows)
+
+    const cat: number[] = []
+    const cont: number[] = []
+    rows.forEach(row => {
+      cat.push(...row.slice(0, 14))
+      cont.push(...row.slice(14))
+    })
     return [
-      ...Predictor.processDeclaration(
-        {property: 'box-sizing', value: 'border-box', type: 'STRING', unit: '', important: false}
-      ),
+      ...Predictor.makeTensor(cat, cont, rows.length),
     ]
   }
 
-  private static processDeclaration(declaration: object) {
-    console.log(declaration)
-    return [new onnx.Tensor([
-      118,
-      1,
-      4,
-      1,
-      0,
-      1,
-      2,
-      2,
-      2,
-      2,
-      1,
-      2,
-      2,
-      118,
-      1,
-      4,
-      1,
-      0,
-      1,
-      2,
-      2,
-      2,
-      2,
-      1,
-      2,
-      2,
-    ], 'int32', [2, 13]),
-    new onnx.Tensor([
-      -0.031102027670426264,
-      0.21374026464604506,
-      0.16109764686327452,
-      0.20809264031839608,
-      -0.04633014672374937,
-      -0.04301364571620888,
-      -0.0017506370861001693,
-      -0.031102027670426264,
-      0.21374026464604506,
-      0.16109764686327452,
-      0.20809264031839608,
-      -0.04633014672374937,
-      -0.04301364571620888,
-      -0.0017506370861001693,
-    ], 'float32', [2, 7])]
+  private static makeTensor(cat: number[], cont: number[], length: number) {
+    return [new onnx.Tensor(cat, 'int32', [length, 14]),
+      new onnx.Tensor(cont, 'float32', [length, 8])]
   }
 }

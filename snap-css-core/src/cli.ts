@@ -28,33 +28,31 @@ class SnapCli extends Command {
     // }
     // const trial = CSS.fromString('Trial CSS')
     // console.log(trial.toString())
-    this.log('Here is the CLI Running space, at ./src/cli.ts')
 
     // this should be what the CLI runs after parsing the inputs any way it wants
     const listLogger = (messages: string[]) => messages.forEach(message => this.log(message))
     const snap = new SnapCss()
-    const optimizers = snap.getOptimizers('s')
-    const css = snap.getCSS(`
-    @media screen and (min-width: 480px) {
-      .body:hover{
-        background-color: rgba(10,11,14,15) !important;
-      }
-    }
+    const optimizers = snap.getOptimizers('cs')
+    let css = snap.getCSS(`
+    @media only screen and (max-width: 600px) {
 
-    #main, .apple {
-      border: 1px solid black;
     }
 
     #max {
-      padding: 50px;
-      height: 100%;
+      color: #fac452;
+      color: yellowgreen;
+    }
+
+    #max {
+      color: green;
     }`, listLogger)
 
-    optimizers.forEach(optimizer => optimizer.optimize(css))
-    // this.log(css.toString())
+    // eslint-disable-next-line no-await-in-loop
+    for (const optimizer of optimizers) css = await optimizer.optimize(css)
+    console.log(css.toString())
     // snap.exportFile('./trial.json', JSON.stringify(css.toObject()))
-    snap.exportFile('./trial.css', css.toString(), listLogger)
-    this.log(snap.getCSSFromFile('./trial.css', listLogger).toString())
+    // snap.exportFile('./trial.css', css.toString(), listLogger)
+    // this.log(snap.getCSSFromFile('./trial.css', listLogger).toString())
     // JsonExporter.start()
   }
 }

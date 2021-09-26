@@ -1,7 +1,7 @@
 import Rule from '../../../css/rule'
 import {Vocab} from './predictor'
 
-class Processor {
+export default class Processor {
   private static processProp(prop: string) {
     if (prop[0] === '-')  prop = prop.slice(prop.indexOf('-', 1))
     return prop
@@ -9,13 +9,14 @@ class Processor {
 
   private static processColor(value: string, kind: string) {
     // consider adding a to the mix
-    let result = [NaN, NaN, NaN]
+    let result = [NaN, NaN, NaN, NaN]
     if (kind === 'HASH') {
       value = value.slice(1)
       const x = value.length in [3, 4] ? 1 : 2
-      let temp = [value.slice(0, x), value.slice(x, 2 * x), value.slice(2 * x, 3 * x)]
+      const a = value.length in [4, 8] ? value.slice(3 * x) : (x === 1 ? 'f' : 'ff')
+      let temp = [value.slice(0, x), value.slice(x, 2 * x), value.slice(2 * x, 3 * x), a]
       if (value.length in [3, 4]) {
-        temp = [temp[0] + temp[0], temp[1] + temp[1], temp[2] + temp[2]]
+        temp = [temp[0] + temp[0], temp[1] + temp[1], temp[2] + temp[2], temp[3] + temp[3]]
       }
       result = temp.map((val: string) => {
         return parseInt(val, 16)
@@ -48,12 +49,12 @@ class Processor {
     return [...result.values()] as string[]
   }
 
-  public static processRule(rule: Rule, useSelector = true, prefix = '') {
+  public static processRule(rule: Rule, useSelector = false, prefix = '') {
     const result: any[] = []
     const selectors = useSelector ? this.processSelectors(rule.selector, prefix) : ['']
     rule.declarations.forEach(decl => {
       const [prop, kind, value, unit] = [decl.property, decl.type, decl.value, decl.unit]
-      selectors.forEach(selector => {
+      selectors.forEach(() => {
         result.push([
           this.processProp(prop),
           decl.important,
@@ -61,7 +62,6 @@ class Processor {
           unit,
           ...this.processVal(value, kind),
           ...this.processColor(value, kind),
-          selector,
         ])
       })
     })
@@ -74,13 +74,14 @@ class Processor {
       result.push([
         ...row.slice(0, 6),
         ...[
-          row[6].isNaN() ? 2 : 1,
-          row[7].isNaN() ? 2 : 1,
-          row[8].isNaN() ? 2 : 1,
-          row[9].isNaN() ? 2 : 1,
-          row[10].isNaN() ? 2 : 1,
-          row[11].isNaN() ? 2 : 1,
-          row[12].isNaN() ? 2 : 1,
+          isNaN(row[6]) ? 2 : 1,
+          isNaN(row[7]) ? 2 : 1,
+          isNaN(row[8]) ? 2 : 1,
+          isNaN(row[9]) ? 2 : 1,
+          isNaN(row[10]) ? 2 : 1,
+          isNaN(row[11]) ? 2 : 1,
+          isNaN(row[12]) ? 2 : 1,
+          isNaN(row[13]) ? 2 : 1,
         ],
         ...row.slice(6),
       ])
