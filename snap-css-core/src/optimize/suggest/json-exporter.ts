@@ -2,6 +2,7 @@
 import Loader from '../../load/loader2'
 import Scanner from '../../load/scanner'
 import {execSync} from 'child_process'
+import SnapCss = require('../../index')
 const postcss = require('postcss')
 const cssVariables = require('postcss-css-variables')
 
@@ -12,7 +13,7 @@ export default class JsonExporter {
     ['foundation', 'foundation-'],
     ['material-components-web', 'mdc-'],
     ['materialize', 'materialize-'],
-    ['mdb', 'materialize-'],
+    ['mdb', 'md-'],
     ['pure', 'pure-'],
     ['semantic', ''],
     ['skeleton', ''],
@@ -22,8 +23,10 @@ export default class JsonExporter {
 
   private static getObject(inputPath: string, prefix = '') {
     const results: object[] = []
-    const [result, message] =  Loader.loadFromFile(inputPath)
+    const [result, message] =  Loader.loadFromFile(inputPath, true)
     console.log(message)
+    const optimizers = new SnapCss().getOptimizers('c')
+    optimizers.forEach(optimizer => optimizer.optimize(result))
     result.ruleSets.forEach(ruleSet => {
       ruleSet.rules.forEach(rule => {
         results.push(rule.toObject())
@@ -66,7 +69,6 @@ export default class JsonExporter {
       if (res.rules.length > 0) final.push(res)
     })
     const message = Scanner.exportFile('./frameworks/data.json', JSON.stringify(final))
-    // eslint-disable-next-line no-console
     console.log(message)
   }
 }

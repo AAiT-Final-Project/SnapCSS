@@ -5,7 +5,7 @@ import {shorthands} from './shorthands'
 import Declaration from '../../css/declaration'
 
 export default class Compressor implements Optimizer {
-  public optimize(input: CSS): CSS {
+  public async optimize(input: CSS): Promise<CSS> {
     return this.findLonghand(input)
   }
 

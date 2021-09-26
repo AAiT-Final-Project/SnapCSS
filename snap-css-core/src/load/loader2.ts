@@ -1,13 +1,13 @@
 import CSS from '../css/css'
 import Scanner from './scanner'
 
-type LoadFunc = (text: string) => [CSS, string[]]
+type LoadFunc = (text: string, validOnly?: boolean) => [CSS, string[]]
 const {validate} = require('csstree-validator')
 
 export default class Loader {
   static SUCCESS_MSG = 'Successfully Loaded CSS'
 
-  static loadCSS: LoadFunc = (text: string) => {
+  static loadCSS: LoadFunc = (text: string, validOnly = true) => {
     // Start by validating the CSS code
     const errors = validate(text)
     if (errors.length > 0) {
@@ -18,15 +18,15 @@ export default class Loader {
           `${error} at line ${error.line} column ${error.column}\n ${error.details}` :
           `${error} at line ${error.line} column ${error.column}`
       })
-      return [new CSS(), messages]
+      if (validOnly) return [new CSS(), messages]
     }
     return [CSS.fromString(text), [Loader.SUCCESS_MSG]]
   }
 
-  static loadFromFile: LoadFunc = (path: string) => {
+  static loadFromFile: LoadFunc = (path: string, validOnly = true) => {
     const result = Scanner.scanFile(path)
     if (result in [Scanner.BAD_EXTENSION_MSG, Scanner.READ_ERROR_MSG])
       return [new CSS(), [result]]
-    return Loader.loadCSS(result)
+    return Loader.loadCSS(result, validOnly)
   }
 }

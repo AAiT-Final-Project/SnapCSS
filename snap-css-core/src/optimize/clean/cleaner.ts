@@ -6,7 +6,7 @@ const cssbeautify = require('cssbeautify');
 const color = require('../clean/color')
 
 export default class Cleaner implements Optimizer {
-  optimize(input: CSS): CSS {
+  async optimize(input: CSS): Promise<CSS> {
     return input
   }
   NonMediaTags(x: any) {
