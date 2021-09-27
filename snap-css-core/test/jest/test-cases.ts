@@ -333,6 +333,42 @@ export const testData = {
       padding-bottom: 10px;
       padding-left: 20px;
     }`,
+  TC_System_001: `
+    .class1 {
+      margin-top: 10px;
+      margin-right: 20px;
+      margin-bottom: 30px;
+      margin-left: 40px;
+      color: blue;
+      color: red;
+    }
+    .class1 {
+      margin-top: 10px;
+      margin-right: 20px;
+      margin-bottom: 30px;
+      margin-left: 40px;
+      color: blue;
+      color: red;
+    }`,
+  TC_System_002: `
+    .class1 {
+      font-style: italic;
+      font-weight: bold;
+      font-size: .8em;
+      line-height: 1.2;
+      font-family: Arial, sans-serif;
+      color: blue;
+      color: red;
+    }
+    .class2 {
+      font-style: italic;
+      font-weight: bold;
+      font-size: .8em;
+      line-height: 1.2;
+      font-family: Arial, sans-serif;
+      color: blue;
+      color: red;
+    }`,
 }
 
 export const expectedResult = {
@@ -371,4 +407,6 @@ export const expectedResult = {
   TC_Integrate_018: '// No Suggestions.class1 {  font : italic bold .8em/1.2 Arial, sans-serif;  color : #ff0000; }',
   TC_Integrate_019: '// No Suggestions.class1 {  padding : 10px 20px; }',
   TC_Integrate_020: '// No Suggestions.class1,.class2 {  padding : 10px 20px; }',
+  TC_System_001: '// No Suggestions.class1 {  margin : 10px 20px 30px 40px;  color : #ff0000; }',
+  TC_System_002: '// No Suggestions.class1,.class2 {  font : italic bold .8em/1.2 Arial, sans-serif;  color : #ff0000; }',
 }

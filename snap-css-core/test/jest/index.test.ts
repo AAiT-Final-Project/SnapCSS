@@ -1,13 +1,16 @@
-import SnapCss = require('../../src')
-const snap = new SnapCss()
+import snap = require('../../src/index')
+import {testData, expectedResult} from './test-cases'
 
-describe('testing performs', () => {
-  test('adds two numbers', () => {
-    expect(snap.add(1, 2)).toBe(3)
+// cleaner, restructurer and compressor
+describe('System Testing - All Modules', () => {
+  test('TC_System_001: Check that all modules work together', async () => {
+    let css = snap.getCSS(testData.TC_System_001)
+    css = await snap.optimize(css, 'a')
+    expect(css.toString().split('\n').join('')).toContain(expectedResult.TC_System_001)
   })
-
-  test('defaults to 0', () => {
-    expect(snap.add()).toBe(0)
+  test('TC_System_002: Check that all modules work together', async () => {
+    let css = snap.getCSS(testData.TC_System_002)
+    css = await snap.optimize(css, 'a')
+    expect(css.toString().split('\n').join('')).toContain(expectedResult.TC_System_002)
   })
 })
-
