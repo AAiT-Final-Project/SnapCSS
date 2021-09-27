@@ -1,8 +1,22 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import SnapCss = require('snappy-css');
+import snap = require('snappy-css');
 
+function makeOptions(choices: string[]) {
+	const result = ['k'];
+
+	if ('Restructure CSS' in choices) {
+		result.push('r');
+	}
+	if ('Clean CSS' in choices) {
+		result.push('c');
+	}
+	if ('Suggest Selectors' in choices) {
+		result.push('s');
+	}
+	return result.join('');
+}
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -17,24 +31,53 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('snap-css-vsc.optimize', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('CSS Optimized Successfully!');
 
 		// vscode.workspace.fs.readDirectory(vscode.Uri.from('/src')).then((files) => console.log(files));
 		vscode.window.showOpenDialog({
 			title: 'Select Input File',
-			canSelectMany: true,
+			canSelectMany: false,
 			canSelectFiles: true,
 			filters: {'css': ['css']}
-		}).then(
-			(file) => vscode.window.showQuickPick(
-				["Restructure CSS", "Clean CSS", "Compress CSS", "Suggest Class Names"],
-				{canPickMany: true})
-		);
-
-		const snap = new SnapCss();
-		const optimizers = snap.getOptimizers("a");
-		let css = snap.getCSS("Trial CSS code Goes Here");
-		optimizers.forEach((optimizer) => (css = optimizer.optimize(css)));
+		}).then(files => {
+			if (files) {
+				vscode.window.showQuickPick(
+					["Restructure CSS", "Clean CSS", "Suggest Selectors"],
+					{canPickMany: true}
+				).then(res => {
+					let message: string[] = [];
+					const css = snap.getCSSFromFile(files[0].path, messages => {
+						message = messages;
+					});
+					if (message[0] === 'Successfully Loaded CSS') {
+						vscode.window.showInformationMessage(message[0]);
+						if (!res) {
+							res = [];
+						}
+						snap.optimize(css, makeOptions(res)).then(result => {
+							vscode.window.showInformationMessage('Successfully Optimized CSS!');
+						});
+						vscode.window.showOpenDialog({
+							title: 'Select Output Path',
+							canSelectMany: false,
+							canSelectFiles: false,
+							canSelectFolders: true,
+						}).then(files => {
+							if (files) {
+								snap.exportFile(files[0].path + '/output.css', css.toString(), messages => {
+									for (const mess of messages) {
+										vscode.window.showInformationMessage(mess);
+									}
+								});
+							}
+						});
+					} else {
+						for (const mess of message) {
+							vscode.window.showErrorMessage(mess);
+						}
+					}
+				});
+			}
+		});
 	});
 
 	context.subscriptions.push(disposable);

@@ -7,7 +7,7 @@ export default class Suggester implements Optimizer {
 
   public async optimize(input: CSS): Promise<CSS> {
     const model = new Predictor()
-    await model.loadModel()
+    await model.load()
     for (const ruleSet of input.ruleSets) {
       for (const rule of ruleSet.rules) {
         this.counts += 1

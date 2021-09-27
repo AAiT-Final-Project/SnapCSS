@@ -1,6 +1,6 @@
 {
   "name": "snappy-css",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "snap-team",
   "bin": {
     "snap-css": "./bin/run"
@@ -10,6 +10,7 @@
     "@oclif/dev-cli": "^1.26.0",
     "@types/jest": "^27.0.1",
     "@types/node": "^10.17.60",
+    "copyfiles": "^2.4.1",
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",
@@ -38,8 +39,7 @@
   "repository": "AAiT-Final-Project/SnapCSS",
   "scripts": {
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev readme",
-    "test-oclif": "nyc --extension .ts mocha --forbid-only \"test/oclif/**/*.test.ts\"",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev readme && copyfiles -u 1 src/optimize/suggest/predict/suggester.onnx lib/",
     "test-jest": "jest",
     "version": "oclif-dev readme && git add README.md"
   },

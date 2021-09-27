@@ -20,11 +20,11 @@ export default class Declaration {
     for (let i = 0; i < options.length; i++)
       if (value.match(new RegExp(options[i][0])))
         return options[i].slice(1, 4)
-    return [value, 'STRING', '']
+    return [value.trim(), 'STRING', '']
   }
 
   static fromAST(decl:  postcss.Declaration) {
-    const expanded: {string: string} = expander.expand(decl.prop, decl.value)
+    const expanded: {string: string} = expander.expand(decl.prop, decl.value, false)
     const result: Declaration[] = []
 
     Object.entries(expanded).forEach(([prop, val]) =>
@@ -43,7 +43,7 @@ export default class Declaration {
 
   public getValueString = () => `${this.value}${this.unit}`
 
-  public toString = () => `${this.property} : ${this.getValueString()}${this.important ? ' !important' : ''};`
+  public toString = () => `${this.property}: ${this.getValueString().trim()}${this.important ? ' !important' : ''};`
 
   public toObject = () => {
     return {

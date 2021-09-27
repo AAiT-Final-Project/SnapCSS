@@ -7,6 +7,7 @@
             :value="opt.value"
             type="checkbox"
             v-model="optimizers"
+            :disabled="opt.disabled"
             @change="() => $emit('update:optimizers', optimizers)"
           />
           <span class="slider round" :id="opt.value + '-switch'"></span>
@@ -26,10 +27,10 @@ import { Options, Vue } from 'vue-class-component';
       switches: [
         { name: 'Clean CSS', value: 'c' },
         { name: 'Restructure CSS', value: 'r' },
-        { name: 'Suggest CSS', value: 's' },
-        { name: 'Compress CSS', value: 'k' },
+        { name: 'Suggest CSS', value: 's', disabled: true },
+        { name: 'Compress CSS', value: 'k', disabled: true },
       ],
-      optimizers: ['c', 'r', 's', 'k'],
+      optimizers: ['c', 'r', 'k'],
     };
   },
 })
@@ -96,6 +97,10 @@ export default class Switches extends Vue {}
 
 input:checked + .slider {
   background-color: #19a500;
+}
+
+input:disabled + .slider {
+  opacity: 0.4;
 }
 
 input:focus + .slider {
