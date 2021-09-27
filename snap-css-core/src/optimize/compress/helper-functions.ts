@@ -211,6 +211,10 @@ export const shorthandBackground = (shorthand: Shorthand, declarations: any): st
 
   const [shorthandValue, shorthandUnit, shorthandType, shorthandImportant] = getShorthandValue(shorthand, declarations)
 
+  if (shorthandValue.includes(',')) {
+    return ['', shorthandUnit, shorthandType, shorthandImportant]
+  } 
+
   if (!declarations['background-position'] || !declarations['background-size']) {
     return [shorthandValue.replace('/', ''), shorthandUnit, shorthandType, shorthandImportant]
   }
