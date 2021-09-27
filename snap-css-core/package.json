@@ -1,6 +1,6 @@
 {
   "name": "snappy-css",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "author": "snap-team",
   "bin": {
     "snap-css": "./bin/run"
@@ -39,7 +39,7 @@
   "repository": "AAiT-Final-Project/SnapCSS",
   "scripts": {
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev readme && copyfiles -u 1 src/optimize/suggest/model/* lib/ && copyfiles -u 1 src/optimize/clean/color-names.json lib/",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev readme && copyfiles -u 1 src/optimize/suggest/predict/suggester.onnx lib/",
     "test-jest": "jest",
     "version": "oclif-dev readme && git add README.md"
   },

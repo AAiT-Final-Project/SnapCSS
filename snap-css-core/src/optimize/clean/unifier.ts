@@ -1,22 +1,22 @@
 import RuleSet from '../../css/rule-set'
 import Declaration from '../../css/declaration'
-import * as fs from 'fs'
-import * as path from 'path'
+import colorNames from './color-names'
 
 interface ColorNameMap {
   [name: string]: string;
 }
 
 export default class Unifier {
-  private static nameValues: ColorNameMap = JSON.parse(
-    fs.readFileSync(path.join(__dirname, 'color-names.json'), 'utf8'))
+  private static nameValues: ColorNameMap = colorNames
 
   public static unifyValues(ruleSet: RuleSet, indices: Set<string>) {
     indices.forEach(indString => {
       const argPattern = /\(\s*([^)]+?)\s*\)/
       const declaration = ruleSet.getDeclaration(...indString.split(',').map(x => parseInt(x, 10)))
       const processRGBNum = (arg: string) => {
-        const val = parseInt(arg, 10)
+        let val
+        if (arg[arg.length - 1] === '%') val = Math.round(parseInt(arg.slice(0, arg.length - 1), 10) * 2.55)
+        else val = parseInt(arg, 10)
         let valString = val.toString(16)
         if (valString.length === 1) valString = `0${valString}`
         return valString
@@ -42,7 +42,10 @@ export default class Unifier {
           newVal = `#${r}${g}${b}`
         }
         if (small.includes('rgba') || small.includes('hsla')) {
-          const res = Math.round(parseFloat(args[3]) * 255).toString(16)
+          const arg = args[3][args[3].length - 1] === '%' ?
+            parseFloat(args[3].slice(0, args[3].length - 1)) * 2.55 :
+            parseFloat(args[3]) * 255
+          const res = Math.round(arg).toString(16)
           newVal += res.length === 2 ? res : `0${res}`
         }
       } else if (declaration.type === 'HASH') {

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import * as fs from 'fs'
 import * as path from 'path'
 import Rule from '../../../css/rule'
 import Processor from './processor'
+import vocabJson from './vocab-json'
 const onnx = require('onnxjs-node')
 
 export interface Vocab {
@@ -20,10 +20,10 @@ export default class Predictor {
 
   private outputs: string[] = []
 
-  public async loadModel(modelPath = 'suggester.onnx', vocabName = 'vocab.json') {
-    await this.session.loadModel(path.join(__dirname, '..', 'model', modelPath))
+  public async load(modelPath = 'suggester.onnx') {
+    await this.session.loadModel(path.join(__dirname, modelPath))
     try {
-      const vocabs = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'model', vocabName), 'utf8')) as string[][]
+      const vocabs = vocabJson as string[][]
       this.outputs = vocabs[vocabs.length - 1]
       vocabs.forEach(list => {
         this.vocabs.push({} as Vocab)
@@ -42,12 +42,13 @@ export default class Predictor {
     const inputs = this.makeData(rule)
     const outputMap = await this.session.run(inputs)
     const outputTensor = outputMap.get('output')
-    for (let i = 0; i < outputTensor.dims[0]; i++) {
-      let biggest = 0
-      for (let j = 0; j < outputTensor.dims[1]; j++)
-        if (outputTensor.get(i, j) > outputTensor.get(i, biggest)) biggest = j
-      result.push(this.outputs[biggest])
-    }
+    if (outputTensor)
+      for (let i = 0; i < outputTensor.dims[0]; i++) {
+        let biggest = 0
+        for (let j = 0; j < outputTensor.dims[1]; j++)
+          if (outputTensor.get(i, j) > outputTensor.get(i, biggest)) biggest = j
+        result.push(this.outputs[biggest])
+      }
     return result
   }
 

@@ -8,7 +8,6 @@ export default class Processor {
   }
 
   private static processColor(value: string, kind: string) {
-    // consider adding a to the mix
     let result = [NaN, NaN, NaN, NaN]
     if (kind === 'HASH') {
       value = value.slice(1)
