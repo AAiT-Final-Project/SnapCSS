@@ -203,7 +203,7 @@ export const shorthandOverflow = (shorthand: Shorthand, declarations: any): stri
   return getShorthandValue(shorthand, declarations)
 }
 
-// background
+// background - works for single background, not for multiple backgrounds
 export const shorthandBackground = (shorthand: Shorthand, declarations: any): string[] => {
   if (!declarations['background-position'] && declarations['background-size']) {
     declarations['background-size'].value = '0 0/' + declarations['background-size'].value
@@ -213,7 +213,7 @@ export const shorthandBackground = (shorthand: Shorthand, declarations: any): st
 
   if (shorthandValue.includes(',')) {
     return ['', shorthandUnit, shorthandType, shorthandImportant]
-  } 
+  }
 
   if (!declarations['background-position'] || !declarations['background-size']) {
     return [shorthandValue.replace('/', ''), shorthandUnit, shorthandType, shorthandImportant]
