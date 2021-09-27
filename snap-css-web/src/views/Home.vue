@@ -45,7 +45,7 @@
         <editor class="output" v-model:code="outputText">
           <div class="editor__footer">
             <div class="editor__footer--left text-right">
-              <a :href="downloadUrl" :download="`snapped.${cssFileName}`">
+              <a :href="downloadUrl" :download="`optimized_${cssFileName}.css`">
                 <button class="editor__btn util-btn right">
                   <mdi :path="mdiFileDownload" class="icon" size="20" />
                   <span class="icon_label">Download Code</span>
@@ -67,21 +67,21 @@
 
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Options, Vue } from 'vue-class-component';
-import Editor from '@/components/Editor.vue';
+import { Options, Vue } from "vue-class-component";
+import Editor from "@/components/Editor.vue";
 import {
   mdiLink,
   mdiAutoFix,
   mdiContentCopy,
   mdiFileDownload,
   mdiFileUploadOutline,
-} from '@mdi/js';
-import * as snap from 'snappy-css';
-import Mdi from '@/components/Mdi.vue';
-import sweetAlert from 'sweetalert2';
-import Switches from '@/components/Switches.vue';
-import Preview from '@/components/Preview.vue';
-import FileImportExport from '@/util/fileImportExport';
+} from "@mdi/js";
+import * as snap from "snappy-css";
+import Mdi from "@/components/Mdi.vue";
+import sweetAlert from "sweetalert2";
+import Switches from "@/components/Switches.vue";
+import Preview from "@/components/Preview.vue";
+import FileImportExport from "@/util/fileImportExport";
 
 @Options({
   data() {
@@ -91,36 +91,30 @@ import FileImportExport from '@/util/fileImportExport';
       mdiContentCopy,
       mdiFileDownload,
       mdiFileUploadOutline,
-      inputText: '',
-      outputText: '',
+      inputText: "",
+      outputText: "",
       fileImportExport: new FileImportExport(),
-      cssFileName: 'CSS.css',
-      htmlFileName: 'file.html',
+      cssFileName: "output",
+      htmlFileName: "file.html",
       switches: [
-        { name: 'Clean CSS', value: 'c' },
-        { name: 'Restructure CSS', value: 'r' },
-        { name: 'Suggest CSS', value: 's' },
-        { name: 'Compress CSS', value: 'k' },
+        { name: "Clean CSS", value: "c" },
+        { name: "Restructure CSS", value: "r" },
+        { name: "Suggest CSS", value: "s" },
+        { name: "Compress CSS", value: "k" },
       ],
-      optimizers: ['c', 'r', 'k'],
+      optimizers: ["c", "r", "k"],
     };
   },
   computed: {
     downloadUrl() {
-      if (
-        this.wholeText &&
-        (this.cssFileName.endsWith('.html') ||
-          this.cssFileName.endsWith('.vue'))
-      ) {
-        return this.fileImportExport.exportToVueHTML(
-          this.wholeText,
-          this.outputText
-        );
-      }
-
       return `data:text/plain;charset=utf-8, ${encodeURIComponent(
         this.outputText
       )}`;
+    },
+  },
+  watch: {
+    inputText() {
+      this.cssFileName = "output";
     },
   },
   components: {
@@ -134,15 +128,15 @@ import FileImportExport from '@/util/fileImportExport';
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
       sweetAlert.fire({
-        title: 'Enter CSS URL',
-        input: 'text',
+        title: "Enter CSS URL",
+        input: "text",
         backdrop: true,
-        inputPlaceholder: 'Insert the css link here to load',
+        inputPlaceholder: "Insert the css link here to load",
         inputAttributes: {
-          autocapitalize: 'off',
+          autocapitalize: "off",
         },
         showCancelButton: false,
-        confirmButtonText: 'Load',
+        confirmButtonText: "Load",
         preConfirm(url: string) {
           let valid = !!url.match(
             /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)?/gi
@@ -157,9 +151,9 @@ import FileImportExport from '@/util/fileImportExport';
               );
           if (!valid)
             sweetAlert.fire({
-              icon: 'error',
-              title: 'Invalid URL',
-              text: 'Could not load CSS from the URL',
+              icon: "error",
+              title: "Invalid URL",
+              text: "Could not load CSS from the URL",
             });
         },
         allowOutsideClick: () => !sweetAlert.isLoading(),
@@ -168,44 +162,46 @@ import FileImportExport from '@/util/fileImportExport';
     optimize() {
       if (!this.inputText.length) {
         sweetAlert.fire({
-          icon: 'info',
-          title: 'Empty CSS',
-          text: 'Insert Css code first',
+          icon: "info",
+          title: "Empty CSS",
+          text: "Insert Css code first",
         });
       } else if (!this.optimizers.length) {
         sweetAlert.fire({
-          icon: 'question',
-          title: 'What should I do?',
-          text: 'Select at least one optimization option',
+          icon: "question",
+          title: "What should I do?",
+          text: "Select at least one optimization option",
           // "\n\n.Detail: " +
           // errors[0]["details"],
         });
       } else {
-        let message = '';
-        let css = snap.getCSS('', () => {console.log('')});
+        let message = "";
+        let css = snap.getCSS("", () => {
+          console.log("");
+        });
         try {
           css = snap.getCSS(this.inputText, (messages) => {
-            message = messages.join('\n')
+            message = messages.join("\n");
           });
         } catch (e) {
-          message = 'Failed to Load CSS'
+          message = "Failed to Load CSS";
           console.log(e);
         }
-        if (message !== 'Successfully Loaded CSS')
+        if (message !== "Successfully Loaded CSS")
           sweetAlert.fire({
-            icon: 'error',
-            title: 'Invalid CSS',
+            icon: "error",
+            title: "Invalid CSS",
             text: message,
           });
         else
-          snap.optimize(css, this.optimizers.join('')).then(result => {
+          snap.optimize(css, this.optimizers.join("")).then((result) => {
             this.outputText = result.toString();
             sweetAlert.fire({
-              icon: 'success',
-              title: 'Success',
-              text: 'Successfully Optimized your CSS',
+              icon: "success",
+              title: "Success",
+              text: "Successfully Optimized your CSS",
             });
-        })
+          });
       }
     },
     onPickFile: (button: HTMLInputElement) => button.click(),
@@ -221,8 +217,8 @@ import FileImportExport from '@/util/fileImportExport';
       this.readFile(event, (e: any) => {
         const importedFile = e.target.result;
         if (
-          this.cssFileName.endsWith('.html') ||
-          this.cssFileName.endsWith('.vue')
+          this.cssFileName.endsWith(".html") ||
+          this.cssFileName.endsWith(".vue")
         ) {
           this.inputText =
             this.fileImportExport.extractCSSFromHtmlOrVue(importedFile);
@@ -236,14 +232,14 @@ import FileImportExport from '@/util/fileImportExport';
       navigator.clipboard.writeText(this.outputText).then(
         () => {
           sweetAlert.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Successfully Copied your CSS',
+            icon: "success",
+            title: "Success",
+            text: "Successfully Copied your CSS",
           });
-          console.log('Async: Copying to clipboard was successful!');
+          console.log("Async: Copying to clipboard was successful!");
         },
         (err) => {
-          console.error('Async: Could not copy text: ', err);
+          console.error("Async: Could not copy text: ", err);
         }
       );
     },
@@ -317,8 +313,8 @@ export default class Home extends Vue {}
   border: none;
   box-shadow: 0 10px 14px rgba(0, 0, 0, 0.35);
   padding: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 .util-btn {
