@@ -68,9 +68,6 @@
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Options, Vue } from 'vue-class-component';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
-import SnapCss from 'snappy-css';
-import Optimizer from 'snappy-css/lib/optimize/optimizer';
 import Editor from '@/components/Editor.vue';
 import {
   mdiLink,
@@ -79,6 +76,7 @@ import {
   mdiFileDownload,
   mdiFileUploadOutline,
 } from '@mdi/js';
+import * as snap from 'snappy-css';
 import Mdi from '@/components/Mdi.vue';
 import sweetAlert from 'sweetalert2';
 import Switches from '@/components/Switches.vue';
@@ -96,7 +94,6 @@ import FileImportExport from '@/util/fileImportExport';
       inputText: '',
       outputText: '',
       fileImportExport: new FileImportExport(),
-      snap: new SnapCss(),
       cssFileName: 'CSS.css',
       htmlFileName: 'file.html',
       switches: [
@@ -105,7 +102,7 @@ import FileImportExport from '@/util/fileImportExport';
         { name: 'Suggest CSS', value: 's' },
         { name: 'Compress CSS', value: 'k' },
       ],
-      optimizers: ['c', 'r', 's', 'k'],
+      optimizers: ['c', 'r', 'k'],
     };
   },
   computed: {
@@ -131,7 +128,6 @@ import FileImportExport from '@/util/fileImportExport';
     Editor,
     Preview,
     Switches,
-    HelloWorld,
   },
   methods: {
     loadUrl() {
@@ -185,17 +181,31 @@ import FileImportExport from '@/util/fileImportExport';
           // errors[0]["details"],
         });
       } else {
-        const optimizers = this.snap.getOptimizers(this.optimizers.join(''));
-        let css = this.snap.getCSS(this.inputText);
-        optimizers.forEach(
-          (optimizer: Optimizer) => (css = optimizer.optimize(css))
-        );
-        this.outputText = css.toString();
-        sweetAlert.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Successfully Optimized your CSS',
-        });
+        let message = '';
+        let css = snap.getCSS('', () => {console.log('')});
+        try {
+          css = snap.getCSS(this.inputText, (messages) => {
+            message = messages.join('\n')
+          });
+        } catch (e) {
+          message = 'Failed to Load CSS'
+          console.log(e);
+        }
+        if (message !== 'Successfully Loaded CSS')
+          sweetAlert.fire({
+            icon: 'error',
+            title: 'Invalid CSS',
+            text: message,
+          });
+        else
+          snap.optimize(css, this.optimizers.join('')).then(result => {
+            this.outputText = result.toString();
+            sweetAlert.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Successfully Optimized your CSS',
+            });
+        })
       }
     },
     onPickFile: (button: HTMLInputElement) => button.click(),
