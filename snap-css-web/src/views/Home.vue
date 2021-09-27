@@ -18,11 +18,15 @@
                   type="file"
                   class="d-none"
                   ref="cssFileInput"
-                  accept="text/css"
+                  accept=".css,.html,.vue"
                   @change="uploadCSS"
                 />
 
-                <button id='load-url-btn' @click="loadUrl" class="editor__btn util-btn">
+                <button
+                  id="load-url-btn"
+                  @click="loadUrl"
+                  class="editor__btn util-btn"
+                >
                   <mdi :path="mdiLink" size="20" />
                   <span class="icon_label">Load URL</span>
                 </button>
@@ -38,14 +42,10 @@
             </div>
           </div>
         </editor>
-        <editor
-          class="output"
-          v-model:code="outputText"
-          :options="{ readOnly: true }"
-        >
+        <editor class="output" v-model:code="outputText">
           <div class="editor__footer">
             <div class="editor__footer--left text-right">
-              <a :href="downloadUrl" :download="`Optimized ${cssFileName}`">
+              <a :href="downloadUrl" :download="`snapped.${cssFileName}`">
                 <button class="editor__btn util-btn right">
                   <mdi :path="mdiFileDownload" class="icon" size="20" />
                   <span class="icon_label">Download Code</span>
@@ -83,6 +83,7 @@ import Mdi from '@/components/Mdi.vue';
 import sweetAlert from 'sweetalert2';
 import Switches from '@/components/Switches.vue';
 import Preview from '@/components/Preview.vue';
+import FileImportExport from '@/util/fileImportExport';
 
 @Options({
   data() {
@@ -92,8 +93,9 @@ import Preview from '@/components/Preview.vue';
       mdiContentCopy,
       mdiFileDownload,
       mdiFileUploadOutline,
-      inputText: '// code',
+      inputText: '',
       outputText: '',
+      fileImportExport: new FileImportExport(),
       snap: new SnapCss(),
       cssFileName: 'CSS.css',
       htmlFileName: 'file.html',
@@ -108,6 +110,17 @@ import Preview from '@/components/Preview.vue';
   },
   computed: {
     downloadUrl() {
+      if (
+        this.wholeText &&
+        (this.cssFileName.endsWith('.html') ||
+          this.cssFileName.endsWith('.vue'))
+      ) {
+        return this.fileImportExport.exportToVueHTML(
+          this.wholeText,
+          this.outputText
+        );
+      }
+
       return `data:text/plain;charset=utf-8, ${encodeURIComponent(
         this.outputText
       )}`;
@@ -196,7 +209,17 @@ import Preview from '@/components/Preview.vue';
     },
     uploadCSS(event: any) {
       this.readFile(event, (e: any) => {
-        this.inputText = e.target.result;
+        const importedFile = e.target.result;
+        if (
+          this.cssFileName.endsWith('.html') ||
+          this.cssFileName.endsWith('.vue')
+        ) {
+          this.inputText =
+            this.fileImportExport.extractCSSFromHtmlOrVue(importedFile);
+        } else {
+          this.inputText = importedFile;
+        }
+        this.wholeText = importedFile;
       });
     },
     copyCode() {
@@ -282,7 +305,7 @@ export default class Home extends Vue {}
   margin: 0 25px 0 0;
   font-size: 16px;
   border: none;
-  box-shadow: 0 10px 14px rgba(0, 0, 0, .35);
+  box-shadow: 0 10px 14px rgba(0, 0, 0, 0.35);
   padding: 10px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;

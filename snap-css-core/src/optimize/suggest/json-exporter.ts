@@ -2,7 +2,7 @@
 import Loader from '../../load/loader2'
 import Scanner from '../../load/scanner'
 import {execSync} from 'child_process'
-import SnapCss = require('../../index')
+import snap = require('../../index')
 const postcss = require('postcss')
 const cssVariables = require('postcss-css-variables')
 
@@ -21,13 +21,12 @@ export default class JsonExporter {
     ['uikit', 'uk-'],
   ]
 
-  private static getObject(inputPath: string, prefix = '') {
+  private static async getObject(inputPath: string, prefix = '') {
     const results: object[] = []
-    const [result, message] =  Loader.loadFromFile(inputPath, true)
+    const [result, message] = Loader.loadFromFile(inputPath, true)
     console.log(message)
-    const optimizers = new SnapCss().getOptimizers('c')
-    optimizers.forEach(optimizer => optimizer.optimize(result))
-    result.ruleSets.forEach(ruleSet => {
+    const css = await snap.optimize(result, 'c')
+    css.ruleSets.forEach(ruleSet => {
       ruleSet.rules.forEach(rule => {
         results.push(rule.toObject())
       })
@@ -59,15 +58,16 @@ export default class JsonExporter {
     JsonExporter.parseCSSVars()
   }
 
-  static start() {
+  static async start() {
     // JsonExporter.downloadFiles()
 
     const final: object[] = []
-    JsonExporter.trainingData.forEach(data => {
+    for (const data of JsonExporter.trainingData) {
       const [file, prefix] = data
-      const res = JsonExporter.getObject(`./frameworks/css/${file}.min.css`, prefix)
+      // eslint-disable-next-line no-await-in-loop
+      const res = await JsonExporter.getObject(`./frameworks/css/${file}.min.css`, prefix)
       if (res.rules.length > 0) final.push(res)
-    })
+    }
     const message = Scanner.exportFile('./frameworks/data.json', JSON.stringify(final))
     console.log(message)
   }
