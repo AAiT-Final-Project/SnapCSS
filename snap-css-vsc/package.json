@@ -5,7 +5,7 @@
   "icon": "images/logo.png",
   "repository": "https://github.com/AAiT-Final-Project/SnapCSS/tree/main/snap-css-vsc",
   "description": "A Visual Studio Code extension for the SnapCSS CSS Optimization tool.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -47,6 +47,6 @@
     "vscode-test": "^1.5.2"
   },
   "dependencies": {
-    "snappy-css": "^0.2.8"
+    "snappy-css": "^0.3.5"
   }
 }

@@ -21,6 +21,7 @@ function makeOptions(choices: string[]) {
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
+	const supported_extensions = ['css', 'html', 'vue', 'php', 'jsx']
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "snap-css-vsc" is now active!');
@@ -37,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 			title: 'Select Input File',
 			canSelectMany: false,
 			canSelectFiles: true,
-			filters: {'css': ['css']}
+			filters: {'css': supported_extensions}
 		}).then(files => {
 			if (files) {
 				vscode.window.showQuickPick(
@@ -59,11 +60,14 @@ export function activate(context: vscode.ExtensionContext) {
 						vscode.window.showOpenDialog({
 							title: 'Select Output Path',
 							canSelectMany: false,
-							canSelectFiles: false,
+							canSelectFiles: true,
 							canSelectFolders: true,
+							filters: {'css': supported_extensions}
 						}).then(files => {
 							if (files) {
-								snap.exportFile(files[0].path + '/output.css', css.toString(), messages => {
+								const end = files[0].path.split('.').pop();
+								const path = end && supported_extensions.includes(end) ? files[0].path : files[0].path + '/optimized_output.css';
+								snap.exportFile(path, css.toString(), messages => {
 									for (const mess of messages) {
 										vscode.window.showInformationMessage(mess);
 									}
